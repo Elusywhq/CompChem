@@ -1,0 +1,221 @@
+#!/bin/bash
+
+# --- Create a tuple list for job types, functionals, states, and basis sets
+job_types=("Optimisation" "Optfreq" "Frequency"  "Intersystem Crossing" "Fluorescence" "Phosphorescence")
+functionals=("camB3LYP" "M062X" "wB97XD4" "pbe0" "O3LYP")
+states=("s0" "s1" "t1")
+basis_sets=("svp" "tzvp")
+GS_methods=("scf" "xtb" "goat")
+ES_methods=("tddft" "Dscf")
+TS_methods=("scf" "Dscf")
+
+# --- Create a tuple list for job type labels, functional labels, state labels, and basis set labels
+job_type_labels=("opt" "optfreq" "freq"  "isc" "fluo" "phosph")
+functional_labels=("cam-B3LYP D4" "M062X D3zero" "wB97X-D4" "pbe0 D4" "o3lyp d4")
+state_labels=("xyz_Singlet" "xyz_Singlet" "xyz_Triplet")
+basis_set_labels=("def2-SVP" "def2-TZVP")
+GS_methods_labels=("opt" "xtb" "goat")
+ES_methods_labels=("tddft_S1" "Dscf_S1")
+TS_methods_labels=("opt" "Dscf_T1")
+
+
+# ------------------------ User Input --------------------------
+# --- Molecule name
+ echo "Please enter a valid molecule prefix without ' ', ',', '*', or '-'."
+ read -e -p "Molecule prefix " answer0
+    # answer0="Molecule_A"  # for testing
+ if [ -z "$answer0" ]; then 
+   echo "Please enter a valid molecule prefix without ' ', ',', '*', or '-'."
+   exit 99
+ else
+   molecule="$answer0"
+   echo "Molecule: $molecule"
+ fi
+
+# --- Specify the coordinate file for ORCA calculation
+ read -e -p "Coordinate file for your calculation (.xyz) " answer1
+    # answer1="test.xyz"  # for testing
+  if [ -f "$answer1" ]; then
+    coord="$answer1"
+    echo "Structure: $coord"
+  else 
+    read -e -p "$answer1 does not exist, do you want to continue? (y/n, y)." answer1a
+    if [ $answer1a == "n" ]; then
+        exit 99
+    fi
+  fi
+
+# --- Prompt the user to select the state
+ echo ""
+ echo "States available:"
+ for ((i=0; i<${#states[@]}; i++)); do
+   echo "$(($i+1)). ${states[$i]}"
+ done
+ read -p "Please enter the number corresponding to your state: " state_number
+#  state_number=3 # for testing T1
+ state_index=$(($state_number-1))
+ if [[ $state_index -lt 0 || $state_index -ge ${#states[@]} ]]; then
+   echo "Invalid state number entered."
+   exit 99
+ fi
+ state=${states[$state_index]}
+ state_label=${state_labels[$state_index]}
+ echo "State: $state"
+
+
+# --- Prompt the user to select the job type
+ echo ""
+ echo "Job type available:"
+ for ((i=0; i<${#job_types[@]}; i++)); do
+   echo "$(($i+1)). ${job_types[$i]} "
+ done
+ read -p "Please enter the number corresponding to your job type: " job_type_number
+    # job_type_number=3 # for testing Optfreq
+ job_type_index=$(($job_type_number-1))
+ if [[ $job_type_index -lt 0 || $job_type_index -ge ${#job_types[@]} ]]; then
+   echo "Invalid job type number entered."
+   exit 99
+ fi
+ job_type=${job_types[$job_type_index]}
+ job_type_label=${job_type_labels[$job_type_index]} 
+ method="default"
+ echo "Job type: $job_type"
+ 
+ # --- Prompt the user to select the method for optimisation
+ if [ $job_type == "Optimisation" ] || [ $job_type == "Optfreq" ]; then
+    if [ $state == "s0" ]; then
+        echo "Optimisation method available:"
+        for ((i=0; i<${#GS_methods[@]}; i++)); do
+            echo "$(($i+1)). ${GS_methods[$i]} "
+        done
+        read -p "Please enter the number corresponding to your optimisation method: " opt_method_number
+        GS_method_index=$(($opt_method_number-1))
+        if [[ $GS_method_index -lt 0 || $GS_method_index -ge ${#GS_methods[@]} ]]; then
+          echo "Invalid optimisation method number entered."
+          exit 99
+        fi
+        GS_method=${GS_methods[$opt_method_index]}
+        opt_method_label=${GS_methods_labels[$opt_method_index]}
+        method="$GS_method"
+        echo "Optimisation method: $GS_method"
+    fi
+
+    if [ $state == "s1" ]; then
+        echo "Optimisation method available:"
+        for ((i=0; i<${#ES_methods[@]}; i++)); do
+            echo "$(($i+1)). ${ES_methods[$i]} "
+        done
+        read -p "Please enter the number corresponding to your optimisation method: " opt_method_number
+        # opt_method_number=2 # for testing tddft_S1
+        ES_method_index=$(($opt_method_number-1))
+        if [[ $ES_method_index -lt 0 || $ES_method_index -ge ${#ES_methods[@]} ]]; then
+            echo "Invalid optimisation method number entered."
+            exit 99
+        fi
+        ES_method=${ES_methods[$ES_method_index]}
+        opt_method_label=${ES_methods_labels[$ES_method_index]}
+        method="$ES_method"
+        echo "Optimisation method: $method"
+    fi
+
+    if [ $state == "t1" ]; then
+        echo "Optimisation method available:"
+        for ((i=0; i<${#TS_methods[@]}; i++)); do
+            echo "$(($i+1)). ${TS_methods[$i]} "
+        done
+        read -p "Please enter the number corresponding to your optimisation method: " opt_method_number
+        # opt_method_number=2 # for testing Dscf
+        TS_method_index=$(($opt_method_number-1))
+        if [[ $TS_method_index -lt 0 || $TS_method_index -ge ${#TS_methods[@]} ]]; then
+            echo "Invalid optimisation method number entered."
+            exit 99
+        fi
+        TS_method=${TS_methods[$TS_method_index]}
+        opt_method_label=${TS_methods_labels[$TS_method_index]}
+        method="$TS_method"
+        echo "Optimisation method: $TS_method"
+    fi
+ fi
+
+# --- Prompt the user to select the functional
+ echo ""
+ echo "Functionals available:"
+ for ((i=0; i<${#functionals[@]}; i++)); do
+   echo "$(($i+1)). ${functionals[$i]} "
+ done
+ read -p "Please enter the number corresponding to your functional: " functional_number
+    # functional_number=5 # for testing camB3LYP
+ functional_index=$(($functional_number-1))
+ if [[ $functional_index -lt 0 || $functional_index -ge ${#functionals[@]} ]]; then
+   echo "Invalid functional number entered."
+   exit 99
+ fi
+ functional=${functionals[$functional_index]}
+ functional_label=${functional_labels[$functional_index]}
+ echo "Functional: $functional"
+
+
+# --- Prompt the user to select the basis set
+ echo ""
+ echo "Basis sets available:"
+ for ((i=0; i<${#basis_sets[@]}; i++)); do
+   echo "$(($i+1)). ${basis_sets[$i]} - ${basis_set_labels[$i]}"
+ done
+ read -p "Please enter the number corresponding to your basis set: " basis_set_number
+    # basis_set_number=2 # for testing def2-SVP
+ basis_set_index=$(($basis_set_number-1))
+ if [[ $basis_set_index -lt 0 || $basis_set_index -ge ${#basis_sets[@]} ]]; then
+   echo "Invalid basis set number entered."
+   exit 99
+ fi
+ basis_set=${basis_sets[$basis_set_index]}
+ basis_set_label=${basis_set_labels[$basis_set_index]}
+ echo "Basis set: $basis_set"
+
+# ------------------------------------- Summary ------------------------------------
+ echo ""
+ echo "****************************************************"
+ echo "CALCULATION SUMMARY"
+ echo "molecule: $molecule"
+ echo "Functional: $functional"
+ echo "State: $state"
+ echo "Method: $method"
+ echo "Basis set: $basis_set"
+ echo "Job type: $job_type"
+ echo "****************************************************"
+ echo "${molecule}_${functional_label}_${state_label}_${opt_method}_${basis_set}_${job_type_label}.inp"
+
+ # --- Create the input file
+  op="${molecule}_${functional}_${basis_set}_${state}_${method}_${job_type_label}.inp"
+  echo "Creating input file: $op"
+
+
+
+# ------ Source block_input
+  source /home/users/nus/e0732533/bin/ORCA_toolbox/ESD/block_input
+  initial_input > "$op"
+# ------ Define Keywords
+  addkeywords "$functional_label"
+  # addkeywords $basis_set_label
+  # addkeywords "def/2J"
+
+# ------ Add blocks 
+ basis $basis_set_label >> "$op"
+ $job_type_label >> "$op"
+
+
+ if [ ! -z "$opt_method_label" ]; then
+    echo "Optimisation method: $opt_method_label"
+    $opt_method_label >> "$op"
+ fi
+
+
+
+# ------ Define xyz file
+  $state_label $coord >> "$op"
+
+# ------ Write Keywords
+  insert_keyword "$op"
+
+  echo "$op created."
+

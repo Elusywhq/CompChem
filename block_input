@@ -1,0 +1,226 @@
+#!/bin/bash
+
+#----------------------------------------------
+# Author: Elusy Wen
+export keyword=("verytightscf defgrid3")
+echo "Keyword: ${keyword[@]}"
+echo "Keyword: ${keyword[@]}"
+
+# --- Keyword 
+
+function addkeywords(){
+    keyword+=("$1")
+}
+
+# --- Initial input file
+function initial_input(){
+    echo -e "\n%pal"
+    echo " nprocs 16"
+    echo "end"
+    # # echo -e "\n%
+    echo -e "\n%maxcore 24000"
+    echo -e "\n%scf"
+    echo " MaxIter 1000"
+    echo "end"
+    # # echo -e "\n%
+    echo -e "\n%output"
+    echo " XYZFile true"
+    echo "end"
+}
+
+# --- basis set
+function basis(){
+    echo -e "\n%basis"
+    echo "  Basis \"$1\" " 
+    echo '  AuxJ "Def2/J" '
+    echo "end"
+}
+
+# --- Ground state optimisation
+function opt(){
+    addkeywords "verytightopt"
+}
+
+function optfreq(){
+    addkeywords "freq"
+    # # echo -e "\n%
+    echo -e "\n%freq"
+    echo " restart true"
+    echo "end"
+}
+
+function freq(){
+    addkeywords "freq"
+    # # echo -e "\n%
+    echo -e "\n%freq"
+    echo " restart true"
+    echo "end"
+}
+
+function xtb(){
+    addkeywords "xtb2"
+}
+
+function goat(){
+    addkeywords "goat"
+    addkeywords "xtb"
+    addkeywords "verytightopt"
+}
+
+# --- xyz file 
+function xyz_Singlet(){
+    # echo -e "\n%
+    echo -e "\n* XYZFILE 0 1 $1"
+}
+
+function xyz_Triplet(){
+    # echo -e "\n%
+    echo -e "\n* XYZFILE 0 3 $1"
+}
+
+# --- Excited state optimisation
+ function tddft_S1(){
+    # echo -e "\n%
+    addkeywords "verytightopt"
+    echo -e "\n%tddft"
+    echo " nroots 10"
+    echo " iroot 1"
+    echo "end"
+ }
+
+ function Dscf_S1(){
+     addkeywords "UHF Deltascf verytightopt"
+    #  # echo -e "\n%
+     echo -e "\n%SCF"
+     echo " ALPHACONF 0,1"
+     echo " PMOM FALSE"
+     echo "END"
+ }
+ 
+ function Dscf_T1(){
+    addkeywords "UHF Deltascf verytightopt"
+    # echo -e "\n%
+    echo -e "\n%SCF"
+    echo " ALPHACONF 1,1" 
+    echo " BETACONF  0,0"
+    echo " PMOM FALSE"
+    echo "END"
+ }
+
+ function dplno(){
+    addkeywords "RHF TIGHTPNO TIGHTSCF DLPNO-STEOM-CCSD"
+    echo -e "\n%mdci"
+    echo "  nroots 4"
+    echo "  DoRootWise false"
+    echo "end"
+ }
+
+
+# --- Excited States Dynamic 
+ 
+ function tddft_phos(){
+     # echo -e "\n%
+     addkeywords "RI-SOMF(1X) "
+     echo -e "\n%tddft"
+     echo " nroots 10"
+     echo " iroot 1"
+     echo " DOSOC TRUE"
+     echo " TDA FALSE"
+     echo "end"
+ }
+ 
+ function tddft_isc(){
+     # echo -e "\n%
+     addkeywords "RI-SOMF(1X)"
+     echo -e "\n%tddft"
+     echo " nroots 10"
+     echo " DOSOC TRUE"
+     echo " TDA FALSE"
+     echo " SROOT 1"
+     echo " TROOT 1"
+     echo " TROOTSSL "
+     echo "end"
+ }
+ 
+ function isc(){
+    # tddft_isc
+      # echo -e "\n%
+     addkeywords "RI-SOMF(1X)"
+     echo -e "\n%tddft"
+     echo " nroots 10"
+     echo " DOSOC TRUE"
+     echo " TDA FALSE"
+     echo " SROOT 1"
+     echo " TROOT 1"
+     echo " TROOTSSL "
+     echo "end"    
+    
+    # esd_isc
+     # echo -e "\n%
+     addkeywords "ESD(ISC)"
+     echo -e "\n%ESD" 
+     echo " ISCISHESS  "initial.hess""
+     echo " ISCFSHESS  "final.hess""
+     echo " DOHT TRUE" 
+     echo " PRINTLEVEL 3"
+     echo " USEJ TRUE"
+     echo " DELE"
+     echo "END" 
+ }
+ 
+ function phosph(){
+    # tddft_phos
+     # echo -e "\n%
+     addkeywords "RI-SOMF(1X)"
+     echo -e "\n%tddft"
+     echo " nroots 10"
+     echo " iroot 1"
+     echo " DOSOC TRUE"
+     echo " TDA FALSE"
+     echo "end"
+    
+    # esd_phosph
+     # echo -e "\n%
+     addkeywords "ESD(PHOSP)"
+     echo -e "\n%ESD" 
+     echo " GSHESSIAN "groundstate.hess""
+     echo " TSHESSIAN "tripletstate.hess""
+     echo " DOHT TRUE" 
+     echo " PRINTLEVEL 3"
+     echo " USEJ TRUE"
+     echo " DELE"
+     echo "END" 
+ 
+ }
+ 
+ function fluo(){
+    # tddft_S1
+     # echo -e "\n%
+     echo -e "\n%tddft"
+     echo " nroots 10"
+     echo " iroot 1"
+     echo "end"
+
+    # esd_fluo
+     # echo -e "\n%
+     addkeywords "ESD(FLUO)"
+     echo -e "\n%ESD" 
+     echo " GSHESSIAN "groundstate.hess""
+     echo " ESHESSIAN "singletstate.hess""
+     echo " DOHT TRUE" 
+     echo " PRINTLEVEL 3"
+     echo " LINES VOIGT"
+     echo " LINEW 75"
+     echo " INLINEW 200"
+     echo "END" 
+ }
+# echo "! ${keyword[@]}" >> test.xyz
+
+function insert_keyword() {
+    local line_to_insert="! ${keyword[@]}"
+    echo "Inserting line: $line_to_insert"
+    sed -i -e "1s/.*/$line_to_insert/" $1
+    rm $1-e
+}
+
+ 
