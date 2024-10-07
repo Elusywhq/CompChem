@@ -192,7 +192,7 @@ TS_methods_labels=("opt" "Dscf_T1")
 
 
 # ------ Source block_input
-  source /home/users/nus/e0732533/bin/ORCA_toolbox/ESD/block_input
+  source $HOME/bin/ORCA/block_input
   initial_input > "$op"
 # ------ Define Keywords
   addkeywords "$functional_label"
