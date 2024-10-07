@@ -2,8 +2,7 @@
 
 #PBS -q parallel12
 #PBS -l select=1:ncpus=12:mpiprocs=12:mem=40GB
-#PBS -j oe
-#PBS -M 
+#PBS -j oe 
 
 input=RN
 orbital=WF          # input file for restart the calculation, if needed
