@@ -27,7 +27,7 @@ CurrDir=$PBS_O_WORKDIR
 cd $CurrDir
 
 # scratch folder. Make it "input- dependent"
-tdir=/home/users/nus/$USER/scratch/orcacalc/${input%.inp}
+tdir=/hpctmp/$USER/orcacalc/${input%.inp}
 
 if [ ! -d $tdir ] ; then
     mkdir -p $tdir
