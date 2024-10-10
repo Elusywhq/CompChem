@@ -339,8 +339,12 @@ basis_set_label="def2-SVP"
  if [ $job_type == "Intersystem Crossing" ] || [ $job_type == "Phosphorescence" ] || [ "$job_type" == "Fluorescence" ]; then 
   coord=""
  fi
- 
+
  $state_label $coord >> "$op"
+
+
+# ------ Write Keywords
+insert_keyword "$op"
 
 if [ "$job_type" == "Fluorescence" ]; then
   sed -i "s/groundstate/$GS/g" "$op"
@@ -357,14 +361,6 @@ if [ "$job_type" == "Phosphorescence" ]; then
   $HOME/bin/ORCA/phosp.sh "$op" "$TS" "$ES"
   echo "$op created."
 fi
-
-# ------ Define xyz file
-if [ "$job_type" == "Optimisation" ] || [ "$job_type" == "Optfreq" ] || ["$job_type" == ]; then
-
-
-# ------ Write Keywords
-insert_keyword "$op"
-
 
 
 exit 0
