@@ -1,19 +1,17 @@
 #!/bin/bash
 
 # --- Create a tuple list for job types, functionals, states, and basis sets
-job_types=("Optimisation" "Optfreq" "Frequency"  "Intersystem Crossing" "Fluorescence" "Phosphorescence")
-functionals=("camB3LYP" "M062X" "wB97XD4" "pbe0" "O3LYP")
+job_types=("Optfreq" "Optimisation" "Frequency" "Intersystem Crossing" "Fluorescence" "Phosphorescence")
+functionals=("O3LYP" "pbe0" "camB3LYP" "M062X" "wB97XD4"  )
 states=("s0" "s1" "t1")
-basis_sets=("svp" "tzvp")
 GS_methods=("scf" "xtb" "goat")
 ES_methods=("tddft" "Dscf")
 TS_methods=("scf" "Dscf")
 
 # --- Create a tuple list for job type labels, functional labels, state labels, and basis set labels
-job_type_labels=("opt" "optfreq" "freq"  "isc" "fluo" "phosph")
-functional_labels=("cam-B3LYP D4" "M062X D3zero" "wB97X-D4" "pbe0 D4" "o3lyp d4")
+job_type_labels=("optfreq" "opt" "freq"  "isc" "fluo" "phosph")
+functional_labels=( "o3lyp d4" "pbe0 D4" "cam-B3LYP D4" "M062X D3zero" "wB97X-D4" )
 state_labels=("xyz_Singlet" "xyz_Singlet" "xyz_Triplet")
-basis_set_labels=("def2-SVP" "def2-TZVP")
 GS_methods_labels=("opt" "xtb" "goat")
 ES_methods_labels=("tddft_S1" "Dscf_S1")
 TS_methods_labels=("opt" "Dscf_T1")
@@ -22,18 +20,18 @@ TS_methods_labels=("opt" "Dscf_T1")
 # ------------------------ User Input --------------------------
 # --- Molecule name
  echo "Please enter a valid molecule prefix without ' ', ',', '*', or '-'."
- read -e -p "Molecule prefix " answer0
+ read -e -p "Molecule prefix: " answer0
     # answer0="Molecule_A"  # for testing
  if [ -z "$answer0" ]; then 
    echo "Please enter a valid molecule prefix without ' ', ',', '*', or '-'."
    exit 99
  else
    molecule="$answer0"
-   echo "Molecule: $molecule"
+   echo "Molecule prefix: $molecule"
  fi
 
 # --- Specify the coordinate file for ORCA calculation
- read -e -p "Coordinate file for your calculation (.xyz) " answer1
+ read -e -p "Coordinate file for your calculation (.xyz): " answer1
     # answer1="test.xyz"  # for testing
   if [ -f "$answer1" ]; then
     coord="$answer1"
@@ -84,6 +82,7 @@ TS_methods_labels=("opt" "Dscf_T1")
  # --- Prompt the user to select the method for optimisation
  if [ $job_type == "Optimisation" ] || [ $job_type == "Optfreq" ]; then
     if [ $state == "s0" ]; then
+        echo ""
         echo "Optimisation method available:"
         for ((i=0; i<${#GS_methods[@]}; i++)); do
             echo "$(($i+1)). ${GS_methods[$i]} "
@@ -94,13 +93,14 @@ TS_methods_labels=("opt" "Dscf_T1")
           echo "Invalid optimisation method number entered."
           exit 99
         fi
-        GS_method=${GS_methods[$opt_method_index]}
-        opt_method_label=${GS_methods_labels[$opt_method_index]}
+        GS_method=${GS_methods[$GS_method_index]}
+        opt_method_label=${GS_methods_labels[$GS_method_index]}
         method="$GS_method"
         echo "Optimisation method: $GS_method"
     fi
 
     if [ $state == "s1" ]; then
+        echo ""
         echo "Optimisation method available:"
         for ((i=0; i<${#ES_methods[@]}; i++)); do
             echo "$(($i+1)). ${ES_methods[$i]} "
@@ -119,6 +119,7 @@ TS_methods_labels=("opt" "Dscf_T1")
     fi
 
     if [ $state == "t1" ]; then
+        echo ""
         echo "Optimisation method available:"
         for ((i=0; i<${#TS_methods[@]}; i++)); do
             echo "$(($i+1)). ${TS_methods[$i]} "
@@ -136,6 +137,112 @@ TS_methods_labels=("opt" "Dscf_T1")
         echo "Optimisation method: $TS_method"
     fi
  fi
+
+ # --- ESD checking
+ if [ $job_type == "Fluorescence" ]; then
+   read -p "What is your output for Ground state? (.out)" GS_job
+    if [ -f "$GS_job" ]; then
+       grep -q "****ORCA TERMINATED NORMALLY****" $GS_job; then
+       echo "Ground state calculation finished. Checking Hessian file..."
+       GS=${GS_job%.out}
+       if [ -f "$GS.hess" ]; then
+         echo "Hessian file found. Proceeding to Singlet Excited state."
+       else
+         echo "Hessian file not found."
+         exit 99
+       fi
+     else
+       echo "Ground state calculation finish with error, please check."
+       exit 99
+    fi
+    if [ ! -f "$GS_job" ]; then
+    echo "$GS_job does not exist."
+    exit 99 
+    fi
+   
+   read -p "What is your output for Singlet Excited state (S1)? (.out)" ES_job
+    if [ -f "$ES_job" ]; then
+       grep -q "****ORCA TERMINATED NORMALLY****" $ES_job; then
+       echo "Excited state calculation finished. Checking Hessian file..."
+       ES=${ES_job%.out}
+        if [ -f "$ES.hess" ]; then
+          echo "Hessian file found. Generating Fluorescence input."
+        else
+          echo "Hessian file not found."
+          exit 99
+        fi
+     else
+       echo "Excited state calculation finish with error, please check."
+       exit 99
+    fi
+    if [ ! -f "$ES_job" ]; then
+     echo "$ES_job does not exist."
+     exit 99 
+    fi    
+ fi
+
+ if [ $job_type == "Intersystem Crossing" ] || [ $job_type == "Phosphorescence" ]; then
+    read -p "What is your output for Ground state? (.out)" GS_job
+      if [ -f "$GS_job" ]; then
+        grep -q "****ORCA TERMINATED NORMALLY****" $GS_job; then
+        echo "Ground state calculation finished. Checking hessian file."
+        GS=${GS_job%.out}
+        if [ -f "$GS.hess" ]; then
+          echo "Hessian file found. Proceeding to Singlet Excited state."
+        else
+          echo "Hessian file not found."
+          exit 99
+        fi
+      else
+        echo "Ground state calculation finish with error, please check."
+        exit 99
+      fi
+      if [ ! -f "$GS_job" ]; then
+      echo "$GS_job does not exist."
+      exit 99 
+      fi
+    
+    read -p "What is your output for Singlet Excited State (S1)? (.out)" ES_job
+      if [ -f "$ES_job" ]; then
+        grep -q "****ORCA TERMINATED NORMALLY****" $ES_job; then
+        echo "Excited state calculation finished. Checking hessian file."
+        ES=${ES_job%.out}
+        if [ -f "$ES.hess" ]; then
+          echo "Hessian file found. Proceeding to Triplet Excited State."
+        else
+          echo "Hessian file not found."
+          exit 99
+        fi
+      else
+        echo "Excited state calculation finish with error, please check."
+        exit 99
+      fi
+      if [ ! -f "$ES_job" ]; then
+      echo "$ES_job does not exist."
+      exit 99 
+      fi    
+    
+    read -p "What is your output for Triplet Excited State (T1)? (.out)" TS_job
+      if [ -f "$TS_job" ]; then
+        grep -q "****ORCA TERMINATED NORMALLY****" $TS_job; then
+        echo "Triplet state calculation finished. Checking hessian file."
+        TS=${TS_job%.out}
+        if [ -f "$TS.hess" ]; then
+          echo "Hessian file found. Generating input."
+        else
+          echo "Hessian file not found."
+          exit 99
+        fi
+      else
+        echo "Triplet state calculation finish with error, please check."
+        exit 99
+      fi
+      if [ ! -f "$TS_job" ]; then
+      echo "$TS_job does not exist."
+      exit 99 
+      fi
+ fi
+
 
 # --- Prompt the user to select the functional
  echo ""
@@ -156,34 +263,38 @@ TS_methods_labels=("opt" "Dscf_T1")
 
 
 # --- Prompt the user to select the basis set
- echo ""
- echo "Basis sets available:"
- for ((i=0; i<${#basis_sets[@]}; i++)); do
-   echo "$(($i+1)). ${basis_sets[$i]} - ${basis_set_labels[$i]}"
- done
- read -p "Please enter the number corresponding to your basis set: " basis_set_number
-    # basis_set_number=2 # for testing def2-SVP
- basis_set_index=$(($basis_set_number-1))
- if [[ $basis_set_index -lt 0 || $basis_set_index -ge ${#basis_sets[@]} ]]; then
-   echo "Invalid basis set number entered."
-   exit 99
- fi
- basis_set=${basis_sets[$basis_set_index]}
- basis_set_label=${basis_set_labels[$basis_set_index]}
- echo "Basis set: $basis_set"
+#  echo ""
+#  echo "Basis sets available:"
+#  for ((i=0; i<${#basis_sets[@]}; i++)); do
+#    echo "$(($i+1)). ${basis_sets[$i]} - ${basis_set_labels[$i]}"
+#  done
+#  read -p "Please enter the number corresponding to your basis set: " basis_set_number
+#     # basis_set_number=2 # for testing def2-SVP
+#  basis_set_index=$(($basis_set_number-1))
+#  if [[ $basis_set_index -lt 0 || $basis_set_index -ge ${#basis_sets[@]} ]]; then
+#    echo "Invalid basis set number entered."
+#    exit 99
+#  fi
+#  basis_set=${basis_sets[$basis_set_index]}
+#  basis_set_label=${basis_set_labels[$basis_set_index]}
+#  echo "Basis set: $basis_set"
+basis_set="svp"
+basis_set_label="def2-SVP"
+#  echo "Basis set: $basis_set"
+
 
 # ------------------------------------- Summary ------------------------------------
  echo ""
  echo "****************************************************"
  echo "CALCULATION SUMMARY"
- echo "molecule: $molecule"
+ echo "Molecule: $molecule"
  echo "Functional: $functional"
  echo "State: $state"
  echo "Method: $method"
  echo "Basis set: $basis_set"
  echo "Job type: $job_type"
  echo "****************************************************"
- echo "${molecule}_${functional_label}_${state_label}_${opt_method}_${basis_set}_${job_type_label}.inp"
+#  echo "${molecule}_${functional_label}_${state_label}_${opt_method}_${basis_set}_${job_type_label}.inp"
 
  # --- Create the input file
   op="${molecule}_${functional}_${basis_set}_${state}_${method}_${job_type_label}.inp"
@@ -200,15 +311,16 @@ TS_methods_labels=("opt" "Dscf_T1")
   # addkeywords "def/2J"
 
 # ------ Add blocks 
- basis $basis_set_label >> "$op"
+#  basis $basis_set_label >> "$op"
  $job_type_label >> "$op"
 
 
  if [ ! -z "$opt_method_label" ]; then
+   if [ "$opt_method_label" != "opt" ]; then
     echo "Optimisation method: $opt_method_label"
     $opt_method_label >> "$op"
+  fi
  fi
-
 
 
 # ------ Define xyz file
@@ -217,5 +329,18 @@ TS_methods_labels=("opt" "Dscf_T1")
 # ------ Write Keywords
   insert_keyword "$op"
 
+if $job_type == "Fluorescence"; then
+  sed -i "s/initial/$GS/g" "$op"
+  sed -i "s/excited/$ES/g" "$op"
   echo "$op created."
+fi
 
+if $job_type == "Intersystem Crossing" ; then
+  $HOME/bin/ORCA/ISC.sh  "$op" "$TS" "$ES" 
+  echo "$op created."
+fi 
+
+if $job_type == "Phosphorescence" ; then
+  $HOME/bin/ORCA/phosp.sh  "$op" "$TS" "$ES" 
+  echo "$op created."
+fi
