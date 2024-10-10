@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # --- Create a tuple list for job types, functionals, states, and basis sets
-job_types=("Optfreq" "Optimisation" "Frequency" "Intersystem Crossing" "Fluorescence" "Phosphorescence")
+job_types=("Optfreq" "Optimisation" "Frequency" "Fluorescence" "Intersystem Crossing" "Reverse Intersystem Crossing" "Phosphorescence" )
 functionals=("O3LYP" "pbe0" "camB3LYP" "M062X" "wB97XD4"  )
 states=("s0" "s1" "t1")
 GS_methods=("scf" "xtb" "goat")
@@ -9,7 +9,7 @@ ES_methods=("tddft" "Dscf")
 TS_methods=("scf" "Dscf")
 
 # --- Create a tuple list for job type labels, functional labels, state labels, and basis set labels
-job_type_labels=("optfreq" "opt" "freq"  "isc" "fluo" "phosph")
+job_type_labels=("optfreq" "opt" "freq" "fluo" "isc" "isc" "phosph")
 functional_labels=( "o3lyp d4" "pbe0 D4" "cam-B3LYP D4" "M062X D3zero" "wB97X-D4" )
 state_labels=("xyz_Singlet" "xyz_Singlet" "xyz_Triplet")
 GS_methods_labels=("opt" "xtb" "goat")
@@ -29,6 +29,8 @@ TS_methods_labels=("opt" "Dscf_T1")
    molecule="$answer0"
    echo "Molecule prefix: $molecule"
   fi
+
+
 
 # --- Specify the coordinate file for ORCA calculation
  read -e -p "Coordinate file for your calculation (.xyz): " answer1
@@ -168,7 +170,7 @@ TS_methods_labels=("opt" "Dscf_T1")
        echo "Excited state calculation finished. Checking Hessian file..."
        ES=${ES_job%.out}
         if [ -f "$ES.hess" ]; then
-          echo "Hessian file found. Generating Fluorescence input."
+          echo "Hessian file found. Exsit ESD check."
         else
           echo "Hessian file not found."
           exit 99
@@ -185,7 +187,7 @@ TS_methods_labels=("opt" "Dscf_T1")
     fi    
   fi
 
- if [ "$job_type" == "Intersystem Crossing" ] || [ "$job_type" == "Phosphorescence" ]; then
+ if [ "$job_type" == "Intersystem Crossing" ]|| [ "$job_type" == "Reverse Intersystem Crossing" ] || [ "$job_type" == "Phosphorescence" ]; then
     read -p "What is your output for Ground state? (.out) " GS_job
       if [ -f "$GS_job" ]; then
         if grep -q "****ORCA TERMINATED NORMALLY****" "$GS_job"; then
@@ -273,24 +275,24 @@ TS_methods_labels=("opt" "Dscf_T1")
 
 
 # --- Prompt the user to select the basis set
-#  echo ""
-#  echo "Basis sets available:"
-#  for ((i=0; i<${#basis_sets[@]}; i++)); do
-#    echo "$(($i+1)). ${basis_sets[$i]} - ${basis_set_labels[$i]}"
-#  done
-#  read -p "Please enter the number corresponding to your basis set: " basis_set_number
-#     # basis_set_number=2 # for testing def2-SVP
-#  basis_set_index=$(($basis_set_number-1))
-#  if [[ $basis_set_index -lt 0 || $basis_set_index -ge ${#basis_sets[@]} ]]; then
-#    echo "Invalid basis set number entered."
-#    exit 99
-#  fi
-#  basis_set=${basis_sets[$basis_set_index]}
-#  basis_set_label=${basis_set_labels[$basis_set_index]}
-#  echo "Basis set: $basis_set"
+  #  echo ""
+  #  echo "Basis sets available:"
+  #  for ((i=0; i<${#basis_sets[@]}; i++)); do
+  #    echo "$(($i+1)). ${basis_sets[$i]} - ${basis_set_labels[$i]}"
+  #  done
+  #  read -p "Please enter the number corresponding to your basis set: " basis_set_number
+  #     # basis_set_number=2 # for testing def2-SVP
+  #  basis_set_index=$(($basis_set_number-1))
+  #  if [[ $basis_set_index -lt 0 || $basis_set_index -ge ${#basis_sets[@]} ]]; then
+  #    echo "Invalid basis set number entered."
+  #    exit 99
+  #  fi
+  #  basis_set=${basis_sets[$basis_set_index]}
+  #  basis_set_label=${basis_set_labels[$basis_set_index]}
+  #  echo "Basis set: $basis_set"
 basis_set="svp"
 basis_set_label="def2-SVP"
-#  echo "Basis set: $basis_set"
+echo "Basis set: $basis_set"
 
 
 # ------------------------------------- Summary ------------------------------------
@@ -308,7 +310,7 @@ basis_set_label="def2-SVP"
 
  # --- Create the input file
   op="${molecule}_${functional}_${basis_set}_${state}_${method}_${job_type_label}.inp"
-  echo "Creating input file: $op"
+  # echo "Creating input file: $op"
 
 
 
@@ -321,47 +323,59 @@ basis_set_label="def2-SVP"
   # addkeywords "def/2J"
 
 # ------ Add blocks 
-#  basis $basis_set_label >> "$op"
- $job_type_label >> "$op"
+ #  basis $basis_set_label >> "$op"
+  $job_type_label >> "$op"
+    if [ "$method" == "esd" ]; then
+      coord=" "
+    fi
+  $state_label $coord >> "$op"
 
 
- if [ ! -z "$opt_method_label" ]; then
-   if [ "$opt_method_label" != "opt" ]; then
-    # echo "Optimisation method: $opt_method_label"
-    $opt_method_label >> "$op"
+  if [ ! -z "$opt_method_label" ]; then
+    if [ "$opt_method_label" != "opt" ]; then
+      # echo "Optimisation method: $opt_method_label"
+      $opt_method_label >> "$op"
+    fi
   fi
- fi
+# ------ ESD bolcks
 
- if [ "$job_type" == "Optimisation" ] || [ "$job_type" == "Optfreq" ]; then
-  optfreq >> "$op"
- fi
+  if [ "$job_type" == "Optimisation" ] || [ "$job_type" == "Optfreq" ]; then
+    optfreq >> "$op"
+  fi
 
- if [ "$job_type" == "Intersystem Crossing" ] || [ "$job_type" == "Phosphorescence" ] || [ "$job_type" == "Fluorescence" ]; then 
-  coord=""
- fi
+  # ------ Write Keywords
+  insert_keyword "$op"
 
- $state_label $coord >> "$op"
-
-
-# ------ Write Keywords
-insert_keyword "$op"
-
-if [ "$job_type" == "Fluorescence" ]; then
-  sed -i "s/groundstate/$GS/g" "$op"
-  sed -i "s/singletstate/$ES/g" "$op"
-  sed -i "s/* XYZFILE 0 1/* XYZFILE 0 1 $GS.xyz/g" "$op"
+  if [ "$job_type" == "Fluorescence" ]; then
+    sed -i "s/groundstate/$GS/g" "$op"
+    sed -i "s/singletstate/$ES/g" "$op"
+    sed -i "s/* XYZFILE 0 1/* XYZFILE 0 1 $GS.xyz/g" "$op"
+  fi
+  
   echo "$op created."
-fi
 
-if [ "$job_type" == "Intersystem Crossing" ]; then
-  sh $HOME/bin/ORCA/ISC.sh "$op" "$TS" "$ES"
-  echo "$op created."
-fi 
+  if [ "$job_type" == "Reverse Intersystem Crossing" ]; then
+    echo "Generating input for RISC calculation...."
+    Energy1=`grep "Electronic energy " $TS.out | awk '{print $4}'`
+    Energy2=`grep "Electronic energy " $ES.out | awk '{print $4}'`
+    DEnergyT1=$(echo "($Energy1 - $Energy2) * 219474.6" | bc)
+    DiffEnergyT1=$(echo "($DEnergyT1 + 0.5) / 1" | bc) 
+    echo "Energy difference between T1 and S1: $DiffEnergyT1"
+    risc_op="${molecule}_${functional}_${basis_set}_${state}_${method}_risc.inp"
+    sed -e "s/TROOTSSL/TROOTSSL 0/g" "$op"   >        "$risc_op"
+    sed -i "s/DELE/DELE $DiffEnergyT1/g"              "$risc_op"
+    sed -i "s/initial.hess/$TS.hess/g"                "$risc_op"
+    sed -i "s/final.hess/$ES.hess/g"                  "$risc_op"
+    sed -i "s/* XYZFILE 0 1/* XYZFILE 0 1 $ES.xyz/g"  "$risc_op"
+    echo "$risc_op is also created, please use this version to generate .sh file."
+  fi
 
-if [ "$job_type" == "Phosphorescence" ]; then
-  sh $HOME/bin/ORCA/phosp.sh "$op" "$TS" "$ES"
-  echo "$op created."
-fi
+  if [ "$job_type" == "Intersystem Crossing" ] ; then
+    sh $HOME/bin/ORCA/ISC.sh "$op" "$TS" "$ES"
+    rm -f "$op"
+  fi 
 
-
+  if [ "$job_type" == "Phosphorescence" ]; then
+    sh $HOME/bin/ORCA/phosp.sh "$op" "$TS" "$ES"
+  fi
 exit 0
