@@ -76,7 +76,7 @@ TS_methods_labels=("opt" "Dscf_T1")
   fi
  job_type=${job_types[$job_type_index]}
  job_type_label=${job_type_labels[$job_type_index]} 
- method="default"
+ method="esd"
  echo "Job type: $job_type"
  
  # --- Prompt the user to select the method for optimisation
