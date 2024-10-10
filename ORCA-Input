@@ -37,7 +37,7 @@ TS_methods_labels=("opt" "Dscf_T1")
     coord="$answer1"
     echo "Structure: $coord"
   else 
-    read -e -p "$answer1 does not exist, do you want to continue? (y/n, y)." answer1a
+    read -e -p "$answer1 does not exist, do you want to continue? (y/n, y). " answer1a
     if [ $answer1a == "n" ]; then
         exit 99
     fi
@@ -140,7 +140,7 @@ TS_methods_labels=("opt" "Dscf_T1")
 
  # --- ESD checking
   if [ $job_type == "Fluorescence" ]; then
-   read -p "What is your output for Ground state? (.out)" GS_job
+   read -p "What is your output for Ground state? (.out) " GS_job
     if [ -f "$GS_job" ]; then
       if grep -q "****ORCA TERMINATED NORMALLY****" "$GS_job"; then
        echo "Ground state calculation finished. Checking Hessian file..."
@@ -162,7 +162,7 @@ TS_methods_labels=("opt" "Dscf_T1")
     exit 99 
     fi
    
-   read -p "What is your output for Singlet Excited state (S1)? (.out)" ES_job
+   read -p "What is your output for Singlet Excited state (S1)? (.out) " ES_job
     if [ -f "$ES_job" ]; then
       if grep -q "****ORCA TERMINATED NORMALLY****" "$ES_job"; then
        echo "Excited state calculation finished. Checking Hessian file..."
@@ -186,7 +186,7 @@ TS_methods_labels=("opt" "Dscf_T1")
   fi
 
  if [ $job_type == "Intersystem Crossing" ] || [ $job_type == "Phosphorescence" ]; then
-    read -p "What is your output for Ground state? (.out)" GS_job
+    read -p "What is your output for Ground state? (.out) " GS_job
       if [ -f "$GS_job" ]; then
         if grep -q "****ORCA TERMINATED NORMALLY****" "$GS_job"; then
          echo "Ground state calculation finished. Checking hessian file."
@@ -208,7 +208,7 @@ TS_methods_labels=("opt" "Dscf_T1")
        exit 99 
       fi
     
-    read -p "What is your output for Singlet Excited State (S1)? (.out)" ES_job
+    read -p "What is your output for Singlet Excited State (S1)? (.out) " ES_job
       if [ -f "$ES_job" ]; then
         if grep -q "****ORCA TERMINATED NORMALLY****" "$ES_job"; then
         echo "Excited state calculation finished. Checking hessian file."
@@ -230,7 +230,7 @@ TS_methods_labels=("opt" "Dscf_T1")
       exit 99 
       fi    
     
-    read -p "What is your output for Triplet Excited State (T1)? (.out)" TS_job
+    read -p "What is your output for Triplet Excited State (T1)? (.out) " TS_job
       if [ -f "$TS_job" ]; then
         if grep -q "****ORCA TERMINATED NORMALLY****" "$TS_job"; then
           echo "Triplet state calculation finished. Checking hessian file."
