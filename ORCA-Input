@@ -239,11 +239,11 @@ TS_methods_labels=("opt" "Dscf_T1")
           TS=${TS_job%.out}
           if [ -f "$TS.hess" ]; then
             echo "Hessian file found. Generating input."
-          else
+           else
             echo "Hessian file not found."
             exit 99
           fi
-        else
+         else
           echo "Triplet state calculation finish with error, please check."
           exit 99
         fi
