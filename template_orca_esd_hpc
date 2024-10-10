@@ -2,7 +2,8 @@
 
 #PBS -q parallel12
 #PBS -l select=1:ncpus=12:mpiprocs=12:mem=40GB
-#PBS -j oe 
+#PBS -j oe
+#PBS -M 
 
 input=RN
 orbital=WF          # input file for restart the calculation, if needed
@@ -93,7 +94,7 @@ if [ -f $CurrDir/$orbital ]; then
 fi
 
 # actual execution of ORCA
-$ORCA_ROOT/orca  $input > ${input%.inp}.out 2> ${input%.inp}.err
+$ORCA_ROOT/bin/orca  $input > ${input%.inp}.out 2> ${input%.inp}.err
 
 # Check Output result::
 finish=0
@@ -114,7 +115,7 @@ while [ $finish -eq 0 ]; do
 # Back up for previous run
   cp $tdir/${input%.inp}.out $tdir/${input%.inp}.o$i
 # Redo the calculation
-  $ORCA_ROOT/orca  $input > ${input%.inp}.out 2> ${input%.inp}.err 
+  $ORCA_ROOT/bin/orca  $input > ${input%.inp}.out 2> ${input%.inp}.err 
 # Check finish status again
   finish=$(grep -c "****ORCA ESD FINISHED WITHOUT ERROR****" $tdir/${input%.inp}.out)
   if [ $finish -eq 1 ]; then
