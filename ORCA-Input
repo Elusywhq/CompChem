@@ -354,12 +354,12 @@ if [ "$job_type" == "Fluorescence" ]; then
 fi
 
 if [ "$job_type" == "Intersystem Crossing" ]; then
-  $HOME/bin/ORCA/ISC.sh "$op" "$TS" "$ES"
+  sh $HOME/bin/ORCA/ISC.sh "$op" "$TS" "$ES"
   echo "$op created."
 fi 
 
 if [ "$job_type" == "Phosphorescence" ]; then
-  $HOME/bin/ORCA/phosp.sh "$op" "$TS" "$ES"
+  sh $HOME/bin/ORCA/phosp.sh "$op" "$TS" "$ES"
   echo "$op created."
 fi
 
