@@ -22,13 +22,13 @@ TS_methods_labels=("opt" "Dscf_T1")
  echo "Please enter a valid molecule prefix without ' ', ',', '*', or '-'."
  read -e -p "Molecule prefix: " answer0
     # answer0="Molecule_A"  # for testing
- if [ -z "$answer0" ]; then 
+  if [ -z "$answer0" ]; then 
    echo "Please enter a valid molecule prefix without ' ', ',', '*', or '-'."
    exit 99
- else
+  else
    molecule="$answer0"
    echo "Molecule prefix: $molecule"
- fi
+  fi
 
 # --- Specify the coordinate file for ORCA calculation
  read -e -p "Coordinate file for your calculation (.xyz): " answer1
@@ -52,10 +52,10 @@ TS_methods_labels=("opt" "Dscf_T1")
  read -p "Please enter the number corresponding to your state: " state_number
 #  state_number=3 # for testing T1
  state_index=$(($state_number-1))
- if [[ $state_index -lt 0 || $state_index -ge ${#states[@]} ]]; then
+  if [[ $state_index -lt 0 || $state_index -ge ${#states[@]} ]]; then
    echo "Invalid state number entered."
    exit 99
- fi
+  fi
  state=${states[$state_index]}
  state_label=${state_labels[$state_index]}
  echo "State: $state"
@@ -70,17 +70,17 @@ TS_methods_labels=("opt" "Dscf_T1")
  read -p "Please enter the number corresponding to your job type: " job_type_number
     # job_type_number=3 # for testing Optfreq
  job_type_index=$(($job_type_number-1))
- if [[ $job_type_index -lt 0 || $job_type_index -ge ${#job_types[@]} ]]; then
+  if [[ $job_type_index -lt 0 || $job_type_index -ge ${#job_types[@]} ]]; then
    echo "Invalid job type number entered."
    exit 99
- fi
+  fi
  job_type=${job_types[$job_type_index]}
  job_type_label=${job_type_labels[$job_type_index]} 
  method="default"
  echo "Job type: $job_type"
  
  # --- Prompt the user to select the method for optimisation
- if [ $job_type == "Optimisation" ] || [ $job_type == "Optfreq" ]; then
+  if [ $job_type == "Optimisation" ] || [ $job_type == "Optfreq" ]; then
     if [ $state == "s0" ]; then
         echo ""
         echo "Optimisation method available:"
@@ -89,10 +89,10 @@ TS_methods_labels=("opt" "Dscf_T1")
         done
         read -p "Please enter the number corresponding to your optimisation method: " opt_method_number
         GS_method_index=$(($opt_method_number-1))
-        if [[ $GS_method_index -lt 0 || $GS_method_index -ge ${#GS_methods[@]} ]]; then
-          echo "Invalid optimisation method number entered."
-          exit 99
-        fi
+      if [[ $GS_method_index -lt 0 || $GS_method_index -ge ${#GS_methods[@]} ]];  then
+        echo "Invalid optimisation method number entered."
+        exit 99
+      fi
         GS_method=${GS_methods[$GS_method_index]}
         opt_method_label=${GS_methods_labels[$GS_method_index]}
         method="$GS_method"
@@ -108,10 +108,10 @@ TS_methods_labels=("opt" "Dscf_T1")
         read -p "Please enter the number corresponding to your optimisation method: " opt_method_number
         # opt_method_number=2 # for testing tddft_S1
         ES_method_index=$(($opt_method_number-1))
-        if [[ $ES_method_index -lt 0 || $ES_method_index -ge ${#ES_methods[@]} ]]; then
-            echo "Invalid optimisation method number entered."
-            exit 99
-        fi
+      if [[ $ES_method_index -lt 0 || $ES_method_index -ge ${#ES_methods[@]} ]]; then
+          echo "Invalid optimisation method number entered."
+          exit 99
+      fi
         ES_method=${ES_methods[$ES_method_index]}
         opt_method_label=${ES_methods_labels[$ES_method_index]}
         method="$ES_method"
@@ -127,35 +127,36 @@ TS_methods_labels=("opt" "Dscf_T1")
         read -p "Please enter the number corresponding to your optimisation method: " opt_method_number
         # opt_method_number=2 # for testing Dscf
         TS_method_index=$(($opt_method_number-1))
-        if [[ $TS_method_index -lt 0 || $TS_method_index -ge ${#TS_methods[@]} ]]; then
-            echo "Invalid optimisation method number entered."
-            exit 99
-        fi
+      if [[ $TS_method_index -lt 0 || $TS_method_index -ge ${#TS_methods[@]} ]]; then
+          echo "Invalid optimisation method number entered."
+          exit 99
+      fi
         TS_method=${TS_methods[$TS_method_index]}
         opt_method_label=${TS_methods_labels[$TS_method_index]}
         method="$TS_method"
         echo "Optimisation method: $TS_method"
     fi
- fi
+  fi
 
  # --- ESD checking
- if [ $job_type == "Fluorescence" ]; then
+  if [ $job_type == "Fluorescence" ]; then
    read -p "What is your output for Ground state? (.out)" GS_job
     if [ -f "$GS_job" ]; then
       if grep -q "****ORCA TERMINATED NORMALLY****" "$GS_job"; then
        echo "Ground state calculation finished. Checking Hessian file..."
        GS=${GS_job%.out}
-       if [ -f "$GS.hess" ]; then
+        if [ -f "$GS.hess" ]; then
          echo "Hessian file found. Proceeding to Singlet Excited state."
-       else
+        else
          echo "Hessian file not found."
          exit 99
-       fi
+        fi
       else
        echo "Ground state calculation finish with error, please check."
        exit 99
       fi
     fi
+
     if [ ! -f "$GS_job" ]; then
     echo "$GS_job does not exist."
     exit 99 
@@ -163,7 +164,7 @@ TS_methods_labels=("opt" "Dscf_T1")
    
    read -p "What is your output for Singlet Excited state (S1)? (.out)" ES_job
     if [ -f "$ES_job" ]; then
-       if grep -q "****ORCA TERMINATED NORMALLY****" "$ES_job"; then
+      if grep -q "****ORCA TERMINATED NORMALLY****" "$ES_job"; then
        echo "Excited state calculation finished. Checking Hessian file..."
        ES=${ES_job%.out}
         if [ -f "$ES.hess" ]; then
@@ -172,52 +173,58 @@ TS_methods_labels=("opt" "Dscf_T1")
           echo "Hessian file not found."
           exit 99
         fi
-     else
-       echo "Excited state calculation finish with error, please check."
-       exit 99
+       else
+         echo "Excited state calculation finish with error, please check."
+         exit 99
+      fi
     fi
+    
     if [ ! -f "$ES_job" ]; then
      echo "$ES_job does not exist."
      exit 99 
     fi    
- fi
+  fi
 
  if [ $job_type == "Intersystem Crossing" ] || [ $job_type == "Phosphorescence" ]; then
     read -p "What is your output for Ground state? (.out)" GS_job
       if [ -f "$GS_job" ]; then
         if grep -q "****ORCA TERMINATED NORMALLY****" "$GS_job"; then
-        echo "Ground state calculation finished. Checking hessian file."
-        GS=${GS_job%.out}
-        if [ -f "$GS.hess" ]; then
-          echo "Hessian file found. Proceeding to Singlet Excited state."
+         echo "Ground state calculation finished. Checking hessian file."
+         GS=${GS_job%.out}
+          if [ -f "$GS.hess" ]; then
+           echo "Hessian file found. Proceeding to Singlet Excited state."
+          else
+           echo "Hessian file not found."
+           exit 99
+          fi
         else
-          echo "Hessian file not found."
-          exit 99
+         echo "Ground state calculation finish with error, please check."
+         exit 99
         fi
-      else
-        echo "Ground state calculation finish with error, please check."
-        exit 99
       fi
+
       if [ ! -f "$GS_job" ]; then
-      echo "$GS_job does not exist."
-      exit 99 
+       echo "$GS_job does not exist."
+       exit 99 
       fi
     
     read -p "What is your output for Singlet Excited State (S1)? (.out)" ES_job
       if [ -f "$ES_job" ]; then
-       if grep -q "****ORCA TERMINATED NORMALLY****" "$ES_job"; then
+        if grep -q "****ORCA TERMINATED NORMALLY****" "$ES_job"; then
         echo "Excited state calculation finished. Checking hessian file."
         ES=${ES_job%.out}
-        if [ -f "$ES.hess" ]; then
-          echo "Hessian file found. Proceeding to Triplet Excited State."
+          if [ -f "$ES.hess" ]; then
+            echo "Hessian file found. Proceeding to Triplet Excited State."
+          else
+            echo "Hessian file not found."
+            exit 99
+          fi
         else
-          echo "Hessian file not found."
-          exit 99
-        fi
-       else
         echo "Excited state calculation finish with error, please check."
         exit 99
-       fi
+        fi
+      fi
+
       if [ ! -f "$ES_job" ]; then
       echo "$ES_job does not exist."
       exit 99 
@@ -225,19 +232,21 @@ TS_methods_labels=("opt" "Dscf_T1")
     
     read -p "What is your output for Triplet Excited State (T1)? (.out)" TS_job
       if [ -f "$TS_job" ]; then
-       if grep -q "****ORCA TERMINATED NORMALLY****" "$TS_job"; then
-        echo "Triplet state calculation finished. Checking hessian file."
-        TS=${TS_job%.out}
-        if [ -f "$TS.hess" ]; then
-          echo "Hessian file found. Generating input."
+        if grep -q "****ORCA TERMINATED NORMALLY****" "$TS_job"; then
+          echo "Triplet state calculation finished. Checking hessian file."
+          TS=${TS_job%.out}
+          if [ -f "$TS.hess" ]; then
+            echo "Hessian file found. Generating input."
+          else
+            echo "Hessian file not found."
+            exit 99
+          fi
         else
-          echo "Hessian file not found."
+          echo "Triplet state calculation finish with error, please check."
           exit 99
         fi
-       else
-        echo "Triplet state calculation finish with error, please check."
-        exit 99
-       fi
+      fi 
+
       if [ ! -f "$TS_job" ]; then
       echo "$TS_job does not exist."
       exit 99 
