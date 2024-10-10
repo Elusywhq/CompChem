@@ -38,7 +38,7 @@ TS_methods_labels=("opt" "Dscf_T1")
     echo "Structure: $coord"
   else 
     read -e -p "$answer1 does not exist, do you want to continue? (y/n, y)." answer1a
-    if [ $answer1a == "n" ]; then
+    if [ "$answer1a" == "n" ]; then
         exit 99
     fi
   fi
@@ -80,8 +80,8 @@ TS_methods_labels=("opt" "Dscf_T1")
  echo "Job type: $job_type"
  
  # --- Prompt the user to select the method for optimisation
-  if [ $job_type == "Optimisation" ] || [ $job_type == "Optfreq" ]; then
-    if [ $state == "s0" ]; then
+  if [ "$job_type" == "Optimisation" ] || [ "$job_type" == "Optfreq" ]; then
+    if [ "$state" == "s0" ]; then
         echo ""
         echo "Optimisation method available:"
         for ((i=0; i<${#GS_methods[@]}; i++)); do
@@ -99,7 +99,7 @@ TS_methods_labels=("opt" "Dscf_T1")
         echo "Optimisation method: $GS_method"
     fi
 
-    if [ $state == "s1" ]; then
+    if [ "$state" == "s1" ]; then
         echo ""
         echo "Optimisation method available:"
         for ((i=0; i<${#ES_methods[@]}; i++)); do
@@ -118,7 +118,7 @@ TS_methods_labels=("opt" "Dscf_T1")
         echo "Optimisation method: $method"
     fi
 
-    if [ $state == "t1" ]; then
+    if [ "$state" == "t1" ]; then
         echo ""
         echo "Optimisation method available:"
         for ((i=0; i<${#TS_methods[@]}; i++)); do
@@ -139,7 +139,7 @@ TS_methods_labels=("opt" "Dscf_T1")
   fi
 
  # --- ESD checking
-  if [ $job_type == "Fluorescence" ]; then
+  if [ "$job_type" == "Fluorescence" ]; then
    read -p "What is your output for Ground state? (.out) " GS_job
     if [ -f "$GS_job" ]; then
       if grep -q "****ORCA TERMINATED NORMALLY****" "$GS_job"; then
@@ -185,7 +185,7 @@ TS_methods_labels=("opt" "Dscf_T1")
     fi    
   fi
 
- if [ $job_type == "Intersystem Crossing" ] || [ $job_type == "Phosphorescence" ]; then
+ if [ "$job_type" == "Intersystem Crossing" ] || [ "$job_type" == "Phosphorescence" ]; then
     read -p "What is your output for Ground state? (.out) " GS_job
       if [ -f "$GS_job" ]; then
         if grep -q "****ORCA TERMINATED NORMALLY****" "$GS_job"; then
@@ -332,11 +332,11 @@ basis_set_label="def2-SVP"
   fi
  fi
 
- if [ $job_type == "Optimisation" ] || [ $job_type == "Optfreq" ]; then
+ if [ "$job_type" == "Optimisation" ] || [ "$job_type" == "Optfreq" ]; then
   optfreq >> "$op"
  fi
 
- if [ $job_type == "Intersystem Crossing" ] || [ $job_type == "Phosphorescence" ] || [ "$job_type" == "Fluorescence" ]; then 
+ if [ "$job_type" == "Intersystem Crossing" ] || [ "$job_type" == "Phosphorescence" ] || [ "$job_type" == "Fluorescence" ]; then 
   coord=""
  fi
 
