@@ -14,7 +14,7 @@ DiffEnergyT1=$(echo "($DEnergyT1 + 0.5) / 1" | bc)
 
   template="template_ISC.inp"
    for i in 1 2 3; do
-     local op="${1%.inp}_T$i"
+     op="${1%.inp}_T$i"
      s=$(( $i - 2 ))
      echo $opt
      sed -e "s/TROOTSSL/TROOTSSL $s/g" $1 > $op.inp
