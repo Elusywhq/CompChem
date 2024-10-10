@@ -37,7 +37,7 @@ TS_methods_labels=("opt" "Dscf_T1")
     coord="$answer1"
     echo "Structure: $coord"
   else 
-    read -e -p "$answer1 does not exist, do you want to continue? (y/n, y). " answer1a
+    read -e -p "$answer1 does not exist, do you want to continue? (y/n, y)." answer1a
     if [ $answer1a == "n" ]; then
         exit 99
     fi
@@ -349,6 +349,7 @@ insert_keyword "$op"
 if [ "$job_type" == "Fluorescence" ]; then
   sed -i "s/groundstate/$GS/g" "$op"
   sed -i "s/singletstate/$ES/g" "$op"
+  sed -i "s/* XYZFILE 0 1/* XYZFILE 0 1 $GS.xyz/g" "$op"
   echo "$op created."
 fi
 
