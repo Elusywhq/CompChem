@@ -142,7 +142,7 @@ TS_methods_labels=("opt" "Dscf_T1")
  if [ $job_type == "Fluorescence" ]; then
    read -p "What is your output for Ground state? (.out)" GS_job
     if [ -f "$GS_job" ]; then
-       grep -q "****ORCA TERMINATED NORMALLY****" $GS_job; then
+      if grep -q "****ORCA TERMINATED NORMALLY****" "$GS_job"; then
        echo "Ground state calculation finished. Checking Hessian file..."
        GS=${GS_job%.out}
        if [ -f "$GS.hess" ]; then
@@ -151,9 +151,10 @@ TS_methods_labels=("opt" "Dscf_T1")
          echo "Hessian file not found."
          exit 99
        fi
-     else
+      else
        echo "Ground state calculation finish with error, please check."
        exit 99
+      fi
     fi
     if [ ! -f "$GS_job" ]; then
     echo "$GS_job does not exist."
@@ -162,7 +163,7 @@ TS_methods_labels=("opt" "Dscf_T1")
    
    read -p "What is your output for Singlet Excited state (S1)? (.out)" ES_job
     if [ -f "$ES_job" ]; then
-       grep -q "****ORCA TERMINATED NORMALLY****" $ES_job; then
+       if grep -q "****ORCA TERMINATED NORMALLY****" "$ES_job"; then
        echo "Excited state calculation finished. Checking Hessian file..."
        ES=${ES_job%.out}
         if [ -f "$ES.hess" ]; then
@@ -184,7 +185,7 @@ TS_methods_labels=("opt" "Dscf_T1")
  if [ $job_type == "Intersystem Crossing" ] || [ $job_type == "Phosphorescence" ]; then
     read -p "What is your output for Ground state? (.out)" GS_job
       if [ -f "$GS_job" ]; then
-        grep -q "****ORCA TERMINATED NORMALLY****" $GS_job; then
+        if grep -q "****ORCA TERMINATED NORMALLY****" "$GS_job"; then
         echo "Ground state calculation finished. Checking hessian file."
         GS=${GS_job%.out}
         if [ -f "$GS.hess" ]; then
@@ -204,7 +205,7 @@ TS_methods_labels=("opt" "Dscf_T1")
     
     read -p "What is your output for Singlet Excited State (S1)? (.out)" ES_job
       if [ -f "$ES_job" ]; then
-        grep -q "****ORCA TERMINATED NORMALLY****" $ES_job; then
+       if grep -q "****ORCA TERMINATED NORMALLY****" "$ES_job"; then
         echo "Excited state calculation finished. Checking hessian file."
         ES=${ES_job%.out}
         if [ -f "$ES.hess" ]; then
@@ -213,10 +214,10 @@ TS_methods_labels=("opt" "Dscf_T1")
           echo "Hessian file not found."
           exit 99
         fi
-      else
+       else
         echo "Excited state calculation finish with error, please check."
         exit 99
-      fi
+       fi
       if [ ! -f "$ES_job" ]; then
       echo "$ES_job does not exist."
       exit 99 
@@ -224,7 +225,7 @@ TS_methods_labels=("opt" "Dscf_T1")
     
     read -p "What is your output for Triplet Excited State (T1)? (.out)" TS_job
       if [ -f "$TS_job" ]; then
-        grep -q "****ORCA TERMINATED NORMALLY****" $TS_job; then
+       if grep -q "****ORCA TERMINATED NORMALLY****" "$TS_job"; then
         echo "Triplet state calculation finished. Checking hessian file."
         TS=${TS_job%.out}
         if [ -f "$TS.hess" ]; then
@@ -233,10 +234,10 @@ TS_methods_labels=("opt" "Dscf_T1")
           echo "Hessian file not found."
           exit 99
         fi
-      else
+       else
         echo "Triplet state calculation finish with error, please check."
         exit 99
-      fi
+       fi
       if [ ! -f "$TS_job" ]; then
       echo "$TS_job does not exist."
       exit 99 
@@ -329,18 +330,18 @@ basis_set_label="def2-SVP"
 # ------ Write Keywords
   insert_keyword "$op"
 
-if $job_type == "Fluorescence"; then
+if [ "$job_type" == "Fluorescence" ]; then
   sed -i "s/initial/$GS/g" "$op"
   sed -i "s/excited/$ES/g" "$op"
   echo "$op created."
 fi
 
-if $job_type == "Intersystem Crossing" ; then
-  $HOME/bin/ORCA/ISC.sh  "$op" "$TS" "$ES" 
+if [ "$job_type" == "Intersystem Crossing" ]; then
+  $HOME/bin/ORCA/ISC.sh "$op" "$TS" "$ES"
   echo "$op created."
 fi 
 
-if $job_type == "Phosphorescence" ; then
-  $HOME/bin/ORCA/phosp.sh  "$op" "$TS" "$ES" 
+if [ "$job_type" == "Phosphorescence" ]; then
+  $HOME/bin/ORCA/phosp.sh "$op" "$TS" "$ES"
   echo "$op created."
 fi
