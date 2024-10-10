@@ -340,8 +340,8 @@ basis_set_label="def2-SVP"
 insert_keyword "$op"
 
 if [ "$job_type" == "Fluorescence" ]; then
-  sed -i "s/initial/$GS/g" "$op"
-  sed -i "s/excited/$ES/g" "$op"
+  sed -i "s/groundstate/$GS/g" "$op"
+  sed -i "s/singletstate/$ES/g" "$op"
   echo "$op created."
 fi
 
