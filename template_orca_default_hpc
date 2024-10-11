@@ -3,6 +3,7 @@
 #PBS -q parallel12
 #PBS -l select=1:ncpus=12:mpiprocs=12:mem=40GB
 #PBS -j oe
+#PBS -M 
 
 input=RN
 orbital=WF          # input file for restart the calculation, if needed
@@ -26,6 +27,19 @@ export LD_LIBRARY_PATH=$MPI_ROOT/lib:$LD_LIBRARY_PATH
 CurrDir=$PBS_O_WORKDIR
 cd $CurrDir
 
+# scratch folder. Make it "input- dependent"
+tdir=/home/users/nus/$USER/scratch/orcacalc/${input%.inp}
+
+if [ ! -d $tdir ] ; then
+    mkdir -p $tdir
+else
+    rm -rf  $tdir/*
+fi
+
+cd $tdir
+echo "ORCA calculation is being executed in: "$tdir
+echo `pwd`
+
 export OMP_NUM_THREADS=1
 
 # scratch folder. Make it "input- dependent"
@@ -41,41 +55,12 @@ cd $tdir
 echo "ORCA calculation is being executed in: "$tdir
 echo `pwd`
 
-
-
 cp $CurrDir/$input      $tdir/$input
 
 if grep -q "* XYZFILE" $CurrDir/$input; then
   XYZFILE=`grep "* XYZFILE" $CurrDir/$input | awk '{print $5}'` 
   cp $CurrDir/$XYZFILE $tdir/
 fi
-
-if grep -q "GSHESSIAN" $CurrDir/$input; then
-  GSHESSIAN=`grep "GSHESSIAN" $CurrDir/$input | awk '{print $2}'| tr -d '"'` 
-  cp $CurrDir/$GSHESSIAN $tdir/
-fi
-
-if grep -q "ESHESSIAN" $CurrDir/$input; then
-  ESHESSIAN=`grep "ESHESSIAN" $CurrDir/$input | awk '{print $2}'| tr -d '"'` 
-  cp $CurrDir/$ESHESSIAN $tdir/
-fi
-
-if grep -q "TSHESSIAN" $CurrDir/$input; then
-  TSHESSIAN=`grep "TSHESSIAN" $CurrDir/$input | awk '{print $2}'| tr -d '"'` 
-  cp $CurrDir/$TSHESSIAN $tdir/
-fi
-
-if grep -q "ISCFSHESS" $CurrDir/$input; then
-  ISCFSHESS=`grep "ISCFSHESS" $CurrDir/$input | awk '{print $2}'| tr -d '"'` 
-  cp $CurrDir/$ISCFSHESS $tdir/
-fi
-
-if grep -q "ISCISHESS" $CurrDir/$input; then
-  ISCISHESS=`grep "ISCISHESS" $CurrDir/$input | awk '{print $2}'| tr -d '"'` 
-  cp $CurrDir/$ISCISHESS $tdir/
-fi
-
-
 
 
 # if it is a restart calcualtion, then check if the $orbital is
@@ -92,13 +77,14 @@ if [ -f $CurrDir/$orbital ]; then
    fi
 fi
 
+
 # actual execution of ORCA
 $ORCA_ROOT/bin/orca  $input > ${input%.inp}.out 2> ${input%.inp}.err
 
 # Check Output result::
 finish=0
 if [ -f $tdir/${input%.inp}.out ]; then
-  finish=$(grep "****ORCA ESD FINISHED WITHOUT ERROR****" $tdir/${input%.inp}.out | wc -l)
+  finish=$(grep "****ORCA TERMINATED NORMALLY****" $tdir/${input%.inp}.out | wc -l)
  else 
   echo "$tdir/${input%.inp}.out is missing, exit..."
   exit 99
@@ -108,28 +94,24 @@ i=0
 while [ $finish -eq 0 ]; do
   i=$((i+1))
   echo "Checking round $i"
-  echo "ESD module return with error, redo the calculation..."
-  echo "Removeing ${input%.inp}.gbw..."
-  rm ${input%.inp}.gbw
+  echo "ORCA calculation returned with error, restart the calculation..."
 # Back up for previous run
   cp $tdir/${input%.inp}.out $tdir/${input%.inp}.o$i
+  rm $tdir/${input%.inp}.gbw
 # Redo the calculation
   $ORCA_ROOT/bin/orca  $input > ${input%.inp}.out 2> ${input%.inp}.err 
 # Check finish status again
-  finish=$(grep -c "****ORCA ESD FINISHED WITHOUT ERROR****" $tdir/${input%.inp}.out)
+  finish=$(grep -c "****ORCA TERMINATED NORMALLY****" $tdir/${input%.inp}.out)
   if [ $finish -eq 1 ]; then
     break
-  fi 
-  if [ $i -eq 5 ]; then
+  fi  
+   if [ $i -eq 10 ]; then
     echo "Iteration hits the limit to $i, quitting... "
     if [ -f  $tdir/${input%.inp}.out  ] ; then  cp $tdir/${input%.inp}.out   $CurrDir/  ; fi ;
     if [ -f  $tdir/${input%.inp}.err  ] ; then  cp $tdir/${input%.inp}.err   $CurrDir/  ; fi ; 
     exit 99
   fi 
-
 done 
-
-
 
 #   if the calculation is successful, then copy the
 #   useful files back the original folder
@@ -152,3 +134,4 @@ done
 #-----------------------------------------------------
 
 exit $?
+
