@@ -91,6 +91,7 @@ function xyz_Triplet(){
 
  function Dscf_S1(){
     #  # echo -e "\n%
+     addkeywords "Deltascf"
      echo -e "\n%SCF"
      echo " ALPHACONF 0,1"
      echo " PMOM FALSE"
