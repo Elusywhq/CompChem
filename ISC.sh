@@ -22,7 +22,7 @@ DiffEnergyT1=$(echo "($DEnergyT1 + 0.5) / 1" | bc)
      sed -i "s/DELE/DELE $DiffEnergyT1/g" $op.inp
      sed -i "s/initial.hess/$init.hess/g" $op.inp
      sed -i "s/final.hess/$final.hess/g" $op.inp
-     sed -i "s/* XYZFILE 0 3/* XYZFILE 0 3 $final.xyz/g" $op.inp
+     sed -i "s/* XYZFILE 0 3/* XYZFILE 0 1 $final.xyz/g" $op.inp
      echo "ISC input file: $op.inp created"
    done
 
