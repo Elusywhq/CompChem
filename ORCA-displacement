@@ -44,6 +44,11 @@ fi
 echo "Generating the displacement for vibrational mode 6..."
 awk '/\* Frequency\(6\)/{count++} count >= 3 && count < 4' $mode | head -n -1 > temp_extracted.txt
 
+
+awk '{if (NF > 4) print $1, $2, $3, $4; else print $0}' temp_extracted.txt > temp_extracted_filtered.txt
+
+mv temp_extracted_filtered.txt temp_extracted.txt
+
 # Step 2: Replace from the second line in benzene.xyz and save it as a new file
 { head -n 1 $oldcoord; cat temp_extracted.txt; } > ${1%.*}_v006.xyz
 
