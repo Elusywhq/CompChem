@@ -331,12 +331,12 @@ echo "Basis set: $basis_set"
  
 
 
-  if [ ! -z "$opt_method_label" ]; then
-    if [ "$opt_method_label" != "opt" ]; then
-      # echo "Optimisation method: $opt_method_label"
-      $opt_method_label >> "$op"
-    fi
-  fi
+  # if [ ! -z "$opt_method_label" ]; then
+  #   if [ "$opt_method_label" != "opt" ]; then
+  #     # echo "Optimisation method: $opt_method_label"
+  #     $opt_method_label >> "$op"
+  #   fi
+  # fi
 # ------ ESD bolcks
 
   if [ "$job_type" == "Optimisation" ] || [ "$job_type" == "Optfreq" ]; then
@@ -348,7 +348,7 @@ echo "Basis set: $basis_set"
 
 
    $state_label $coord >> "$op"
-   
+
   if [ "$job_type" == "Fluorescence" ]; then
     sed -i "s/groundstate/$GS/g" "$op"
     sed -i "s/singletstate/$ES/g" "$op"
