@@ -120,7 +120,7 @@ function xyz_Triplet(){
  
  function tddft_phos(){
      # echo -e "\n%
-     addkeywords "UKS RI-SOMF(1X) "
+     addkeywords "RI-SOMF(1X) "
      echo -e "\n%tddft"
      echo " nroots 10"
      echo " iroot 1"
@@ -131,7 +131,7 @@ function xyz_Triplet(){
  
  function tddft_isc(){
      # echo -e "\n%
-     addkeywords "UKS RI-SOMF(1X)"
+     addkeywords "RI-SOMF(1X)"
      echo -e "\n%tddft"
      echo " nroots 10"
      echo " DOSOC TRUE"
@@ -145,7 +145,7 @@ function xyz_Triplet(){
  function isc(){
     # tddft_isc
       # echo -e "\n%
-     addkeywords "RKS RI-SOMF(1X)"
+     addkeywords "RI-SOMF(1X)"
      echo -e "\n%tddft"
      echo " nroots 10"
      echo " DOSOC TRUE"
@@ -171,7 +171,7 @@ function xyz_Triplet(){
  function phosph(){
     # tddft_phos
      # echo -e "\n%
-     addkeywords "RKS RI-SOMF(1X)"
+     addkeywords "RI-SOMF(1X)"
      echo -e "\n%tddft"
      echo " nroots 10"
      echo " iroot 1"
