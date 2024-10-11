@@ -331,17 +331,17 @@ echo "Basis set: $basis_set"
  
 
 
-  # if [ ! -z "$opt_method_label" ]; then
-  #   if [ "$opt_method_label" != "opt" ]; then
-  #     # echo "Optimisation method: $opt_method_label"
-  #     $opt_method_label >> "$op"
-  #   fi
-  # fi
+  if [ ! -z "$opt_method_label" ]; then
+    if [ "$opt_method_label" != "opt" ]; then
+      # echo "Optimisation method: $opt_method_label"
+      $opt_method_label >> "$op"
+    fi
+  fi
 # ------ ESD bolcks
 
-  if [ "$job_type" == "Optimisation" ] || [ "$job_type" == "Optfreq" ]; then
-    optfreq >> "$op"
-  fi
+  # if [ "$job_type" == "Optimisation" ] || [ "$job_type" == "Optfreq" ]; then
+  #   optfreq >> "$op"
+  # fi
 
   # ------ Write Keywords
   insert_keyword "$op"
