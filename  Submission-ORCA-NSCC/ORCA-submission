@@ -6,15 +6,7 @@ name="default"
 memory="390"
 gbw=0
 wt=24
-
-
-if [[ $(hostname) == *"atlas"* ]]; then
-  Host="hpc"
-elif [[ $(hostname) == *"asp2a"* ]]; then
-  Host="nscc"
-fi
-
-template=template_orca_default_$Host
+template=template_orca_default
 
 # Function to display usage information
 usage() {
@@ -97,8 +89,14 @@ while [ "$#" -gt 0 ]; do
       fi  
       ;;
 
+    -6)
+      orca6=1
+      ;;
+    -chk)
+      template=template_orca_check
+      ;;
     -esd)
-      template=template_orca_esd_$Host
+      template=template_orca_esd
       ;; 
   *)
       echo "Error: Unknown option: $1"
@@ -110,7 +108,7 @@ done
 
 # Your script logic goes here
 
-sed -e "s/CR/$cores/g" $HOME/bin/ORCA/$template > ./$name.sh
+sed -e "s/CR/$cores/g" $HOME/bin/$template > ./$name.sh
 sed -i "s/RN/$name.inp/g" ./$name.sh
 sed -i "s/MRY/$memory/g" ./$name.sh
 sed -i "s/WT/$wt/g" ./$name.sh
@@ -124,6 +122,10 @@ if [ $gbw -eq 1 ]; then
   sed -i "s/WF/$wf.gbw/g" ./$name.sh
 else 
   sed -i "s/WF/$name.gbw/g" ./$name.sh 
+fi 
+
+if [ $orca6 -eq 1 ]; then
+  sed -i "s/orca_5_0_4_linux_x86-64_openmpi411/orca_6_0_0/g" ./$name.sh
 fi 
 
 
