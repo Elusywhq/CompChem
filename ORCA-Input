@@ -328,7 +328,7 @@ echo "Basis set: $basis_set"
     if [ "$method" == "esd" ]; then
       coord=" "
     fi
-  $state_label $coord >> "$op"
+ 
 
 
   if [ ! -z "$opt_method_label" ]; then
@@ -346,6 +346,9 @@ echo "Basis set: $basis_set"
   # ------ Write Keywords
   insert_keyword "$op"
 
+
+   $state_label $coord >> "$op"
+   
   if [ "$job_type" == "Fluorescence" ]; then
     sed -i "s/groundstate/$GS/g" "$op"
     sed -i "s/singletstate/$ES/g" "$op"
@@ -367,7 +370,6 @@ echo "Basis set: $basis_set"
     sed -i "s/initial.hess/$TS.hess/g"                "$risc_op"
     sed -i "s/final.hess/$ES.hess/g"                  "$risc_op"
     sed -i "s/* XYZFILE 0 1/* XYZFILE 0 1 $ES.xyz/g"  "$risc_op"
-    rm -f "$op"
     echo "$risc_op is also created, please use this version to generate .sh file."
   fi
 
