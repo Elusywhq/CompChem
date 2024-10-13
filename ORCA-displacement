@@ -55,6 +55,6 @@ mv temp_extracted_filtered.txt temp_extracted.txt
 echo "Displacement file ${1%.*}_v006.xyz created."
 
 rm $mode
-
+ rm temp_extracted.txt
 
 
