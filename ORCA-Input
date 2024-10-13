@@ -334,7 +334,7 @@ echo "Basis set: $basis_set"
   if [ ! -z "$opt_method_label" ]; then
     # if [ "$opt_method_label" != "opt" ]; then
       # echo "Optimisation method: $opt_method_label"
-      # "opt" >> "$op"
+      "opt" >> "$op"
       $opt_method_label >> "$op"
     # fi
   fi
