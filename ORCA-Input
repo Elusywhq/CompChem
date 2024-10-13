@@ -9,12 +9,12 @@ ES_methods=("tddft" "Dscf")
 TS_methods=("scf" "Dscf")
 
 # --- Create a tuple list for job type labels, functional labels, state labels, and basis set labels
-job_type_labels=("freq" "opt" "freq" "fluo" "isc" "isc" "phosph")
+job_type_labels=("optfreq" "opt" "freq" "fluo" "isc" "isc" "phosph")
 functional_labels=( "o3lyp d4" "pbe0 D4" "cam-B3LYP D4" "M062X D3zero" "wB97X-D4" )
 state_labels=("xyz_Singlet" "xyz_Singlet" "xyz_Triplet")
-GS_methods_labels=(" " "xtb" "goat")
+GS_methods_labels=("scf" "xtb" "goat")
 ES_methods_labels=("tddft_S1" "Dscf_S1")
-TS_methods_labels=(" " "Dscf_T1")
+TS_methods_labels=("scf" "Dscf_T1")
 
 
 # ------------------------ User Input --------------------------
