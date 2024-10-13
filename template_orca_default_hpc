@@ -138,7 +138,7 @@ while [ $hess -eq 1 ]; do
     echo "Frequency 6: $freq"
     hess=1
   else
-    echo "Frequency 6: $freq"
+     echo "Frequency 6: $freq"
     echo "No imaginary mode found. Exiting..."
     break
   fi  
