@@ -117,17 +117,25 @@ else
   hess=0
 fi
 
+
+xyz=`grep "* XYZFILE 0" benzene_tutorial_O3LYP_svp_s1_Dscf_optfreq.inp | awk '{print $5}'`
+
 while [ $hess -eq 1 ]; do
   h=$((h+1))
-  cp -f ${input%.inp}.xyz ${input%.inp}_i$h.xyz
-  echo "${input%.inp}_i$h.xyz is backed up."
+  cp -f $xyz ${input%.inp}.xyz.i$h
+  echo "${input%.inp}.xyz.i$h is backed up."
 
   $HOME/bin/ORCA/ORCA-displacement $input
-  cp -v -f ${input%.inp}_v006.xyz ${input%.inp}.xyz
+  cp -v -f ${input%.inp}_v006.xyz $xyz
   echo "Replacing xyz file and restart the calculation..."
-   $ORCA_ROOT/bin/orca  $input > ${input%.inp}.out 2> ${input%.inp}.err 
+
+  # actual execution
+  $ORCA_ROOT/bin/orca  $input > ${input%.inp}.out 2> ${input%.inp}.err 
+
   echo "Checking imaginary mode again. Iteration: $h "
+
   freq=`grep "vibrational_frequencies" -A 8 ${input%.inp}.hess | tail -n 1 | awk '{print $2}'`
+
   if [[ "$freq" == -* ]]; then
     echo "Vibrational mode 6 is an imaginary mode."
     echo "Frequency 6: $freq"
@@ -137,7 +145,6 @@ while [ $hess -eq 1 ]; do
     echo "No imaginary mode found. Exiting..."
     break
   fi  
- 
 done
 
 
