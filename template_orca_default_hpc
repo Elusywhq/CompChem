@@ -123,7 +123,7 @@ while [ $hess -eq 1 ]; do
   echo "${input%.inp}_i$h.xyz is backed up."
 
   $HOME/bin/ORCA/ORCA-displacement $input
-  cp -f ${input%.inp}_v006.xyz ${input%.inp}.xyz
+  cp -v -f ${input%.inp}_v006.xyz ${input%.inp}.xyz
   echo "Replacing xyz file and restart the calculation..."
   $ORCA_ROOT/bin/orca  $input > ${input%.inp}.out 2> ${input%.inp}.err 
   echo "Checking imaginary mode again. Iteration: $h "
