@@ -118,7 +118,7 @@ else
 fi
 
 
-xyz=`grep "* XYZFILE 0" benzene_tutorial_O3LYP_svp_s1_Dscf_optfreq.inp | awk '{print $5}'`
+xyz=`grep "* XYZFILE 0" $input | awk '{print $5}'`
 
 while [ $hess -eq 1 ]; do
   h=$((h+1))
@@ -126,7 +126,7 @@ while [ $hess -eq 1 ]; do
   echo "${input%.inp}.xyz.i$h is backed up."
 
   $HOME/bin/ORCA/ORCA-displacement $input
-  cp -v -f ${input%.inp}_v006.xyz $xyz
+  cat ${input%.inp}_v006.xyz > $xyz
   echo "Replacing xyz file and restart the calculation..."
 
   # actual execution
