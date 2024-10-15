@@ -125,7 +125,7 @@ while [ $hess -eq 1 ]; do
   $HOME/bin/ORCA/ORCA-displacement $input
   cp -v -f ${input%.inp}_v006.xyz ${input%.inp}.xyz
   echo "Replacing xyz file and restart the calculation..."
-  $ORCA_ROOT/bin/orca  $input > ${input%.inp}.out 2> ${input%.inp}.err 
+   $ORCA_ROOT/bin/orca  $input > ${input%.inp}.out 2> ${input%.inp}.err 
   echo "Checking imaginary mode again. Iteration: $h "
   freq=`grep "vibrational_frequencies" -A 8 ${input%.inp}.hess | tail -n 1 | awk '{print $2}'`
   if [[ "$freq" == -* ]]; then
