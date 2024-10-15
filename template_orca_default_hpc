@@ -131,7 +131,7 @@ while [ $hess -eq 1 ]; do
   if [[ "$freq" == -* ]]; then
     echo "Vibrational mode 6 is an imaginary mode."
     echo "Frequency 6: $freq"
-    hess=1
+     hess=1
   else
     echo "Frequency 6: $freq"
     echo "No imaginary mode found. Exiting..."
