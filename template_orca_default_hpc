@@ -91,6 +91,7 @@ while [ $finish -eq 0 ]; do
 # Check finish status again
   finish=$(grep -c "****ORCA TERMINATED NORMALLY****" $tdir/${input%.inp}.out)
   if [ $finish -eq 1 ]; then
+    echo "ORCA calculation is finished successfully."
     break
   fi  
    if [ $i -eq 10 ]; then
@@ -101,36 +102,43 @@ while [ $finish -eq 0 ]; do
   fi 
 done 
 
-# freq=`grep "vibrational_frequencies" -A 8 ${input%.inp}.hess | tail -n 1 | awk '{print $2}'`
-# hess=0
-# if [[ "$freq" == -* ]]; then
-#   echo "Vibrational mode 6 is an imaginary mode."
-#   echo "Frequency 6: $freq"
-#   hess=1
-# else
-#   echo "Frequency 6: $freq"
-#   echo "No imaginary mode found. Exiting..."
-#   hess=0
-# fi
 
-# while [ $hess -eq 1 ]; do
-#   $HOME/bin/ORCA/ORCA-displacement $input
-#   cp -f ${input%.inp}_v006.xyz ${input%.inp}.xyz
-#   echo "Replacing xyz file..."
-#   $ORCA_ROOT/bin/orca  $input > ${input%.inp}.out 2> ${input%.inp}.err 
-#   "Checking imaginary mode... "
-#   freq=`grep "vibrational_frequencies" -A 8 ${input%.inp}.hess | tail -n 1 | awk '{print $2}'`
-#   if [[ "$freq" == -* ]]; then
-#     echo "Vibrational mode 6 is an imaginary mode."
-#     echo "Frequency 6: $freq"
-#     hess=1
-#   else
-#     echo "Frequency 6: $freq"
-#     echo "No imaginary mode found. Exiting..."
-#     break
-#   fi  
+hess=0
+echo "Checking imaginary mode... "
+
+freq=`grep "vibrational_frequencies" -A 8 ${input%.inp}.hess | tail -n 1 | awk '{print $2}'`
+if [[ "$freq" == -* ]]; then
+  echo "Vibrational mode 6 is an imaginary mode."
+  echo "Frequency 6: $freq"
+  hess=1
+else
+  echo "Frequency 6: $freq"
+  echo "No imaginary mode found. Exiting..."
+  hess=0
+fi
+
+while [ $hess -eq 1 ]; do
+  h=$((h+1))
+  cp -f ${input%.inp}.xyz ${input%.inp}_i$h.xyz
+  echo "${input%.inp}_i$h.xyz is backed up."
+
+  $HOME/bin/ORCA/ORCA-displacement $input
+  cp -f ${input%.inp}_v006.xyz ${input%.inp}.xyz
+  echo "Replacing xyz file and restart the calculation..."
+  $ORCA_ROOT/bin/orca  $input > ${input%.inp}.out 2> ${input%.inp}.err 
+  echo "Checking imaginary mode again. Iteration: $h "
+  freq=`grep "vibrational_frequencies" -A 8 ${input%.inp}.hess | tail -n 1 | awk '{print $2}'`
+  if [[ "$freq" == -* ]]; then
+    echo "Vibrational mode 6 is an imaginary mode."
+    echo "Frequency 6: $freq"
+    hess=1
+  else
+    echo "Frequency 6: $freq"
+    echo "No imaginary mode found. Exiting..."
+    break
+  fi  
  
-# done
+done
 
 
 #   if the calculation is successful, then copy the
