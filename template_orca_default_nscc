@@ -1,10 +1,18 @@
 #!/bin/bash
 
-#PBS -P Personal 
+if [ $USER == "e0732533"]; then
+  #PBS -P Personal 
+else
+  #PBS -P 11003762 
+fi
+
 #PBS -q normal
 #PBS -l select=1:ncpus=CR:mpiprocs=CR:mem=MRYGB
 #PBS -l walltime=WT:00:00
-#PBS -M $USER@u.nus.edu
+if [ $USER == "e0732533"]; then
+  #PBS -M wenhanqi@u.nus.ed
+fi
+
 #PBS -m abe
 
 input=RN
