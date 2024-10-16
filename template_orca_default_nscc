@@ -15,7 +15,7 @@ export OMP_NUM_THREADS=1
 
 # module load openmpi/4.1.2-hpe
 module load openmpi/4.1.5-gcc11
-if [ "$USER" = "e0732533" ]; then 
+if [ "$USER" = "e0732533" ]; then
   export ORCA_ROOT=/home/project/11003762/orca_6_0_0/
 else
   export ORCA_ROOT=/home/users/nus/$USER/Software/orca_6_0_0/ 
