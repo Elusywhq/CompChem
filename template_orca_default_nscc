@@ -4,13 +4,13 @@
 #PBS -l select=1:ncpus=CR:mpiprocs=CR:mem=MRYGB
 #PBS -l walltime=WT:00:00
 
-if [ "$USER" == "e0732533"]; then
+if [ "$USER" = "e0732533"]; then
   #PBS -P 11003762
 else
   #PBS -P Personal
 fi
 
-if [ "$USER" == "e0732533"]; then
+if [ "$USER" = "e0732533"]; then
   #PBS -M wenhanqi@u.nus.edu
 fi
 
