@@ -14,8 +14,7 @@ elif [[ $(hostname) == *"asp2a"* ]]; then
   Host="nscc"
 fi
 
-
-  project=11003762
+project=11003762
 
 template=template_orca_default_$Host
 
