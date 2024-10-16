@@ -14,9 +14,8 @@ elif [[ $(hostname) == *"asp2a"* ]]; then
   Host="nscc"
 fi
 
-if [$USER == "e0732533"]; then
+
   project=11003762
-fi
 
 template=template_orca_default_$Host
 
