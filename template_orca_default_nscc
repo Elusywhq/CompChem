@@ -5,9 +5,9 @@
 #PBS -l walltime=WT:00:00
 
 if [ $USER == "e0732533"]; then
-  #PBS -P Personal
-else
   #PBS -P 11003762
+else
+  #PBS -P Personal
 fi
 if [ $USER == "e0732533"]; then
   #PBS -M wenhanqi@u.nus.edu
