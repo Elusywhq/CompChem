@@ -15,10 +15,10 @@ function addkeywords(){
 # --- Initial input file
 function initial_input(){
     echo -e "\n%pal"
-    echo " nprocs 12"
+    echo " nprocs 16"
     echo "end"
     # # echo -e "\n%
-    echo -e "\n%maxcore 3000"
+    echo -e "\n%maxcore 2000"
     echo -e "\n%scf"
     echo " MaxIter 1000"
     echo "end"
