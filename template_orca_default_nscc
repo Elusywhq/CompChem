@@ -1,8 +1,5 @@
 #!/bin/bash
 
-if [ $USER == "e0732533"]; then
-  #PBS -P Personal 
-
 #PBS -q normal
 #PBS -l select=1:ncpus=CR:mpiprocs=CR:mem=MRYGB
 #PBS -l walltime=WT:00:00
