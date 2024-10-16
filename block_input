@@ -18,7 +18,7 @@ function initial_input(){
     echo " nprocs 16"
     echo "end"
     # # echo -e "\n%
-    echo -e "\n%maxcore 2000"
+    echo -e "\n%maxcore 24000"
     echo -e "\n%scf"
     echo " MaxIter 1000"
     echo "end"
