@@ -38,7 +38,7 @@ else
 fi
 
 cd $tdir
-echo "ORCA calculation is being executed in:  "$tdir
+echo "ORCA calculation is being executed in: "$tdir
 echo `pwd`
 
 
