@@ -39,7 +39,13 @@ cd $tdir
 echo "ORCA calculation is being executed in: "$tdir
 echo `pwd`
 
+
 cp $CurrDir/$input      $tdir/$input
+
+if grep -q "* XYZFILE" $CurrDir/$input; then
+  XYZFILE=`grep "* XYZFILE" $CurrDir/$input | awk '{print $5}'` 
+  cp $CurrDir/$XYZFILE $tdir/
+fi
 
 if [ -f ${input%.inp}.nodes  ]; then rm -rf ${input%.inp}.nodes ; fi ;
 #for i in $ncpus ; do
