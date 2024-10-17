@@ -5,6 +5,7 @@
 #PBS -l select=1:ncpus=CR:mpiprocs=CR:mem=MRYGB
 #PBS -l walltime=WT:00:00
 #PBS -m abe
+#PBS -M @u.nus.edu
 
 input=RN
 orbital=WF          # input file for restart the calculation, if needed
@@ -15,11 +16,7 @@ export OMP_NUM_THREADS=1
 
 # module load openmpi/4.1.2-hpe
 module load openmpi/4.1.5-gcc11
-if [ "$USER" = "e0732533" ]; then
-  export ORCA_ROOT=/home/project/11003762/orca_6_0_0/
-else
-  export ORCA_ROOT=/home/users/nus/$USER/Software/orca_6_0_0/ 
-fi
+export ORCA_ROOT=/home/project/11003762/orca_6_0_0_avx2/
 export PATH=$ORCA_ROOT:$PATH
 export MPI_ROOT=/app/apps/openmpi/4.1.5-gcc11/
 export PATH=$MPI_ROOT/bin:$PATH
@@ -146,6 +143,12 @@ while [ $hess -eq 1 ]; do
     echo "Frequency 6: $freq"
     echo "No imaginary mode found. Exiting..."
     break
+  fi 
+  if [ $h -eq 10 ]; then
+    echo "Iteration hits the limit to $h, quitting... "
+    if [ -f  $tdir/${input%.inp}.out  ] ; then  cp $tdir/${input%.inp}.out   $CurrDir/  ; fi ;
+    if [ -f  $tdir/${input%.inp}.err  ] ; then  cp $tdir/${input%.inp}.err   $CurrDir/  ; fi ; 
+    exit 99
   fi  
 done
 

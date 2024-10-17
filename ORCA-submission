@@ -128,9 +128,13 @@ else
   sed -i "s/WF/$name.gbw/g" ./$name.sh 
 fi 
 
+sed -i "s/#PBS -P Personal/#PBS -P $project/g" ./$name.sh
 
-  sed -i "s/#PBS -P Personal/#PBS -P $project/g" ./$name.sh
-
+if [ $USER = "e0732533" ]; then
+  sed -i "s/#PBS -M @u.nus.edu/#PBS -M wenhanqi@u.nus.edu/g" ./$name.sh
+else
+  sed -i "s/#PBS -M @u.nus.edu/#PBS -M $USER@u.nus.edu/g" ./$name.sh
+fi
 
 # Example usage
 echo "Cores: $cores"

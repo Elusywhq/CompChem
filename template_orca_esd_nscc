@@ -1,11 +1,11 @@
 #!/bin/bash
 
-#PBS -P Personal 
+#PBS -P Personal
 #PBS -q normal
 #PBS -l select=1:ncpus=CR:mpiprocs=CR:mem=MRYGB
 #PBS -l walltime=WT:00:00
-#PBS -M $USER@u.nus.edu
 #PBS -m abe
+#PBS -M @u.nus.edu
 
 input=RN
 orbital=WF          # input file for restart the calculation, if needed
@@ -16,7 +16,7 @@ orbital=WF          # input file for restart the calculation, if needed
 # module load openmpi/4.1.2-hpe
 module load openmpi/4.1.5-gcc11
 
-export ORCA_ROOT=/home/project/11003762/orca_6_0_0/
+export ORCA_ROOT=/home/project/11003762/orca_6_0_0_avx2/
 export PATH=$ORCA_ROOT:$PATH
 export MPI_ROOT=/app/apps/openmpi/4.1.5-gcc11/
 export PATH=$MPI_ROOT/bin:$PATH
