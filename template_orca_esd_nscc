@@ -135,14 +135,14 @@ done
 #   useful files back the original folder
 #if [ $? -eq 0 ]; then
    if [ -f  $tdir/${input%.inp}.out          ] ; then  cp $tdir/${input%.inp}.out           $CurrDir/  ; fi ;
-   if [ -f  $tdir/${input%.inp}.err          ] ; then  cp $tdir/${input%.inp}.err           $CurrDir/  ; fi ;
+  #  if [ -f  $tdir/${input%.inp}.err          ] ; then  cp $tdir/${input%.inp}.err           $CurrDir/  ; fi ;
    if [ -f  $tdir/${input%.inp}.densities    ] ; then  cp $tdir/${input%.inp}.densities     $CurrDir/  ; fi ;
    if [ -f  $tdir/*.cube                     ] ; then  cp $tdir/*.cube                      $CurrDir/  ; fi ;
    if [ -f  $tdir/${input%.inp}.trj          ] ; then  cp $tdir/${input%.inp}.trj           $CurrDir/  ; fi ;
    if [ -f  $tdir/${input%.inp}.cis          ] ; then  cp $tdir/${input%.inp}.cis           $CurrDir/  ; fi ;
    if [ -f  $tdir/${input%.inp}.xyz          ] ; then  cp $tdir/${input%.inp}.xyz           $CurrDir/  ; fi ;
    if [ -f  $tdir/${input%.inp}.spectrum     ] ; then  cp $tdir/${input%.inp}.spectrum      $CurrDir/  ; fi ;
-   if [ -f  $tdir/${input%.inp}.plt          ] ; then  cp $tdir/${input%.inp}.plt           $CurrDir/  ; fi ;
+  #  if [ -f  $tdir/${input%.inp}.plt          ] ; then  cp $tdir/${input%.inp}.plt           $CurrDir/  ; fi ;
    if [ -f  $tdir/${input%.inp}.hess         ] ; then  cp $tdir/${input%.inp}.hess          $CurrDir/  ; fi ;
 #   if [ -f  $tdir/${input%.inp}_property.txt ] ; then  cp $tdir/${input%.inp}_property.txt  $CurrDir/  ; fi ;
    if [ -f  $tdir/${input%.inp}.gbw           ] ; then  cp $tdir/${input%.inp}.gbw            $CurrDir/  ; fi ;   
