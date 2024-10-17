@@ -128,9 +128,9 @@ else
   sed -i "s/WF/$name.gbw/g" ./$name.sh 
 fi 
 
-if [ "$USER" == "e0732533" ]; then
+
   sed -i "s/#PBS -P Personal/#PBS -P $project/g" ./$name.sh
-fi
+
 
 # Example usage
 echo "Cores: $cores"
