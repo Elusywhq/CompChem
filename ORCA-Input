@@ -372,7 +372,7 @@ echo "Basis set: $basis_set"
     # sed -i "s/final.hess/$ES.hess/g"                  "$risc_op"
     # sed -i "s/* XYZFILE 0 1/* XYZFILE 0 1 $ES.xyz/g"  "$risc_op"
     # echo "$risc_op is also created, please use this version to generate .sh file."
-    sh $HOME/bin/ORCA/ISC.sh "$op" "$TS" "$ES"
+    sh $HOME/bin/ORCA/ISC.sh "$op" "$ES" "$TS"
     rm -f "$op"
   fi
 
