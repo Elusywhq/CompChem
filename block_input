@@ -169,7 +169,33 @@ function xyz_Triplet(){
      echo " DELE"
      echo "END" 
  }
- 
+
+ function risc(){
+    # tddft_isc
+      # echo -e "\n%
+     addkeywords "RI-SOMF(1X)"
+     echo -e "\n%tddft"
+     echo " nroots 10"
+     echo " DOSOC TRUE"
+     echo " TDA FALSE"
+     echo " SROOT 1"
+     echo " TROOT 1"
+     echo " TROOTSSL "
+     echo "end"    
+    
+    # esd_isc
+     # echo -e "\n%
+     addkeywords "ESD(ISC)"
+     echo -e "\n%ESD" 
+     echo " ISCISHESS  \"initial.hess\""
+     echo " ISCFSHESS  \"final.hess\""
+     echo " DOHT TRUE" 
+     echo " PRINTLEVEL 3"
+     echo " USEJ TRUE"
+     echo " DELE"
+     echo "END" 
+ }
+
  function phosph(){
     # tddft_phos
      # echo -e "\n%
