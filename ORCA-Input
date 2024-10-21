@@ -359,19 +359,21 @@ echo "Basis set: $basis_set"
   echo "$op created."
 
   if [ "$job_type" == "Reverse Intersystem Crossing" ]; then
-    echo "Generating input for RISC calculation...."
-    Energy1=`grep "Electronic energy " $TS.out | awk '{print $4}'`
-    Energy2=`grep "Electronic energy " $ES.out | awk '{print $4}'`
-    DEnergyT1=$(echo "($Energy1 - $Energy2) * 219474.6" | bc)
-    DiffEnergyT1=$(echo "($DEnergyT1 + 0.5) / 1" | bc) 
-    echo "Energy difference between T1 and S1: $DiffEnergyT1"
-    risc_op="${molecule}_${functional}_${basis_set}_${state}_${method}_risc.inp"
-    sed -e "s/TROOTSSL/TROOTSSL 0/g" "$op"   >        "$risc_op"
-    sed -i "s/DELE/DELE $DiffEnergyT1/g"              "$risc_op"
-    sed -i "s/initial.hess/$TS.hess/g"                "$risc_op"
-    sed -i "s/final.hess/$ES.hess/g"                  "$risc_op"
-    sed -i "s/* XYZFILE 0 1/* XYZFILE 0 1 $ES.xyz/g"  "$risc_op"
-    echo "$risc_op is also created, please use this version to generate .sh file."
+    # echo "Generating input for RISC calculation...."
+    # Energy1=`grep "Electronic energy " $TS.out | awk '{print $4}'`
+    # Energy2=`grep "Electronic energy " $ES.out | awk '{print $4}'`
+    # DEnergyT1=$(echo "($Energy1 - $Energy2) * 219474.6" | bc)
+    # DiffEnergyT1=$(echo "($DEnergyT1 + 0.5) / 1" | bc) 
+    # echo "Energy difference between T1 and S1: $DiffEnergyT1"
+    # risc_op="${molecule}_${functional}_${basis_set}_${state}_${method}_risc.inp"
+    # sed -e "s/TROOTSSL/TROOTSSL 0/g" "$op"   >        "$risc_op"
+    # sed -i "s/DELE/DELE $DiffEnergyT1/g"              "$risc_op"
+    # sed -i "s/initial.hess/$TS.hess/g"                "$risc_op"
+    # sed -i "s/final.hess/$ES.hess/g"                  "$risc_op"
+    # sed -i "s/* XYZFILE 0 1/* XYZFILE 0 1 $ES.xyz/g"  "$risc_op"
+    # echo "$risc_op is also created, please use this version to generate .sh file."
+    sh $HOME/bin/ORCA/ISC.sh "$op" "$TS" "$ES"
+    rm -f "$op"
   fi
 
   if [ "$job_type" == "Intersystem Crossing" ] ; then
