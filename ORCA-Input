@@ -323,13 +323,12 @@ echo "Basis set: $basis_set"
   # addkeywords "def/2J"
 
 # ------ Add blocks 
- #  basis $basis_set_label >> "$op"
+  basis $basis_set_label >> "$op"
   $job_type_label >> "$op"
     if [ "$method" == "esd" ]; then
       coord=" "
     fi
  
-
 
   if [ ! -z "$opt_method_label" ]; then
     # if [ "$opt_method_label" != "opt" ]; then
