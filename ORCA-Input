@@ -328,7 +328,7 @@ echo "Basis set: $basis_set"
       $job_type_label >> "$op"
   fi
 
-  if [ "$method" == "esd" ]; then
+  if [  "$method" == "esd" ]; then
     coord=" "
   fi
  
