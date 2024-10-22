@@ -324,10 +324,13 @@ echo "Basis set: $basis_set"
 
 # ------ Add blocks 
   basis $basis_set_label >> "$op"
-  $job_type_label >> "$op"
-    if [ "$method" == "esd" ]; then
-      coord=" "
-    fi
+  if [ "$job_type" != "Optimisation" ] ; then
+      $job_type_label >> "$op"
+  fi
+
+  if [ "$method" == "esd" ]; then
+    coord=" "
+  fi
  
 
   if [ ! -z "$opt_method_label" ]; then

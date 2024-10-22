@@ -45,7 +45,7 @@ function opt(){
 }
 
 function optfreq(){
-    addkeywords "freq defgrid3"
+    addkeywords "freq"
     # # echo -e "\n%
     echo -e "\n%freq"
     echo " restart true"
