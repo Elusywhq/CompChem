@@ -2,7 +2,7 @@
 
 #----------------------------------------------
 # Author: Elusy Wen
-export keyword=("verytightscf defgrid3")
+export keyword=("verytightscf ")
 # echo "Keyword: ${keyword[@]}"
 # echo "Keyword: ${keyword[@]}"
 
@@ -38,14 +38,14 @@ function basis(){
 
 # --- Ground state optimisation
 function opt(){
-    addkeywords "verytightopt"
+    addkeywords "verytightopt defgrid3"
     echo -e "\n%geom"
     echo "  maxIter 500 "
     echo "end"
 }
 
 function optfreq(){
-    addkeywords "freq"
+    addkeywords "freq defgrid3"
     # # echo -e "\n%
     echo -e "\n%freq"
     echo " restart true"
@@ -53,7 +53,7 @@ function optfreq(){
 }
 
 function freq(){
-    addkeywords "freq"
+    addkeywords "freq defgrid3"
     # # echo -e "\n%
     echo -e "\n%freq"
     echo " restart true"
