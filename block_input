@@ -33,7 +33,7 @@ function basis(){
     echo -e "\n%basis"
     echo "  Basis \"$1\" " 
     echo "  AuxJ \"Def2/J\""
-    echo "end"
+    echo "end" 
 }
 
 # --- Ground state optimisation
