@@ -131,7 +131,7 @@ fi
 #  sed -i "s/#PBS -P Personal/#PBS -P $project/g" ./$name.sh
 if [$USER = "e0732533"]; then
   sed -i "s/#PBS -P Personal/#PBS -P $project/g" ./$name.sh
-else
+
 fi
 
 if [ $USER = "e0732533" ]; then
