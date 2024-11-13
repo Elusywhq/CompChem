@@ -95,7 +95,7 @@ function xyz_Triplet(){
      addkeywords "UHF Deltascf"
      echo -e "\n%SCF"
      echo " ALPHACONF 0,1"
-     echo " PMOM FALSE"
+     echo " PMOM TRUE"
      echo "END"
  }
  
