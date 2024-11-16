@@ -133,11 +133,11 @@ if [ $USER = "e0732533" ]; then
   sed -i "s/#PBS -P Personal/#PBS -P $project/g" ./$name.sh
 fi
 
-if [ $USER = "e0732533" ]; then
+# if [ $USER = "e0732533" ]; then
   sed -i "s/#PBS -M @u.nus.edu/#PBS -M wenhanqi@u.nus.edu/g" ./$name.sh
-else
+# else
   sed -i "s/#PBS -M @u.nus.edu/#PBS -M $USER@u.nus.edu/g" ./$name.sh
-fi
+# fi
 
 # Example usage
 echo "Cores: $cores"
