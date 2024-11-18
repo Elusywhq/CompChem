@@ -1,0 +1,23 @@
+#!/bin/sh
+
+curd=$(pwd)
+molecule_names=$@
+
+for molecule in "${molecule_names[@]}"; do
+  cd $curd/"$molecule"
+    opt_files=$(ls *opt*inp)
+    for opt_file in $opt_files; do
+        IFS='_' read -r molecule functional basis_set state method job_type_label <<< "${opt_file%.inp}"
+        echo "${molecule}_${functional}_${basis_set}_${state}_${method}_${job_type_label}.inp"
+
+        finish=$(ORCA-chkjob -q $opt_file)
+
+        if [ $finish -eq 1 ]; then
+
+            continue
+        else
+            echo "$name ORCA did not terminate normally."
+        fi
+    done
+
+done

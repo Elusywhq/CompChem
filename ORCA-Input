@@ -16,262 +16,221 @@ GS_methods_labels=("scf" "xtb" "goat")
 ES_methods_labels=("tddft_S1" "Dscf_S1")
 TS_methods_labels=("scf" "Dscf_T1")
 
+# --- Print available options as a table
+print_table() {
+  local -n arr=$1
+  echo "Index | Option"
+  echo "----------------"
+  for ((i=0; i<${#arr[@]}; i++)); do
+    printf "%-5s | %s\n" "$(($i+1))" "${arr[$i]}"
+  done
+}
+
+if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+  echo "Job Types:"
+  print_table job_types
+  echo ""
+  echo "Functionals:"
+  print_table functionals
+  echo ""
+  echo "States:"
+  print_table states
+  echo ""
+  echo "GS Methods:"
+  print_table GS_methods
+  echo ""
+  echo "ES Methods:"
+  print_table ES_methods
+  echo ""
+  echo "TS Methods:"
+  print_table TS_methods
+  exit 0
+fi
+
+mol=$1
+xyz=$2
+stat=$3
+job=$4
+func=$5
+met=$6
+
 
 # ------------------------ User Input --------------------------
+
 # --- Molecule name
- echo "Please enter a valid molecule prefix without ' ', ',', '*', or '-'."
- read -e -p "Molecule prefix: " answer0
-    # answer0="Molecule_A"  # for testing
-  if [ -z "$answer0" ]; then 
-   echo "Please enter a valid molecule prefix without ' ', ',', '*', or '-'."
-   exit 99
+  if [ -z "$mol" ]; then
+    read -e -p "Please enter a valid molecule prefix without ' ', ',', '*', or '-': " answer0
   else
-   molecule="$answer0"
-   echo "Molecule prefix: $molecule"
+    answer0=$mol
+  fi
+
+  if [ -z "$answer0" ]; then 
+    echo "Please enter a valid molecule prefix without ' ', ',', '*', or '-'."
+    exit 99
+  else
+    molecule="$answer0"
+    echo "Molecule prefix: $molecule"
   fi
 
 
-
-# --- Specify the coordinate file for ORCA calculation
- read -e -p "Coordinate file for your calculation (.xyz): " answer1
-    # answer1="test.xyz"  # for testing
+# --- XYZ file
+  if [ -z "$xyz" ]; then
+    read -e -p "Please enter the path to the XYZ file: " answer1
+  else
+    answer1=$xyz
+  fi
+  
   if [ -f "$answer1" ]; then
     coord="$answer1"
     echo "Structure: $coord"
   else 
-    read -e -p "$answer1 does not exist, do you want to continue? (y/n, y)." answer1a
+    read -e -p "$answer1 does not exist, do you want to continue? (y/n, y): " answer1a
     if [ "$answer1a" == "n" ]; then
-        exit 99
+      exit 99
+    else 
+      echo "Structure: $answer1"
     fi
   fi
 
-# --- Prompt the user to select the state
- echo ""
- echo "States available:"
- for ((i=0; i<${#states[@]}; i++)); do
-   echo "$(($i+1)). ${states[$i]}"
- done
- read -p "Please enter the number corresponding to your state: " state_number
-#  state_number=3 # for testing T1
- state_index=$(($state_number-1))
-  if [[ $state_index -lt 0 || $state_index -ge ${#states[@]} ]]; then
-   echo "Invalid state number entered."
-   exit 99
+
+# --- State
+  if [ -z "$stat" ]; then
+    read -e -p "Please enter the number corresponding to your state: " state_number
+  else
+    state_number=$stat
   fi
- state=${states[$state_index]}
- state_label=${state_labels[$state_index]}
- echo "State: $state"
+
+  state_index=$(($state_number-1))
+  if [[ $state_index -lt 0 || $state_index -ge ${#state_labels[@]} ]]; then
+    echo "Invalid state number entered."
+    exit 99
+  fi
+
+  state=${states[$state_index]}
+  state_label=${state_labels[$state_index]}
+  echo "State: $state"
 
 
-# --- Prompt the user to select the job type
- echo ""
- echo "Job type available:"
- for ((i=0; i<${#job_types[@]}; i++)); do
-   echo "$(($i+1)). ${job_types[$i]} "
- done
- read -p "Please enter the number corresponding to your job type: " job_type_number
-    # job_type_number=3 # for testing Optfreq
- job_type_index=$(($job_type_number-1))
+# --- job type
+  if [ -z "$job" ]; then
+    echo ""
+    echo "Job type available:"
+    for ((i=0; i<${#job_types[@]}; i++)); do
+      echo "$(($i+1)). ${job_types[$i]} "
+    done
+    read -e -p "Please enter the number corresponding to your job type: " job_type_number
+  else
+    job_type_number=$job
+  fi
+
+  job_type_index=$(($job_type_number-1))
   if [[ $job_type_index -lt 0 || $job_type_index -ge ${#job_types[@]} ]]; then
-   echo "Invalid job type number entered."
-   exit 99
+    echo "Invalid job type number entered."
+    exit 99
   fi
- job_type=${job_types[$job_type_index]}
- job_type_label=${job_type_labels[$job_type_index]} 
- method="esd"
- echo "Job type: $job_type"
+
+  job_type=${job_types[$job_type_index]}
+  job_type_label=${job_type_labels[$job_type_index]}
+  method="esd"
+  echo "Job type: $job_type"
  
- # --- Prompt the user to select the method for optimisation
+ # --- Method
   if [ "$job_type" == "Optimisation" ] || [ "$job_type" == "Optfreq" ]; then
+  # --- S0 method
+    # --- S0 method
     if [ "$state" == "s0" ]; then
-        echo ""
-        echo "Optimisation method available:"
-        for ((i=0; i<${#GS_methods[@]}; i++)); do
-            echo "$(($i+1)). ${GS_methods[$i]} "
-        done
-        read -p "Please enter the number corresponding to your optimisation method: " opt_method_number
-        GS_method_index=$(($opt_method_number-1))
-      if [[ $GS_method_index -lt 0 || $GS_method_index -ge ${#GS_methods[@]} ]];  then
+      if [ -z "$met" ]; then
+        GS_method_index=0
+      else
+        GS_method_index=$(($met-1))
+      fi
+    
+      if [[ $GS_method_index -lt 0 || $GS_method_index -ge ${#GS_methods[@]} ]]; then
         echo "Invalid optimisation method number entered."
         exit 99
       fi
-        GS_method=${GS_methods[$GS_method_index]}
-        opt_method_label=${GS_methods_labels[$GS_method_index]}
-        method="$GS_method"
-        echo "Optimisation method: $GS_method"
+    
+      GS_method=${GS_methods[$GS_method_index]}
+      opt_method_label=${GS_methods_labels[$GS_method_index]}
+      method="$GS_method"
+      echo "Optimisation method: $GS_method"
     fi
 
+  # --- S1 method
     if [ "$state" == "s1" ]; then
+      if [ -z "$met" ]; then
         echo ""
         echo "Optimisation method available:"
         for ((i=0; i<${#ES_methods[@]}; i++)); do
-            echo "$(($i+1)). ${ES_methods[$i]} "
+          echo "$(($i+1)). ${ES_methods[$i]} "
         done
-        read -p "Please enter the number corresponding to your optimisation method: " opt_method_number
-        # opt_method_number=2 # for testing tddft_S1
-        ES_method_index=$(($opt_method_number-1))
-      if [[ $ES_method_index -lt 0 || $ES_method_index -ge ${#ES_methods[@]} ]]; then
-          echo "Invalid optimisation method number entered."
-          exit 99
+        read -e -p "Please enter the number corresponding to your optimisation method: " opt_method_number
+      else
+        opt_method_number=$met
       fi
-        ES_method=${ES_methods[$ES_method_index]}
-        opt_method_label=${ES_methods_labels[$ES_method_index]}
-        method="$ES_method"
-        echo "Optimisation method: $method"
+    
+      ES_method_index=$(($opt_method_number-1))
+      if [[ $ES_method_index -lt 0 || $ES_method_index -ge ${#ES_methods[@]} ]]; then
+        echo "Invalid optimisation method number entered."
+        exit 99
+      fi
+    
+      ES_method=${ES_methods[$ES_method_index]}
+      opt_method_label=${ES_methods_labels[$ES_method_index]}
+      method="$ES_method"
+      echo "Optimisation method: $method"
     fi
+  fi
 
+  # --- T1 method
     if [ "$state" == "t1" ]; then
+      if [ -z "$met" ]; then
         echo ""
         echo "Optimisation method available:"
         for ((i=0; i<${#TS_methods[@]}; i++)); do
-            echo "$(($i+1)). ${TS_methods[$i]} "
+          echo "$(($i+1)). ${TS_methods[$i]} "
         done
-        read -p "Please enter the number corresponding to your optimisation method: " opt_method_number
-        # opt_method_number=2 # for testing Dscf
-        TS_method_index=$(($opt_method_number-1))
-      if [[ $TS_method_index -lt 0 || $TS_method_index -ge ${#TS_methods[@]} ]]; then
-          echo "Invalid optimisation method number entered."
-          exit 99
+        read -e -p "Please enter the number corresponding to your optimisation method: " opt_method_number
+      else
+        opt_method_number=$met
       fi
-        TS_method=${TS_methods[$TS_method_index]}
-        opt_method_label=${TS_methods_labels[$TS_method_index]}
-        method="$TS_method"
-        echo "Optimisation method: $TS_method"
+    
+      TS_method_index=$(($opt_method_number-1))
+      if [[ $TS_method_index -lt 0 || $TS_method_index -ge ${#TS_methods[@]} ]]; then
+        echo "Invalid optimisation method number entered."
+        exit 99
+      fi
+    
+      TS_method=${TS_methods[$TS_method_index]}
+      opt_method_label=${TS_methods_labels[$TS_method_index]}
+      method="$TS_method"
+      echo "Optimisation method: $method"
     fi
-  fi
+
 
  # --- ESD checking
-  if [ "$job_type" == "Fluorescence" ]; then
-   read -p "What is your output for Ground state? (.out) " GS_job
-    if [ -f "$GS_job" ]; then
-      if grep -q "****ORCA TERMINATED NORMALLY****" "$GS_job"; then
-       echo "Ground state calculation finished. Checking Hessian file..."
-       GS=${GS_job%.out}
-        if [ -f "$GS.hess" ]; then
-         echo "Hessian file found. Proceeding to Singlet Excited state."
-        else
-         echo "Hessian file not found."
-         exit 99
-        fi
-      else
-       echo "Ground state calculation finish with error, please check."
-       exit 99
-      fi
-    fi
 
-    if [ ! -f "$GS_job" ]; then
-    echo "$GS_job does not exist."
-    exit 99 
-    fi
-   
-   read -p "What is your output for Singlet Excited state (S1)? (.out) " ES_job
-    if [ -f "$ES_job" ]; then
-      if grep -q "****ORCA TERMINATED NORMALLY****" "$ES_job"; then
-       echo "Excited state calculation finished. Checking Hessian file..."
-       ES=${ES_job%.out}
-        if [ -f "$ES.hess" ]; then
-          echo "Hessian file found. Exsit ESD check."
-        else
-          echo "Hessian file not found."
-          exit 99
-        fi
-       else
-         echo "Excited state calculation finish with error, please check."
-         exit 99
-      fi
-    fi
-    
-    if [ ! -f "$ES_job" ]; then
-     echo "$ES_job does not exist."
-     exit 99 
-    fi    
+# --- functional
+  if [ -z "$func" ]; then
+    echo ""
+    echo "Functionals available:"
+    for ((i=0; i<${#functionals[@]}; i++)); do
+      echo "$(($i+1)). ${functionals[$i]} "
+    done
+    read -e -p "Please enter the number corresponding to your functional: " functional_number
+  else
+    functional_number=$func
   fi
 
- if [ "$job_type" == "Intersystem Crossing" ]|| [ "$job_type" == "Reverse Intersystem Crossing" ] || [ "$job_type" == "Phosphorescence" ]; then
-    read -p "What is your output for Ground state? (.out) " GS_job
-      if [ -f "$GS_job" ]; then
-        if grep -q "****ORCA TERMINATED NORMALLY****" "$GS_job"; then
-         echo "Ground state calculation finished. Checking hessian file."
-         GS=${GS_job%.out}
-          if [ -f "$GS.hess" ]; then
-           echo "Hessian file found. Proceeding to Singlet Excited state."
-          else
-           echo "Hessian file not found."
-           exit 99
-          fi
-        else
-         echo "Ground state calculation finish with error, please check."
-         exit 99
-        fi
-      fi
+  functional_index=$(($functional_number-1))
+  if [[ $functional_index -lt 0 || $functional_index -ge ${#functionals[@]} ]]; then
+    echo "Invalid functional number entered."
+    exit 99
+  fi
 
-      if [ ! -f "$GS_job" ]; then
-       echo "$GS_job does not exist."
-       exit 99 
-      fi
-    
-    read -p "What is your output for Singlet Excited State (S1)? (.out) " ES_job
-      if [ -f "$ES_job" ]; then
-        if grep -q "****ORCA TERMINATED NORMALLY****" "$ES_job"; then
-        echo "Excited state calculation finished. Checking hessian file."
-        ES=${ES_job%.out}
-          if [ -f "$ES.hess" ]; then
-            echo "Hessian file found. Proceeding to Triplet Excited State."
-          else
-            echo "Hessian file not found."
-            exit 99
-          fi
-        else
-        echo "Excited state calculation finish with error, please check."
-        exit 99
-        fi
-      fi
-
-      if [ ! -f "$ES_job" ]; then
-      echo "$ES_job does not exist."
-      exit 99 
-      fi    
-    
-    read -p "What is your output for Triplet Excited State (T1)? (.out) " TS_job
-      if [ -f "$TS_job" ]; then
-        if grep -q "****ORCA TERMINATED NORMALLY****" "$TS_job"; then
-          echo "Triplet state calculation finished. Checking hessian file."
-          TS=${TS_job%.out}
-          if [ -f "$TS.hess" ]; then
-            echo "Hessian file found. Generating input."
-           else
-            echo "Hessian file not found."
-            exit 99
-          fi
-         else
-          echo "Triplet state calculation finish with error, please check."
-          exit 99
-        fi
-      fi 
-
-      if [ ! -f "$TS_job" ]; then
-      echo "$TS_job does not exist."
-      exit 99 
-      fi
- fi
-
-
-# --- Prompt the user to select the functional
- echo ""
- echo "Functionals available:"
- for ((i=0; i<${#functionals[@]}; i++)); do
-   echo "$(($i+1)). ${functionals[$i]} "
- done
- read -p "Please enter the number corresponding to your functional: " functional_number
-    # functional_number=5 # for testing camB3LYP
- functional_index=$(($functional_number-1))
- if [[ $functional_index -lt 0 || $functional_index -ge ${#functionals[@]} ]]; then
-   echo "Invalid functional number entered."
-   exit 99
- fi
- functional=${functionals[$functional_index]}
- functional_label=${functional_labels[$functional_index]}
- echo "Functional: $functional"
+  functional=${functionals[$functional_index]}
+  functional_label=${functional_labels[$functional_index]}
+  echo "Functional: $functional"
 
 
 # --- Prompt the user to select the basis set
@@ -294,6 +253,12 @@ basis_set="svp"
 basis_set_label="def2-SVP"
 echo "Basis set: $basis_set"
 
+  op="${molecule}_${functional}_${basis_set}_${state}_${method}_${job_type_label}.inp"
+
+if [ -f "$op" ]; then
+  echo "$op already exists."
+  exit 99
+fi
 
 # ------------------------------------- Summary ------------------------------------
  echo ""
@@ -309,13 +274,13 @@ echo "Basis set: $basis_set"
 #  echo "${molecule}_${functional_label}_${state_label}_${opt_method}_${basis_set}_${job_type_label}.inp"
 
  # --- Create the input file
-  op="${molecule}_${functional}_${basis_set}_${state}_${method}_${job_type_label}.inp"
+
   # echo "Creating input file: $op"
 
 
 
 # ------ Source block_input
-  source $HOME/bin/ORCA/block_input
+  source $HOME/bin/ESD/block_input
   initial_input > "$op"
 # ------ Define Keywords
   addkeywords "$functional_label"
@@ -352,6 +317,13 @@ echo "Basis set: $basis_set"
 
    $state_label $coord >> "$op"
 
+
+  
+  # --- Settings for ESD
+  GS="${molecule}_${functional}_svp_s0_Dscf_optfreq"
+  ES="${molecule}_${functional}_svp_s1_Dscf_optfreq"
+  TS="${molecule}_${functional}_svp_t1_Dscf_optfreq"
+
   if [ "$job_type" == "Fluorescence" ]; then
     sed -i "s/groundstate/$GS/g" "$op"
     sed -i "s/singletstate/$ES/g" "$op"
@@ -361,19 +333,6 @@ echo "Basis set: $basis_set"
   echo "$op created."
 
   if [ "$job_type" == "Reverse Intersystem Crossing" ]; then
-    # echo "Generating input for RISC calculation...."
-    # Energy1=`grep "Electronic energy " $TS.out | awk '{print $4}'`
-    # Energy2=`grep "Electronic energy " $ES.out | awk '{print $4}'`
-    # DEnergyT1=$(echo "($Energy1 - $Energy2) * 219474.6" | bc)
-    # DiffEnergyT1=$(echo "($DEnergyT1 + 0.5) / 1" | bc) 
-    # echo "Energy difference between T1 and S1: $DiffEnergyT1"
-    # risc_op="${molecule}_${functional}_${basis_set}_${state}_${method}_risc.inp"
-    # sed -e "s/TROOTSSL/TROOTSSL 0/g" "$op"   >        "$risc_op"
-    # sed -i "s/DELE/DELE $DiffEnergyT1/g"              "$risc_op"
-    # sed -i "s/initial.hess/$TS.hess/g"                "$risc_op"
-    # sed -i "s/final.hess/$ES.hess/g"                  "$risc_op"
-    # sed -i "s/* XYZFILE 0 1/* XYZFILE 0 1 $ES.xyz/g"  "$risc_op"
-    # echo "$risc_op is also created, please use this version to generate .sh file."
     sh $HOME/bin/ORCA/ISC.sh "$op" "$ES" "$TS"
     rm -f "$op"
   fi
@@ -386,4 +345,11 @@ echo "Basis set: $basis_set"
   if [ "$job_type" == "Phosphorescence" ]; then
     sh $HOME/bin/ORCA/phosp.sh "$op" "$TS" "$ES"
   fi
+
+  if [ -f $op ]; then
+    echo "Input file created."
+  else
+    echo "Input file not created."
+  fi
+
 exit 0

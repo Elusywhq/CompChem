@@ -1,0 +1,128 @@
+#!/bin/sh
+
+# Initialise the settings
+  s0=1; s1=2; t1=3
+  o3lyp=1; pbe0=2; cam=3; m062x=4; wb97x=5
+  tddft=1;Dscf=2
+  optfreq=1; fluo=4; isc=5; risc=6
+  curd=$(pwd)
+  molecule_names=$@
+
+# ---------------------------------------------
+  for molecule in "${molecule_names[@]}"; do
+    cd $curd/"$molecule"
+    inp=$(ls *opt*inp | wc -l)
+    if [ $inp -gt 0 ]; then
+        echo "Input files already exist, skipping"
+        continue
+    fi
+    echo "-----------------------------------------------------------------------------"
+    echo "Processing: $molecule"
+    echo "path: $(pwd)"
+    xyz="$molecule".xyz 
+    if [ ! -f "$xyz" ]; then
+        elif [ -f "${molcule}_S0.xyz" ]; then
+            xyz="${molecule}_S0.xyz"
+        else
+        echo "$xyz does not exist, skipping"
+        continue        
+    fi
+    # generate all the input files
+
+    for func in $(seq 1 3); do
+     # S0 optimisation
+     ORCA-Input $molecule $xyz $s0 $optfreq $func
+      for state in $(seq 2 3); do
+       # S1 and T1 Dscf and tddft optimisation
+        ORCA-Input $molecule $xyz $state $optfreq $func $Dscf
+        # ~/bin/ESD/ORCA-Input $molecule $xyz $state $optfreq $func $tddft
+      done
+     # Fluorescence
+     ORCA-Input $molecule $xyz $s0 $fluo $func
+        
+      for esd in $(seq 5 6); do
+       # Intersystem crossing and reverse intersystem crossing
+        ORCA-Input $molecule $xyz $t0 $esd $func
+        ORCA-Input $molecule $xyz $t1 $esd $func
+      done
+    done
+
+    echo "----------------------------------------------------------------------------"
+    echo "path: $(pwd)"
+    # echo $(pwd)
+  done
+
+# molecule="0BC0"
+# xyz="$molecule".xyz
+
+for molecule in "${molecule_names[@]}"; do
+  cd $curd/"$molecule"
+    opt_files=$(ls *opt*inp)
+    esd_files=$(ls *esd*inp)
+
+    for file in $opt_files; do
+        if qjlist | grep -q "${file%.inp}"; then
+            echo "${file%.inp} is in the queue, skipping"
+        elif [ -f "${file%.inp}".out ]; then
+            echo "${file%.inp} is in the queue, skipping"
+        else
+            echo "${file%.inp} is not in the queue, submitting the job"
+            ORCA-submission -n ${file%.inp}
+            qsub ${file%.inp}.sh > ${file%.inp}.pbs
+        fi
+    done
+
+    # for file in $esd_files; do
+    #     if qjlist | grep -q "${file%.inp}"; then
+    #         echo "${file%.inp} is in the queue, skipping"
+    #     else
+    #         echo "${file%.inp} is not in the queue, submitting the job"
+    #         ORCA-submission -n ${file%.inp} -esd -t 72
+    #         if [[ $file == *isc*inp ]]; then
+
+    #           ISCISHESS=`grep "ISCISHESS" $file | awk '{print $2}'| tr -d '"'`
+    #           ISCFSHESS=`grep "ISCFSHESS" $file | awk '{print $2}'| tr -d '"'` 
+    #           final=${ISCFSHESS%.hess} 
+    #           init=${ISCISHESS%.hess}
+    #           if [ -f "$final.pbs" ]; then
+    #             echo "$final.pbs exists"
+    #             jobid1=`cat $final.pbs`
+    #           else 
+    #             echo "$final.pbs does not exist, skipping $file"
+                
+    #           fi 
+    #           if [ -f "$init.pbs" ]; then
+    #             echo "$init.pbs exists"
+    #             jobid2=`cat $init.pbs`
+    #           else 
+    #             echo "$init.pbs does not exist, skipping $file"
+    #             continue
+    #           fi        
+    #            qsub -W depend=afterok:$jobid1:$jobid2 ${file%.inp}.sh > ${file%.inp}.pbs 
+    #         fi
+    #     fi
+    # done
+done
+
+
+# generate all the input files
+
+    #S0 optimisation
+    # ~/bin/ESD/ORCA-Input $molecule $xyz $s0 $optfreq $o3lyp 
+    # #S1 Dscf optimisation
+    # ~/bin/ESD/ORCA-Input $molecule $xyz $s1 $optfreq $o3lyp $Dscf
+    # #S1 TDDFT optimisation
+    # ~/bin/ESD/ORCA-Input $molecule $xyz $s1 $optfreq $o3lyp $tddft
+    # #T1 Dscf optimisation
+    # ~/bin/ESD/ORCA-Input $molecule $xyz $t1 $optfreq $o3lyp $Dscf
+    # #T1 TDDFT optimisation
+    # ~/bin/ESD/ORCA-Input $molecule $xyz $t1 $optfreq $o3lyp $tddft
+    #Fluorescence
+    # ~/bin/ESD/ORCA-Input $molecule $xyz $s0 $fluo $o3lyp
+    # #Intersystem crossing
+    # ~/bin/ESD/ORCA-Input $molecule $xyz $t1 $isc $o3lyp
+    # #Reverse intersystem crossing
+    # ~/bin/ESD/ORCA-Input $molecule $xyz $t1 $risc $o3lyp
+# ORCA submission seperately
+
+

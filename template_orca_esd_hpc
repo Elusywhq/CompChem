@@ -44,6 +44,7 @@ echo `pwd`
 
 
 
+
 cp $CurrDir/$input      $tdir/$input
 
 if grep -q "* XYZFILE" $CurrDir/$input; then
@@ -54,29 +55,38 @@ fi
 if grep -q "GSHESSIAN" $CurrDir/$input; then
   GSHESSIAN=`grep "GSHESSIAN" $CurrDir/$input | awk '{print $2}'| tr -d '"'` 
   cp $CurrDir/$GSHESSIAN $tdir/
+  GS=${GSHESSIAN%.hess}
 fi
 
 if grep -q "ESHESSIAN" $CurrDir/$input; then
   ESHESSIAN=`grep "ESHESSIAN" $CurrDir/$input | awk '{print $2}'| tr -d '"'` 
   cp $CurrDir/$ESHESSIAN $tdir/
+  ES=${ESHESSIAN%.hess}
 fi
 
 if grep -q "TSHESSIAN" $CurrDir/$input; then
   TSHESSIAN=`grep "TSHESSIAN" $CurrDir/$input | awk '{print $2}'| tr -d '"'` 
   cp $CurrDir/$TSHESSIAN $tdir/
+  TS=${TSHESSIAN%.hess}
 fi
 
 if grep -q "ISCFSHESS" $CurrDir/$input; then
   ISCFSHESS=`grep "ISCFSHESS" $CurrDir/$input | awk '{print $2}'| tr -d '"'` 
   cp $CurrDir/$ISCFSHESS $tdir/
+  final=${ISCFSHESS%.hess} 
 fi
 
 if grep -q "ISCISHESS" $CurrDir/$input; then
   ISCISHESS=`grep "ISCISHESS" $CurrDir/$input | awk '{print $2}'| tr -d '"'` 
   cp $CurrDir/$ISCISHESS $tdir/
+  init=${ISCISHESS%.hess}
 fi
 
-
+Energy1=`grep "Electronic energy " $CurrDir/$init.out | awk '{print $4}'`
+Energy2=`grep "Electronic energy " $CurrDir/$final.out | awk '{print $4}'`
+DEnergyT1=$(echo "($Energy1 - $Energy2) * 219474.6" | bc)
+DiffEnergyT1=$(echo "($DEnergyT1 + 0.5) / 1" | bc) 
+sed -i "/^ DELE /c\ DELE $DiffEnergyT1" $tdir/$input
 
 
 # if it is a restart calcualtion, then check if the $orbital is
