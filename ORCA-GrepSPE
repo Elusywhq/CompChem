@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# grep "FINAL SINGLE" $1 | tail -n 1 
+
+# If there are multiple files
+
+if [ "$1" == "-q" ]; then
+    for file in "${@:2}"; do
+        SPE=$(grep "FINAL SINGLE" "$file" | tail -n 1 | awk '{print $5}')
+        echo "$SPE"
+    done
+else
+    for file in "$@"; do
+        # echo "File: $file"
+        SPE=$(grep "FINAL SINGLE" "$file" | tail -n 1 | awk '{print $5}')
+        echo -e "$file: \t $SPE"
+        # echo ""
+    done
+fi
+
+exit 0
