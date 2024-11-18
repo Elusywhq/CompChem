@@ -14,7 +14,7 @@ elif [[ $(hostname) == *"asp2a"* ]]; then
   Host="nscc"
 fi
 
-project=11003762
+project=11001278
 
 template=template_orca_default_$Host
 
@@ -134,7 +134,7 @@ if [ $USER = "e0732533" ]; then
 fi
 
 # if [ $USER = "e0732533" ]; then
-  sed -i "s/#PBS -M @u.nus.edu/#PBS -M wenhanqi@u.nus.edu/g" ./$name.sh
+  # sed -i "s/#PBS -M @u.nus.edu/#PBS -M wenhanqi@u.nus.edu/g" ./$name.sh
 # else
   # sed -i "s/#PBS -M @u.nus.edu/#PBS -M $USER@u.nus.edu/g" ./$name.sh
 # fi

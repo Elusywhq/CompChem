@@ -5,7 +5,7 @@
 #PBS -l select=1:ncpus=CR:mpiprocs=CR:mem=MRYGB
 #PBS -l walltime=WT:00:00
 #PBS -m abe
-#PBS -M @u.nus.edu
+#PBS -M wenhanqi@u.nus.edu
 
 input=RN
 orbital=WF          # input file for restart the calculation, if needed
