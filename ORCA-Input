@@ -260,10 +260,10 @@ echo "Basis set: $basis_set"
 
   op="${molecule}_${functional}_${basis_set}_${state}_${method}_${job_type_label}.inp"
 
-if [ -f "$op" ]; then
-  echo "$op already exists."
-  exit 99
-fi
+# if [ -f "$op" ]; then
+#   echo "$op already exists."
+#   exit 99
+# fi
 
 # ------------------------------------- Summary ------------------------------------
  echo ""
