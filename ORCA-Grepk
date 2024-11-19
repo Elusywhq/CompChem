@@ -10,25 +10,27 @@ if [ "$1" == "-q" ]; then
             # echo "File $file does not exist."
             continue
         fi
-        SPE=$(grep "FINAL SINGLE" "$file" | tail -n 1 | awk '{print $5}')
-        if [ -z "$SPE" ]; then
-            SPE=0
+        constant=$(grep "rate constant" $file | awk '{ print $7 }')
+        if [ -z "$constant" ]; then
+            constant=0
         fi
-        echo "$SPE"
+        echo "$constant"
     done
 else
     for file in "$@"; do
+        # echo "File: $file"
         if [ ! -f "$file" ]; then
             echo "File $file does not exist."
             continue
         fi
-        SPE=$(grep "FINAL SINGLE" "$file" | tail -n 1 | awk '{print $5}')
-        if [ -z "$SPE" ]; then
-            SPE=0
+        constant=$(grep "rate constant" $file | awk '{ print $7 }')
+        if [ -z "$constant" ]; then
+            constant=0
         fi
-        echo -e "$file: \t $SPE"
+        echo -e "$file: \t $constant"
         # echo ""
     done
 fi
 
 exit 0
+
