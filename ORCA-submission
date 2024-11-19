@@ -59,7 +59,7 @@ while [ "$#" -gt 0 ]; do
       ;;  
     -n)
       if [ -n "$2" ] && ! is_integer "$2"; then
-        name="$2"
+        name="${2%.*}"
         shift
       else
         echo "Error: -n requires a name (must be a string)."
