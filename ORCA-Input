@@ -285,7 +285,7 @@ echo "Basis set: $basis_set"
 
 
 # ------ Source block_input
-  source $HOME/bin/ESD/block_input
+  source $HOME/bin/ORCA/block_input
   initial_input > "$op"
 # ------ Define Keywords
   addkeywords "$functional_label"
