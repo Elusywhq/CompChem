@@ -95,6 +95,11 @@ met=$6
 
 # --- State
   if [ -z "$stat" ]; then
+    echo ""
+    echo "States available:"
+    for ((i=0; i<${#states[@]}; i++)); do
+      echo "$(($i+1)). ${states[$i]} "
+    done
     read -e -p "Please enter the number corresponding to your state: " state_number
   else
     state_number=$stat
