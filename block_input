@@ -20,7 +20,7 @@ function initial_input(){
     # # echo -e "\n%
     echo -e "\n%maxcore 24000"
     echo -e "\n%scf"
-    echo " MaxIter 1000"
+    echo " MaxIter 5000"
     echo "end"
     # # echo -e "\n%
     echo -e "\n%output"
