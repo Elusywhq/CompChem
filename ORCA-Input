@@ -184,10 +184,9 @@ met=$6
       opt_method_label=${ES_methods_labels[$ES_method_index]}
       method="$ES_method"
       echo "Optimisation method: $method"
+    
     fi
-  fi
 
-  # --- T1 method
     if [ "$state" == "t1" ]; then
       if [ -z "$met" ]; then
         echo ""
@@ -211,6 +210,10 @@ met=$6
       method="$TS_method"
       echo "Optimisation method: $method"
     fi
+  fi
+
+  # --- T1 method
+
 
 
  # --- ESD checking
