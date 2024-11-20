@@ -325,7 +325,7 @@ echo "Basis set: $basis_set"
 
   
   # --- Settings for ESD
-  GS="${molecule}_${functional}_svp_s0_Dscf_optfreq"
+  GS="${molecule}_${functional}_svp_s0_scf_optfreq"
   ES="${molecule}_${functional}_svp_s1_Dscf_optfreq"
   TS="${molecule}_${functional}_svp_t1_Dscf_optfreq"
 
