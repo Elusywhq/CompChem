@@ -7,10 +7,9 @@ for file in "$@"; do
     fi
     echo "------------------------ --------------------------------- ------------------------------------"
     grep "GEOMETRY OPTIMIZATION CYCLE" ~/scratch/orcacalc/$name/$name.out | tail -n 1
+    echo "----------------------------------------------------------------------------------------------"
     echo "~/scratch/orcacalc/$name/$name.out ::"
     echo " "
     tail -n 6 ~/scratch/orcacalc/$name/$name.out
-
-    echo "----------------------------------------------------------------------------------------------"
-    # echo " "
+    echo " "
 done 
