@@ -5,6 +5,8 @@ for file in "$@"; do
     if [ ! -f ~/scratch/orcacalc/$name/$name.out ]; then
         continue
     fi
-    echo "Output file: ~/scratch/orcacalc/$name/$name.out"
-    tail -n 15 ~/scratch/orcacalc/$name/$name.out
+    echo "------ ~/scratch/orcacalc/$name/$name.out"
+    tail -n 6 ~/scratch/orcacalc/$name/$name.out
+    echo "------ GEOMETRY OPTIMIZATION CYCLE "
+    grep "GEOMETRY OPTIMIZATION CYCLE" ~/scratch/orcacalc/$name/$name.out | tail -n 1
 done 
