@@ -19,7 +19,7 @@ DiffEnergyT1=$(echo "($DEnergyT1 + 0.5) / 1" | bc)
      op="${1%.inp}_T$i"
      s=$(( $i - 2 ))
      sed -e "s/TROOTSSL/TROOTSSL $s/g" $1 > $op.inp
-    #  sed -i "s/DELE/DELE $DiffEnergyT1/g" $op.inp
+     sed -i "s/DELE/DELE $DiffEnergyT1/g" $op.inp
      sed -i "s/initial.hess/$init.hess/g" $op.inp
      sed -i "s/final.hess/$final.hess/g" $op.inp
      sed -i "s/* XYZFILE 0 3/* XYZFILE 0 1 $final.xyz/g" $op.inp
