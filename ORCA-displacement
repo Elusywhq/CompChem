@@ -1,7 +1,6 @@
 #!/bin/bash
 
-source /app1/ebenv > /dev/null 2>&1
-module load ORCA/6.0.0-foss-2023b_xtb_6.7.1
+
 orca_pltvib=/home/project/11003762/orca_6_0_0/orca_pltvib
 
 hess=${1%.*}.hess
