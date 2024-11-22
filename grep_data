@@ -50,6 +50,9 @@ echo "${risc_rate_avg[@]}"
 
 for molecule in $molecules; do
     # echo "molecule: $molecule"
+    if [[ ! "$molecule" =~ ^[0-9] ]]; then
+      continue
+    fi
     cd $molecule
     for functional in "${functionals[@]}"; do
         GS="$molecule"_"$functional"_svp_s0_scf_optfreq
