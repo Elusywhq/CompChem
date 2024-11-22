@@ -30,21 +30,6 @@ fi
 # IFS=',' read -r -a risc_rate_3 < $csv_file
 # IFS=',' read -r -a risc_rate_avg < $csv_file
 
-echo "${headers[@]}" 
-echo "${Functionals[@]}"
-echo "${spe_s0[@]}"
-echo "${spe_s1[@]}"
-echo "${spe_t1[@]}"
-echo "${energy_gap[@]}"
-echo "${fluorescence_rate[@]}"
-echo "${isc_rate_1[@]}"
-echo "${isc_rate_2[@]}"
-echo "${isc_rate_3[@]}"
-echo "${isc_rate_avg[@]}"
-echo "${risc_rate_1[@]}"
-echo "${risc_rate_2[@]}"
-echo "${risc_rate_3[@]}"
-echo "${risc_rate_avg[@]}"
 
 
 
