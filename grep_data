@@ -176,19 +176,19 @@ for molecule in $molecules; do
           risc_rate_avg+=("$RISC_average")
 
         if [ "$SPE_S0" == "0" ]; then
-            if ! qjlist | grep -q "$GS"; then
+            if ! qjlist | grep "$GS"; then
                 echo "$GS"  
             fi
         fi
 
         if [ "$SPE_S1"  == "0" ]; then
-            if ! qjlist | grep -q "$ES"; then
+            if ! qjlist | grep "$ES"; then
                 echo "$ES"
             fi
         fi
 
         if [ "$SPE_T1"  == "0" ]; then
-            if ! qjlist | grep -q "$TS"; then
+            if ! qjlist | grep "$TS"; then
             echo "$TS"
             fi
         fi
