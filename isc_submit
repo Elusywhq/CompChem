@@ -1,6 +1,6 @@
 #!/bin/bash
 
-rm ${1}*isc_T3.inp
+rm *${1}*isc_T3.inp
 for f in $(ls *${1}*isc*.inp); do 
   echo $f
   ORCA-submission -esd -t 120 -n $f
