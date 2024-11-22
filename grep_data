@@ -176,42 +176,58 @@ for molecule in $molecules; do
           risc_rate_avg+=("$RISC_average")
 
         if [ "$SPE_S0" == "0" ]; then
-            echo "$GS"
+            if ! qjlist | grep -q "$GS"; then
+                echo "$GS"  
+            fi
         fi
 
         if [ "$SPE_S1"  == "0" ]; then
-            echo "$ES"
+            if ! qjlist | grep -q "$ES"; then
+                echo "$ES"
+            fi
         fi
 
         if [ "$SPE_T1"  == "0" ]; then
+            if ! qjlist | grep -q "$TS"; then
             echo "$TS"
+            fi
         fi
 
         if [ "$Fluorescence_rate" == "0.00000000e+00" ]; then
-            echo "$FLUO"
+            if ! qjlist | grep -q "$FLUO"; then
+                echo "$FLUO"
+            fi
         fi
 
         if [ "$ISC_rate_1" == "0.00000000e+00" ]; then
-            echo "$ISC_1"
+            if ! qjlist | grep -q "$ISC_1"; then
+                echo "$ISC_1"
+            fi
         fi
         if [ "$ISC_rate_2" == "0.00000000e+00" ]; then
-            echo "$ISC_2"
+            if ! qjlist | grep -q "$ISC_2"; then
+                echo "$ISC_2"
+            fi
         fi
-        if [ "$ISC_rate_3" == "0.00000000e+00" ]; then
-            echo "$ISC_3"
-        fi
+        # if [ "$ISC_rate_3" == "0.00000000e+00" ]; then
+        #     echo "$ISC_3"
+        # fi
 
         if [ "$RISC_rate_1" == "0.00000000e+00" ]; then
-            echo "$RISC_1"
+            if ! qjlist | grep -q "$RISC_1"; then
+                echo "$RISC_1"
+            fi
         fi
 
         if [ "$RISC_rate_2" == "0.00000000e+00" ]; then
-            echo "$RISC_2"
+            if ! qjlist | grep -q "$RISC_2"; then
+                echo "$RISC_2"
+            fi
         fi
 
-        if [ "$RISC_rate_3" == "0.00000000e+00" ]; then
-            echo "$RISC_3"
-        fi
+        # if [ "$RISC_rate_3" == "0.00000000e+00" ]; then
+        #     echo "$RISC_3"
+        # fi
 
     done
        # Testing
