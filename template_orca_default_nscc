@@ -94,7 +94,7 @@ while [ $finish -eq 0 ]; do
   if [ $finish -eq 1 ]; then
     break
   fi  
-   if [ $i -eq 10 ]; then
+   if [ $i -eq 5 ]; then
     echo "Iteration hits the limit to $i, quitting... "
     if [ -f  $tdir/${input%.inp}.out  ] ; then  cp $tdir/${input%.inp}.out   $CurrDir/  ; fi ;
     if [ -f  $tdir/${input%.inp}.err  ] ; then  cp $tdir/${input%.inp}.err   $CurrDir/  ; fi ; 
@@ -123,6 +123,8 @@ while [ $hess -eq 1 ]; do
   h=$((h+1))
   cp -f $xyz ${input%.inp}.xyz.i$h
   echo "${input%.inp}.xyz.i$h is backed up."
+  cp -f ${input%.inp}.out > ${input%.inp}.out.i$h
+  echo "${input%.inp}.out.i$h is backed up."
 
   $HOME/bin/ORCA/ORCA-displacement $input
   cat ${input%.inp}_v006.xyz > $xyz
@@ -144,7 +146,7 @@ while [ $hess -eq 1 ]; do
     echo "No imaginary mode found. Exiting..."
     break
   fi 
-  if [ $h -eq 10 ]; then
+  if [ $h -eq 5 ]; then
     echo "Iteration hits the limit to $h, quitting... "
     if [ -f  $tdir/${input%.inp}.out  ] ; then  cp $tdir/${input%.inp}.out   $CurrDir/  ; fi ;
     if [ -f  $tdir/${input%.inp}.err  ] ; then  cp $tdir/${input%.inp}.err   $CurrDir/  ; fi ; 
