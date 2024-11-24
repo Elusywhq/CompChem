@@ -12,6 +12,8 @@ if [[ $(hostname) == *"atlas"* ]]; then
   Host="hpc"
 elif [[ $(hostname) == *"asp2a"* ]]; then
   Host="nscc"
+elif [[ $(hostname) == *"Precision"* ]]; then
+  Host="bohr"
 fi
 
 project=11001278

@@ -1,9 +1,10 @@
 #!/bin/bash
 
 #PBS -q colo-chmlu 
-#PBS -l select=1:ncpus=12:mpiprocs=12:mem=40GB
+#PBS -l select=1:ncpus=16:mpiprocs=16:mem=120GB
 #PBS -j oe
-#PBS -m abe 
+#PBS -m abe
+
 
 input=RN
 orbital=WF          # input file for restart the calculation, if needed
@@ -11,11 +12,11 @@ orbital=WF          # input file for restart the calculation, if needed
 #---------------------------------------------------------------------------
 #   normally you should not need to change anything below this line
 source /app1/ebenv
-module load ORCA/6.0.0-foss-2023b_xtb_6.7.1
-
+module load ORCA/6.0.1-foss-2023b-avx2
+EBENV_AVX2=1 
 #---------------------------------------------------------------------------
 #   normally you should not need to change anything below this line
-export ORCA_ROOT=/app1/ebapps/arches/flat/software/ORCA/6.0.0-foss-2023b_xtb_6.7.1
+export ORCA_ROOT=/app1/ebapps/arches/flat-avx2/software/ORCA/6.0.1-foss-2023b-avx2/bin/
 export PATH=$ORCA_ROOT/bin:$PATH
 export LD_LIBRARY_PATH=$ORCA_ROOT/lib:$LD_LIBRARY_PATH
 
