@@ -1,15 +1,27 @@
 #!/bin/bash
 
+if [[ $(hostname) == *"atlas"* ]]; then
+  Host="hpc"
+  scratch=/home/users/nus/$USER
+elif [[ $(hostname) == *"asp2a"* ]]; then
+  Host="nscc"
+  scratch=/home/users/nus/$USER
+elif [[ $(hostname) == *"Precision"* ]]; then
+  Host="bohr"
+  scratch=/home/scratch/hanqi/orca/
+fi
+
 for file in "$@"; do
     name=${file%.*}
-    if [ ! -f ~/scratch/orcacalc/$name/$name.out ]; then
+        if [ ! -f $scratch/$name/$name.out ]; then
         continue
-    fi
-    echo "------------------------ --------------------------------- ------------------------------------"
-    grep "GEOMETRY OPTIMIZATION CYCLE" ~/scratch/orcacalc/$name/$name.out | tail -n 1
-    echo "----------------------------------------------------------------------------------------------"
-    echo "~/scratch/orcacalc/$name/$name.out ::"
-    echo " "
-    tail -n 6 ~/scratch/orcacalc/$name/$name.out
-    echo " "
+        fi
+        echo "------------------------ --------------------------------- ------------------------------------"
+        grep "GEOMETRY OPTIMIZATION CYCLE" ~/scratch/orcacalc/$name/$name.out | tail -n 1
+        echo "----------------------------------------------------------------------------------------------"
+        echo "$scratch/$name/$name.out ::"
+        echo " "
+        tail $scratch/$name/$name.out
+        echo " "
+
 done 
