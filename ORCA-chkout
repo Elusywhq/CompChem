@@ -2,7 +2,7 @@
 
 if [[ $(hostname) == *"atlas"* ]]; then
   Host="hpc"
-  scratch=/home/users/nus/$USER
+  scratch=/hpctmp/$USER
 elif [[ $(hostname) == *"asp2a"* ]]; then
   Host="nscc"
   scratch=/home/users/nus/$USER
@@ -17,7 +17,7 @@ for file in "$@"; do
         continue
         fi
         echo "------------------------ --------------------------------- ------------------------------------"
-        grep "GEOMETRY OPTIMIZATION CYCLE" ~/scratch/orcacalc/$name/$name.out | tail -n 1
+        grep "GEOMETRY OPTIMIZATION CYCLE" $scratch/$name/$name.out | tail -n 1
         echo "----------------------------------------------------------------------------------------------"
         echo "$scratch/$name/$name.out ::"
         echo " "
