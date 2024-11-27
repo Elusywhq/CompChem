@@ -16,7 +16,7 @@ elif [[ $(hostname) == *"Precision"* ]]; then
   Host="bohr"
 fi
 
-project=11001278
+project=11004127
 
 template=template_orca_default_$Host
 
