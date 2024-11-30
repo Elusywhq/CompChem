@@ -31,7 +31,7 @@ cd $CurrDir
 export OMP_NUM_THREADS=1
 
 # scratch folder. Make it "input- dependent"
-tdir=SCRATCH/${input%.inp}
+tdir=FOLDER/${input%.inp}
 
 if [ ! -d $tdir ] ; then
     mkdir -p $tdir
