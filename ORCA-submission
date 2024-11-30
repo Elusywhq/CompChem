@@ -10,8 +10,9 @@ wt=24
 
 if [[ $(hostname) == *"atlas"* ]]; then
   Host="hpc"
-  scratch=/hpctmp/$USER
+  scratch=/hpctmp/e0732532
   echo "atlas"
+  echo $scratch
 elif [[ $(hostname) == *"asp2a"* ]]; then
   Host="nscc"
   scratch=/home/users/nus/$USER
