@@ -87,14 +87,14 @@ while [ $finish -eq 0 ]; do
   cp $tdir/${input%.inp}.out $tdir/${input%.inp}.o$i
   rm $tdir/${input%.inp}.gbw
 # Redo the calculation
-  $ORCA_ROOT/bin/orca  $input > ${input%.inp}.out 2> ${input%.inp}.err 
+  $ORCA_ROOT/orca  $input > ${input%.inp}.out 2> ${input%.inp}.err 
 # Check finish status again
   finish=$(grep -c "****ORCA TERMINATED NORMALLY****" $tdir/${input%.inp}.out)
   if [ $finish -eq 1 ]; then
     echo "ORCA calculation is finished successfully."
     break
   fi  
-   if [ $i -eq 10 ]; then
+   if [ $i -eq 1 ]; then
     echo "Iteration hits the limit to $i, quitting... "
     if [ -f  $tdir/${input%.inp}.out  ] ; then  cp $tdir/${input%.inp}.out   $CurrDir/  ; fi ;
      if [ -f  $tdir/${input%.inp}.err  ] ; then  cp $tdir/${input%.inp}.err   $CurrDir/  ; fi ; 
@@ -118,34 +118,7 @@ else
 fi
 
 
-xyz=`grep "* XYZFILE 0" $input | awk '{print $5}'`
 
-while [ $hess -eq 1 ]; do
-  h=$((h+1))
-  cp -f $xyz ${input%.inp}.xyz.i$h
-  echo "${input%.inp}.xyz.i$h is backed up."
-
-  $HOME/bin/ORCA/ORCA-displacement $input
-  cat ${input%.inp}_v006.xyz > $xyz
-  echo "Replacing xyz file and restart the calculation..."
-
-  # actual execution
-  $ORCA_ROOT/bin/orca  $input > ${input%.inp}.out 2> ${input%.inp}.err 
-
-  echo "Checking imaginary mode again. Iteration: $h "
-
-  freq=`grep "vibrational_frequencies" -A 8 ${input%.inp}.hess | tail -n 1 | awk '{print $2}'`
-
-  if [[ "$freq" == -* ]]; then
-    echo "Vibrational mode 6 is an imaginary mode."
-    echo "Frequency 6: $freq"
-    hess=1
-  else
-    echo "Frequency 6: $freq"
-    echo "No imaginary mode found. Exiting..."
-    break
-  fi  
-done
 
 
 #   if the calculation is successful, then copy the
