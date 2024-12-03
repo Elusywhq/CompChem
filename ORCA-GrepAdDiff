@@ -1,0 +1,17 @@
+#!/bin/bash
+
+init=${1%.*}.out
+final=${2%.*}.out
+
+
+Energy1=`grep "Electronic energy " $init | awk '{print $4}'`
+
+Energy2=`grep "Electronic energy " $final | awk '{print $4}'`
+
+echo $Energy1
+
+echo $Energy2
+
+DiffEnergy=$(echo "($Energy2 - $Energy1) * 219474.6" | bc)
+
+echo "Adiabatic Difference (T1 - S0): $DiffEnergy"
