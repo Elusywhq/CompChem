@@ -121,7 +121,7 @@ done
 
 # Your script logic goes here
 
-sed -e "s/CR/=$cores/g" $HOME/bin/ORCA/$template > ./$name.sh
+sed -e "s/CR/$cores/g" $HOME/bin/ORCA/$template > ./$name.sh
 sed -i "s/RN/$name.inp/g" ./$name.sh
 sed -i "s/MRY/$memory/g" ./$name.sh
 sed -i "s/WT/$wt/g" ./$name.sh
