@@ -3,6 +3,6 @@
 rm *${1}*isc_T3.inp
 for f in $(ls *${1}*isc*.inp); do 
   echo $f
-  ORCA-submission -esd -n $f
+  ORCA-submission -esd -n $f -t 120
   qsub ${f%.inp}.sh
 done
