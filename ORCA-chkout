@@ -5,7 +5,7 @@ if [[ $(hostname) == *"atlas"* ]]; then
   scratch=/hpctmp/$USER
 elif [[ $(hostname) == *"asp2a"* ]]; then
   Host="nscc"
-  scratch=/home/users/nus/$USER
+  scratch=/home/users/nus/$USER/orcacalc/
 elif [[ $(hostname) == *"Precision"* ]]; then
   Host="bohr"
   scratch=/home/scratch/hanqi/orca/
