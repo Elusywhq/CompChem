@@ -13,24 +13,6 @@ else
   output=$1
 fi
 
-# Read the CSV file and store its content
-# IFS=',' read -r -a headers < $csv_file
-# IFS=',' read -r -a Functionals < $csv_file
-# IFS=',' read -r -a spe_s0 < $csv_file
-# IFS=',' read -r -a spe_s1 < $csv_file
-# IFS=',' read -r -a spe_t1 < $csv_file
-# IFS=',' read -r -a energy_gap < $csv_file
-# IFS=',' read -r -a fluorescence_rate < $csv_file
-# IFS=',' read -r -a isc_rate_1 < $csv_file
-# IFS=',' read -r -a isc_rate_2 < $csv_file
-# IFS=',' read -r -a isc_rate_3 < $csv_file
-# IFS=',' read -r -a isc_rate_avg < $csv_file
-# IFS=',' read -r -a risc_rate_1 < $csv_file
-# IFS=',' read -r -a risc_rate_2 < $csv_file
-# IFS=',' read -r -a risc_rate_3 < $csv_file
-# IFS=',' read -r -a risc_rate_avg < $csv_file
-
-
 
 
 for molecule in $molecules; do
