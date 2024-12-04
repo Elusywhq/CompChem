@@ -249,22 +249,28 @@ done
 # echo "spe_s1: ${spe_s1[@]}"
 
 # Write the updated content back to the CSV file
+# {
+#     IFS=','; echo "${headers[*]}"
+#     IFS=','; echo "${Functionals[*]}"
+#     IFS=','; echo "${spe_s0[*]}"
+#     IFS=','; echo "${spe_s1[*]}"
+#     IFS=','; echo "${spe_t1[*]}"
+#     IFS=','; echo "${energy_gap[*]}"
+#     IFS=','; echo "${fluorescence_rate[*]}"
+#     IFS=','; echo "${isc_rate_1[*]}"
+#     IFS=','; echo "${isc_rate_2[*]}"
+#     IFS=','; echo "${isc_rate_3[*]}"
+#     IFS=','; echo "${isc_rate_avg[*]}"
+#     IFS=','; echo "${risc_rate_1[*]}"
+#     IFS=','; echo "${risc_rate_2[*]}"
+#     IFS=','; echo "${risc_rate_3[*]}"
+#     IFS=','; echo "${risc_rate_avg[*]}"
+# } > $output
+
 {
-    IFS=','; echo "${headers[*]}"
-    IFS=','; echo "${Functionals[*]}"
-    IFS=','; echo "${spe_s0[*]}"
-    IFS=','; echo "${spe_s1[*]}"
-    IFS=','; echo "${spe_t1[*]}"
-    IFS=','; echo "${energy_gap[*]}"
-    IFS=','; echo "${fluorescence_rate[*]}"
-    IFS=','; echo "${isc_rate_1[*]}"
-    IFS=','; echo "${isc_rate_2[*]}"
-    IFS=','; echo "${isc_rate_3[*]}"
-    IFS=','; echo "${isc_rate_avg[*]}"
-    IFS=','; echo "${risc_rate_1[*]}"
-    IFS=','; echo "${risc_rate_2[*]}"
-    IFS=','; echo "${risc_rate_3[*]}"
-    IFS=','; echo "${risc_rate_avg[*]}"
+    for ((i=0; i<${#headers[@]}; i++)); do
+        echo "${headers[i]},${Functionals[i]},${spe_s0[i]},${spe_s1[i]},${spe_t1[i]},${energy_gap[i]},${fluorescence_rate[i]},${isc_rate_1[i]},${isc_rate_2[i]},${isc_rate_3[i]},${isc_rate_avg[i]},${risc_rate_1[i]},${risc_rate_2[i]},${risc_rate_3[i]},${risc_rate_avg[i]}"
+    done
 } > $output
 
 # echo "Data has been processed and saved to $output"
