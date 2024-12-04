@@ -267,7 +267,7 @@ done
 #     IFS=','; echo "${risc_rate_avg[*]}"
 # } > $output
 
-headers=("molecule name,functional,SPE Energy (S0) / eh,SPE Energy (S1) / eh,SPE Energy (T1) / eh,Energy Gap (S1 - T1) / eV,Fluorescence rate / s-1,ISC rate 1 / s-1,ISC rate 2 / s-1,ISC rate 3 / s-1,ISC rate average / s-1,RISC rate 1 / s-1,RISC rate 2 / s-1,RISC rate 3 / s-1,RISC rate average / s-1")
+# headers=("molecule name,functional,SPE Energy (S0) / eh,SPE Energy (S1) / eh,SPE Energy (T1) / eh,Energy Gap (S1 - T1) / eV,Fluorescence rate / s-1,ISC rate 1 / s-1,ISC rate 2 / s-1,ISC rate 3 / s-1,ISC rate average / s-1,RISC rate 1 / s-1,RISC rate 2 / s-1,RISC rate 3 / s-1,RISC rate average / s-1")
 
 
 {
