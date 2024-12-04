@@ -271,7 +271,7 @@ headers=("molecule name,functional,SPE Energy (S0) / eh,SPE Energy (S1) / eh,SPE
 
 
 {
-    for ((i=0; i<${#headers[@]}; i++)); do
+    for ((i=0; i<${#MoleculeNames[@]}; i++)); do
         echo "${headers[i]},${MoleculeNames[i]},${Functionals[i]},${spe_s0[i]},${spe_s1[i]},${spe_t1[i]},${energy_gap[i]},${fluorescence_rate[i]},${isc_rate_1[i]},${isc_rate_2[i]},${isc_rate_3[i]},${isc_rate_avg[i]},${risc_rate_1[i]},${risc_rate_2[i]},${risc_rate_3[i]},${risc_rate_avg[i]}"
     done
 } > $output
