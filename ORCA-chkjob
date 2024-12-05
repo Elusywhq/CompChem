@@ -1,24 +1,39 @@
 #!/bin/bash
 
 
+if [[ $(hostname) == *"atlas"* ]]; then
+  Host="hpc"
+  scratch=/hpctmp/e0732532
+  echo "atlas"
+  echo $scratch
+elif [[ $(hostname) == *"asp2a"* ]]; then
+  Host="nscc"
+  scratch=/home/users/nus/$USER/scratch/orcacalc
+  echo "nscc"
+elif [[ $(hostname) == *"Precision"* ]]; then
+  Host="bohr"
+  scratch=/home/scratch/hanqi/orca
+  echo "bohr"
+fi
 
 if [ "$1" == "-q" ]; then
     shift
     for file in "$@"; do
-        finish=$(grep -c "****ORCA TERMINATED NORMALLY****" ${file%.*}.out)
+        finish=$(grep -c "****ORCA TERMINATED NORMALLY****" $scratch/${file%.*}.out)
         echo "$finish"
     done
 else
     for file in "$@"; do
         if [ ! -f ${file%.*}.out ]; then
-            echo "$file ORCA output file does not exist."
+            echo "$scratch/$file ORCA output file does not exist."
             continue
         fi
-        finish=$(grep -c "****ORCA TERMINATED NORMALLY****" ${file%.*}.out)
+        finish=$(grep -c "****ORCA TERMINATED NORMALLY****" $scratch/${file%.*}.out)
         if [ $finish -eq 1 ]; then
+            echo "$scratch/$file ORCA terminated normally."
             continue
         else
-            echo "$file ORCA did not terminate normally."
+            echo "$scratch/$file ORCA did not terminate normally."
         fi
     done
 fi
