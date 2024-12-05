@@ -1,12 +1,12 @@
 #!/bin/bash
 
-echo $(hostname)
+# echo $(hostname)
 
 if [[ $(hostname) == *"atlas"* ]]; then
   Host="hpc"
   scratch=/hpctmp/e0732532
   echo "atlas"
-  echo $scratch
+#   echo $scratch
 elif [[ $(hostname) == *"asp2a"* ]]; then
   Host="nscc"
   scratch=/home/users/nus/$USER/scratch/orcacalc
