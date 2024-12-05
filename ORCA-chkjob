@@ -19,7 +19,7 @@ fi
 if [ "$1" == "-q" ]; then
     shift
     for file in "$@"; do
-        finish=$(grep -c "****ORCA TERMINATED NORMALLY****" $scratch/${file%.*}.out)
+        finish=$(grep -c "****ORCA TERMINATED NORMALLY****" $scratch/${file%.*}/${file%.*}.out)
         echo "$finish"
     done
 else
@@ -28,12 +28,12 @@ else
             echo "$scratch/$file ORCA output file does not exist."
             continue
         fi
-        finish=$(grep -c "****ORCA TERMINATED NORMALLY****" $scratch/${file%.*}.out)
+        finish=$(grep -c "****ORCA TERMINATED NORMALLY****" $scratch/${file%.*}/${file%.*}.out)
         if [ $finish -eq 1 ]; then
-            echo "$scratch/$file ORCA terminated normally."
+            echo "$scratch/${file%.*}/$file ORCA terminated normally."
             continue
         else
-            echo "$scratch/$file ORCA did not terminate normally."
+            echo "$scratch/${file%.*}/$file ORCA did not terminate normally."
         fi
     done
 fi
