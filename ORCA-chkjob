@@ -26,8 +26,12 @@ if [ "$1" == "-q" ]; then
 else
     for file in "$@"; do
         if [ ! -f ${file%.*}.out ]; then
-            echo "$scratch/$file ORCA output file does not exist."
-            continue
+            echo "WARNING: ${file%.*}.out ORCA output file does not exist in your current folder."
+            echo "Checking $scratch/${file%.*}/${file%.*}.out" 
+            if [ ! -f $scratch/${file%.*}/${file%.*}.out ]; then
+                echo "!!!!! $scratch/${file%.*}/${file%.*}.out ORCA output file does not exist."
+                continue
+            fi
         fi
         finish=$(grep -c "****ORCA TERMINATED NORMALLY****" $scratch/${file%.*}/${file%.*}.out)
         if [ $finish -eq 1 ]; then
