@@ -103,7 +103,7 @@ for molecule in $molecules; do
         else
             RISC_average=0
         fi
-
+        multiwfn_ana $FLUO s1
         $DIndex_S1=$(multiwfn_ana $FLUO s1)
         echo $FLUO
         echo "D INdex: $DIndex_S1"
@@ -123,7 +123,7 @@ for molecule in $molecules; do
         RISC_rate_2=$(printf "%.8e" "$RISC_rate_2")
         RISC_rate_3=$(printf "%.8e" "$RISC_rate_3")
         RISC_average=$(printf "%.8e" "$RISC_average")
-        $DIndex_S1=$(printf "%.3e" "$$DIndex_S1")
+        # $DIndex_S1=$(printf "%.3e" "$$DIndex_S1")
         # CT_T1=$(printf "%.3e" "$CT_T1")
 
         # echo "SPE_S0: $SPE_S0"
