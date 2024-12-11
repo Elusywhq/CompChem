@@ -10,7 +10,7 @@ if [ "$1" == "-q" ]; then
             # echo "File $file does not exist."
             continue
         fi
-        SPE=$(grep "FINAL SINGLE" "$file" | tail -n 1 | awk '{print $5}')
+        SPE=$(grep --text "FINAL SINGLE" "$file" | tail -n 1 | awk '{print $5}')
         if [ -z "$SPE" ]; then
             SPE=0
         fi
@@ -22,7 +22,7 @@ else
             echo "File $file does not exist."
             continue
         fi
-        SPE=$(grep "FINAL SINGLE" "$file" | tail -n 1 | awk '{print $5}')
+        SPE=$(grep --text "FINAL SINGLE" "$file" | tail -n 1 | awk '{print $5}')
         if [ -z "$SPE" ]; then
             SPE=0
         fi
