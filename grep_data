@@ -105,6 +105,8 @@ for molecule in $molecules; do
         fi
 
         $DIndex_S1=$(multiwfn_ana $FLUO s1)
+        echo $FLUO
+        echo "D INdex: $DIndex_S1"
         # CT_T1=$(multiwfn_ana $ES t1)
         
 

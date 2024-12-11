@@ -13,16 +13,16 @@ state=$2
 echo "18" > calcall.txt  # 18 Electron excitation analysis
 echo "1" >> calcall.txt  # 1 Calculate hole
 echo "$input.out" >> calcall.txt  # Output file
-if [ $state == "s1" ]; then
+# if [ $state == "s1" ]; then
+#     echo "1" >> calcall.txt  # Singlet
+#     echo "1" >> calcall.txt  # S1
+# elif [ $state == "t1" ]; then
+#     echo "3" >> calcall.txt  # Triplet
+#     echo "1" >> calcall.txt  # T1
+# else 
     echo "1" >> calcall.txt  # Singlet
     echo "1" >> calcall.txt  # S1
-elif [ $state == "t1" ]; then
-    echo "3" >> calcall.txt  # Triplet
-    echo "1" >> calcall.txt  # T1
-else 
-    echo "1" >> calcall.txt  # Singlet
-    echo "1" >> calcall.txt  # S1
-fi
+# fi
 
 echo "" >> calcall.txt  # Empty line
 echo "1" >> calcall.txt  # 1 Analyze hole in S1
