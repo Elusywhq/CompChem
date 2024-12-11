@@ -1,15 +1,29 @@
 #!/bin/bash
 set -e  # Exit immediately if a command exits with a non-zero status
 input=${1%.*}
+if [ ! -f $input.gbw ]; then
+    echo "Error: $input.gbw not found"
+    exit 1
+fi
 $PROJECT/orca_6_0_0/orca_2mkl $input -molden > /dev/null 2>&1
 output=multiwfn_${input}.out
+state=$2 
 
 # Create calcall.txt with initial content
 echo "18" > calcall.txt  # 18 Electron excitation analysis
 echo "1" >> calcall.txt  # 1 Calculate hole
 echo "$input.out" >> calcall.txt  # Output file
-echo "1" >> calcall.txt  # Singlet
-echo "1" >> calcall.txt  # S1
+if [ $state == "s1" ]; then
+    echo "1" >> calcall.txt  # Singlet
+    echo "1" >> calcall.txt  # S1
+elif [ $state == "t1" ]; then
+    echo "3" >> calcall.txt  # Triplet
+    echo "1" >> calcall.txt  # T1
+else 
+    echo "1" >> calcall.txt  # Singlet
+    echo "1" >> calcall.txt  # S1
+fi
+
 echo "" >> calcall.txt  # Empty line
 echo "1" >> calcall.txt  # 1 Analyze hole in S1
 echo "2" >> calcall.txt  # 1 medium gird
@@ -22,15 +36,14 @@ echo "q" >> calcall.txt  # q quit
 Multiwfn $input.molden.input < calcall.txt > out.txt
 # echo "finished"
 # Remove temporary files (commented out for debugging)
-# rm -f ./calcall.txt ./result.txt
-# Search for specific patterns in out.txt and append results to result.txt
-grep "Sr index" ./out.txt >> result.txt
-grep "D index" ./out.txt  >> result.txt
-grep "RMSD of electron in" ./out.txt >> result.txt
-grep "H index" ./out.txt >> result.txt
-grep "t index" ./out.txt >> result.txt
-echo
-echo "Multiwfn Finished!"
+# rm -f ./calcall.txt ./.txt
+# Search for specific patterns in out.txt and append results to $output
+
+grep "Sr index" ./out.txt >> $output
+grep "D index" ./out.txt  >> $output
+grep "RMSD of electron in" ./out.txt >> $output
+grep "H index" ./out.txt >> $output
+grep "t index" ./out.txt >> $output
 
 D_Index=$(grep "D index" ./out.txt | awk '{print $9}')
-echo "D index: $D_Index"
+echo "$D_Index"
