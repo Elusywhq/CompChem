@@ -103,10 +103,15 @@ for molecule in $molecules; do
         else
             RISC_average=0
         fi
-        multiwfn_ana $FLUO s1
-        DIndex_S1=$(~/bin/ORCA/multiwfn_ana $FLUO s1)
-        echo $FLUO
-        echo "D INdex: $DIndex_S1"
+        # multiwfn_ana $FLUO s1
+        if [ -f "$FLUO.gbw" ]; then
+            DIndex_S1=$(multiwfn_ana $FLUO s1)
+        else
+            DIndex_S1=0
+        fi
+        # DIndex_S1=$(~/bin/ORCA/multiwfn_ana $FLUO s1)
+        # echo $FLUO
+        # echo "D INdex: $DIndex_S1"
         # CT_T1=$(multiwfn_ana $ES t1)
         
 
