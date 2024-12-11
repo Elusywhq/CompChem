@@ -104,8 +104,8 @@ for molecule in $molecules; do
             RISC_average=0
         fi
 
-        CT_S1=$(multiwfn_ana $ISC_1 s1)
-        CT_T1=$(multiwfn_ana $ISC_1 t1)
+        $DIndex_S1=$(multiwfn_ana $ES s1)
+        # CT_T1=$(multiwfn_ana $ES t1)
         
 
         SPE_S0=$(printf "%.10f" "$SPE_S0")
@@ -121,8 +121,8 @@ for molecule in $molecules; do
         RISC_rate_2=$(printf "%.8e" "$RISC_rate_2")
         RISC_rate_3=$(printf "%.8e" "$RISC_rate_3")
         RISC_average=$(printf "%.8e" "$RISC_average")
-        CT_S1=$(printf "%.3e" "$CT_S1")
-        CT_T1=$(printf "%.3e" "$CT_T1")
+        $DIndex_S1=$(printf "%.3e" "$$DIndex_S1")
+        # CT_T1=$(printf "%.3e" "$CT_T1")
 
         # echo "SPE_S0: $SPE_S0"
         # echo "SPE_S1: $SPE_S1"
@@ -161,6 +161,7 @@ for molecule in $molecules; do
           risc_rate_2+=("$RISC_rate_2")
           risc_rate_3+=("$RISC_rate_3")
           risc_rate_avg+=("$RISC_average")
+          CT_S1+=("$DIndex_S1")
 
         if [ "$SPE_S0" == "0" ]; then
             if ! qjlist | grep -q "$GS"; then
