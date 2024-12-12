@@ -15,7 +15,7 @@ else
 fi
 
 # Check if there is any imaginary mode
-freq=`grep "vibrational_frequencies" -A 8 $hess | tail -n 1 | awk '{print $2}'`
+freq=`grep --text "vibrational_frequencies" -A 8 $hess | tail -n 1 | awk '{print $2}'`
 
 if [[ "$freq" == -* ]]; then
   echo "Vibrational mode 6 is an imaginary mode."

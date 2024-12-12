@@ -4,9 +4,9 @@ init=${1%.*}.out
 final=${2%.*}.out
 
 
-Energy1=`grep "Electronic energy " $init | awk '{print $4}'`
+Energy1=`grep --text "Electronic energy " $init | awk '{print $4}'`
 
-Energy2=`grep "Electronic energy " $final | awk '{print $4}'`
+Energy2=`grep --text "Electronic energy " $final | awk '{print $4}'`
 
 echo $Energy1
 

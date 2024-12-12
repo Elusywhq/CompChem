@@ -10,7 +10,7 @@ if [ "$1" == "-q" ]; then
             # echo "File $file does not exist."
             continue
         fi
-        constant=$(grep "rate constant" $file | awk '{ print $7 }')
+        constant=$(grep --text "rate constant" $file | awk '{ print $7 }')
         if [ -z "$constant" ]; then
             constant=0
         fi
@@ -23,7 +23,7 @@ else
             echo "File $file does not exist."
             continue
         fi
-        constant=$(grep "rate constant" $file | awk '{ print $7 }')
+        constant=$(grep --text "rate constant" $file | awk '{ print $7 }')
         if [ -z "$constant" ]; then
             constant=0
         fi

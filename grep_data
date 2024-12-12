@@ -49,7 +49,7 @@ for molecule in $molecules; do
                 echo $s
                 hess=1
             else
-                freq=`grep "vibrational_frequencies" -A 8 $s.hess | tail -n 1 | awk '{print $2}'`
+                freq=`grep --text "vibrational_frequencies" -A 8 $s.hess | tail -n 1 | awk '{print $2}'`
                 if [[ "$freq" == -* ]]; then
                     echo $s.hess
                     # echo "Frequency 6: $freq"
