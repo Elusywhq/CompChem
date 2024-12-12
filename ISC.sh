@@ -7,8 +7,8 @@ init=$S1
 final=$T1
 echo "Initial state: " $init
 echo "Final state: " $final
-Energy1=`grep "Electronic energy " $init.out | awk '{print $4}'`
-Energy2=`grep "Electronic energy " $final.out | awk '{print $4}'`
+Energy1=`grep --text "Electronic energy " $init.out | awk '{print $4}'`
+Energy2=`grep --text "Electronic energy " $final.out | awk '{print $4}'`
 DEnergyT1=$(echo "($Energy1 - $Energy2) * 219474.6" | bc)
 DiffEnergyT1=$(echo "($DEnergyT1 + 0.5) / 1" | bc) 
 
