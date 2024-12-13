@@ -5,7 +5,25 @@ if [ ! -f $input.gbw ]; then
     echo "Error: $input.gbw not found"
     exit 1
 fi
-$PROJECT/orca_6_0_0/orca_2mkl $input -molden > /dev/null 2>&1
+
+if [[ $(hostname) == *"atlas"* ]]; then
+  Host="hpc"
+  scratch=/hpctmp/e0732532
+  ORCA_ROOT=/app1/ebapps/arches/flat-avx2/software/ORCA/6.0.1-foss-2023b-avx2/bin
+  echo "atlas"
+#   echo $scratch
+elif [[ $(hostname) == *"asp2a"* ]]; then
+  Host="nscc"
+  scratch=/home/users/nus/$USER/orca_6_0_0
+  ORCA_ROOT=/home/project/11003762/
+  echo "nscc"
+elif [[ $(hostname) == *"Precision"* ]]; then
+  Host="bohr"
+  scratch=/home/scratch/hanqi/orca
+  echo "bohr"
+fi
+
+$ORCA_ROOT/orca_2mkl $input -molden > /dev/null 2>&1
 output=multiwfn_${input}.out
 state=$2 
 
