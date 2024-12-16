@@ -23,7 +23,7 @@ elif [[ $(hostname) == *"Precision"* ]]; then
 #   echo "bohr"
 fi
 
-$ORCA_ROOT/orca_2aim $input > /dev/null 2>&1
+$ORCA_ROOT/orca_2mkl $input -molden > /dev/null 2>&1
 output=multiwfn_${input}.out
 state=$2 
 
@@ -51,7 +51,7 @@ echo "0" >> calcall.txt  # 0 return to main menu
 echo "q" >> calcall.txt  # q quit
 
 # Run Multiwfn command and capture output
-Multiwfn $input.wfn < calcall.txt > out.txt
+Multiwfn $input.molden.input < calcall.txt > out.txt
 # echo "finished"
 # Remove temporary files (commented out for debugging)
 # rm -f ./calcall.txt ./.txt
