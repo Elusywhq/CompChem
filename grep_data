@@ -1,7 +1,7 @@
 #/bin/bash
 
 molecules=$(ls -d */ | sed 's:/*$::')
-# molecules="1DA1 1DA2"
+molecules="1DA1"
 functionals=("O3LYP" "pbe0" "camB3LYP") # "M062X" "wB97XD4")
 states=("s0" "s1" "t1")
 
@@ -113,6 +113,10 @@ for molecule in $molecules; do
         # echo $FLUO
         # echo "D INdex: $DIndex_S1"
         # CT_T1=$(multiwfn_ana $ES t1)
+
+        XYZ_S1_S0=$(calculate_rmsd $ES.xyz $GS.xyz 2>&1)
+        XYZ_T1_S1=$(calculate_rmsd $TS.xyz $ES.xyz 2>&1)
+        XYZ_T1_S1=$(calculate_rmsd $TS.xyz $ES.xyz 2>&1)
         
 
         SPE_S0=$(printf "%.10f" "$SPE_S0")
@@ -128,6 +132,9 @@ for molecule in $molecules; do
         RISC_rate_2=$(printf "%.8e" "$RISC_rate_2")
         RISC_rate_3=$(printf "%.8e" "$RISC_rate_3")
         RISC_average=$(printf "%.8e" "$RISC_average")
+        XYZ_S1_S0=$(printf "%.10f" "$XYZ_S1_S0")
+        XYZ_T1_S1=$(printf "%.10f" "$XYZ_T1_S1")
+        XYZ_T1_S0=$(printf "%.10f" "$XYZ_T1_S0")
         # $DIndex_S1=$(printf "%.3e" "$$DIndex_S1")
         # CT_T1=$(printf "%.3e" "$CT_T1")
 
@@ -169,6 +176,9 @@ for molecule in $molecules; do
           risc_rate_3+=("$RISC_rate_3")
           risc_rate_avg+=("$RISC_average")
           CT_S1+=("$DIndex_S1")
+          XYZ_S1_S0+=("$XYZ_S1_S0")
+          XYZ_T1_S1+=("$XYZ_T1_S1")
+          XYZ_T1_S0+=("$XYZ_T1_S0")
 
         if [ "$SPE_S0" == "0" ]; then
             if ! qjlist | grep -q "$GS"; then
@@ -267,7 +277,7 @@ echo $MoleculeNames
 
 {
     for ((i=0; i<${#MoleculeNames[@]}; i++)); do
-        echo "${MoleculeNames[i]},${Functionals[i]},${spe_s0[i]},${spe_s1[i]},${spe_t1[i]},${energy_gap[i]},${fluorescence_rate[i]},${isc_rate_1[i]},${isc_rate_2[i]},${isc_rate_3[i]},${isc_rate_avg[i]},${risc_rate_1[i]},${risc_rate_2[i]},${risc_rate_3[i]},${risc_rate_avg[i]},${CT_S1[i]}"
+        echo "${MoleculeNames[i]},${Functionals[i]},${spe_s0[i]},${spe_s1[i]},${spe_t1[i]},${energy_gap[i]},${fluorescence_rate[i]},${isc_rate_1[i]},${isc_rate_2[i]},${isc_rate_3[i]},${isc_rate_avg[i]},${risc_rate_1[i]},${risc_rate_2[i]},${risc_rate_3[i]},${risc_rate_avg[i]},${CT_S1[i]},${XYZ_S1_S0[i]},${XYZ_T1_S0[i]},${XYZ_T1_S1[i]}"
     done
 } > $output
 
