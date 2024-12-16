@@ -119,7 +119,8 @@ for molecule in $molecules; do
         fi
         ISC_sum=$(echo "$ISC_rate_1 + $ISC_rate_2 + $ISC_rate_3" | bc -l 2>/dev/null)
         # ISC_sum=$(echo "scale=8; $ISC_rate_1 + $ISC_rate_2 + $ISC_rate_3" | bc -l 2>/dev/null)
-        RISC_sum=$(echo "scale=8; $RISC_rate_1 + $RISC_rate_2 + $RISC_rate_3" | bc -l 2>/dev/null)
+        # RISC_sum=$(echo "scale=8; $RISC_rate_1 + $RISC_rate_2 + $RISC_rate_3" | bc -l 2>/dev/null)
+        RISC_sum=$(printf "%.10g + %.10g + %.10g\n" "$RISC_rate_1" "$RISC_rate_2" "$RISC_rate_3" | bc -l 2>/dev/null)
         echo "ISC 1: $ISC_rate_1"
         echo "ISC 2: $ISC_rate_2"
         echo "ISC 3: $ISC_rate_3"
