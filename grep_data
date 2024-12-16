@@ -154,18 +154,18 @@ for molecule in $molecules; do
         # multiwfn_ana $FLUO s1
         # echo "RUNNING: multiwfn_ana $FLUO s1"
 
-        if [ -f "$FLUO.gbw" ]; then
-            # echo "Multiwfn analysis for $FLUO"
-            DIndex_S1=$(multiwfn_ana $FLUO s1)
-        else
-            # echo "Multiwfn analysis for $FLUO.gbw"
-            DIndex_S1=0
-        fi
+        # if [ -f "$FLUO.gbw" ]; then
+        #     # echo "Multiwfn analysis for $FLUO"
+        #     DIndex_S1=$(multiwfn_ana $FLUO)
+        # else
+        #     # echo "Multiwfn analysis for $FLUO.gbw"
+        #     DIndex_S1=0
+        # fi
 
         DIndex_S1=$(~/bin/ORCA/multiwfn_ana $FLUO s1)
         # echo $FLUO
         # echo "D INdex: $DIndex_S1"
-        CT_T1=$(multiwfn_ana $ES t1)
+        # CT_T1=$(multiwfn_ana $ES t1)
 
         XYZ_S1_S0=$(calculate_rmsd $ES.xyz $GS.xyz 2>&1)
         XYZ_T1_S0=$(calculate_rmsd $TS.xyz $GS.xyz 2>&1)
