@@ -110,6 +110,7 @@ for molecule in $molecules; do
 
 
         multiwfn_ana $FLUO s1
+        echo "RUNNING: multiwfn_ana $FLUO s1"
 
         if [ -f "$FLUO.gbw" ]; then
             echo "Multiwfn analysis for $FLUO"
