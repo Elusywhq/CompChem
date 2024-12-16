@@ -90,21 +90,49 @@ for molecule in $molecules; do
         ISC_rate_1=$(ORCA-Grepk -q "$ISC_1.out")
         ISC_rate_2=$(ORCA-Grepk -q "$ISC_2.out")
         ISC_rate_3=$(ORCA-Grepk -q "$ISC_3.out")
-        if [[ "$ISC_rate_1" =~ ^-?[0-9]+$ ]] && [[ "$ISC_rate_2" =~ ^-?[0-9]+$ ]] && [[ "$ISC_rate_3" =~ ^-?[0-9]+$ ]] && [ "$ISC_rate_1" -ne 0 ] && [ "$ISC_rate_2" -ne 0 ] && [ "$ISC_rate_3" -ne 0 ]; then
-            ISC_average=$(echo "($ISC_rate_1 + $ISC_rate_2 + $ISC_rate_3) / 3" | bc -l)
-        else
-            ISC_average=0
-        fi
 
         RISC_rate_1=$(ORCA-Grepk -q "$RISC_1.out")
         RISC_rate_2=$(ORCA-Grepk -q "$RISC_2.out")
         RISC_rate_3=$(ORCA-Grepk -q "$RISC_3.out")
-        if [[ "$RISC_rate_1" =~ ^-?[0-9]+$ ]] && [[ "$RISC_rate_2" =~ ^-?[0-9]+$ ]] && [[ "$RISC_rate_3" =~ ^-?[0-9]+$ ]] && [ "$RISC_rate_1" -ne 0 ] && [ "$RISC_rate_2" -ne 0 ] && [ "$RISC_rate_3" -ne 0 ]; then
-            RISC_average=$(echo "($RISC_rate_1 + $RISC_rate_2 + $RISC_rate_3) / 3" | bc -l)
+
+        # Make sure 1 and 3 are equal if one of them is zero
+        if [ "$ISC_rate_1" == "0.00000000e+00" ] && [ "$ISC_rate_3" != "0.00000000e+00" ]; then
+            ISC_rate_1=$ISC_rate_3
+        elif [ "$ISC_rate_3" == "0.00000000e+00" ] && [ "$ISC_rate_1" != "0.00000000e+00" ]; then
+            ISC_rate_3=$ISC_rate_1
+        fi
+
+        if [ "$RISC_rate_1" == "0.00000000e+00" ] && [ "$RISC_rate_3" != "0.00000000e+00" ]; then
+            RISC_rate_1=$RISC_rate_3
+        elif [ "$RISC_rate_3" == "0.00000000e+00" ] && [ "$RISC_rate_1" != "0.00000000e+00" ]; then
+            RISC_rate_3=$RISC_rate_1
+        fi
+
+
+        ISC_sum=$(echo "$ISC_rate_1 + $ISC_rate_2 + $ISC_rate_3" | bc -l)
+        if [ "$ISC_sum" != "0" ]; then
+            if (( $(echo "$ISC_sum > 0" | bc -l) )); then
+                ISC_average=$(echo "($ISC_rate_1 + $ISC_rate_2 + $ISC_rate_3) / 3" | bc -l)
+            else 
+                ISC_average="NaN"
+            fi
+        else
+            ISC_average=0
+        fi
+
+        RISC_sum=$(echo "$RISC_rate_1 + $RISC_rate_2 + $RISC_rate_3" | bc -l)
+        if [ "$RISC_sum" != "0" ]; then
+            if (( $(echo "$RISC_sum > 0" | bc -l) )); then
+                RISC_average=$(echo "($RISC_rate_1 + $RISC_rate_2 + $RISC_rate_3) / 3" | bc -l)
+            else 
+                RISC_average="NaN"
+            fi
         else
             RISC_average=0
         fi
-        # multiwfn_ana $FLUO s1
+
+        multiwfn_ana $FLUO s1
+
         if [ -f "$FLUO.gbw" ]; then
             DIndex_S1=$(multiwfn_ana $FLUO s1)
         else
@@ -157,17 +185,7 @@ for molecule in $molecules; do
           energy_gap+=("$Energy_Gap")
           fluorescence_rate+=("$Fluorescence_rate")
 
-        if [ "$ISC_rate_1" == "0.00000000e+00" ] && [ "$ISC_rate_3" != "0.00000000e+00" ]; then
-            ISC_rate_1=$ISC_rate_3
-        elif [ "$ISC_rate_3" == "0.00000000e+00" ] && [ "$ISC_rate_1" != "0.00000000e+00" ]; then
-            ISC_rate_3=$ISC_rate_1
-        fi
 
-        if [ "$RISC_rate_1" == "0.00000000e+00" ] && [ "$RISC_rate_3" != "0.00000000e+00" ]; then
-            RISC_rate_1=$RISC_rate_3
-        elif [ "$RISC_rate_3" == "0.00000000e+00" ] && [ "$RISC_rate_1" != "0.00000000e+00" ]; then
-            RISC_rate_3=$RISC_rate_1
-        fi
           isc_rate_1+=("$ISC_rate_1")
           isc_rate_2+=("$ISC_rate_2")
           isc_rate_3+=("$ISC_rate_3")
@@ -177,9 +195,9 @@ for molecule in $molecules; do
           risc_rate_3+=("$RISC_rate_3")
           risc_rate_avg+=("$RISC_average")
           CT_S1+=("$DIndex_S1")
-          XYZ_S1_S0+=("$XYZ_S1_S0")
-          XYZ_T1_S1+=("$XYZ_T1_S1")
-          XYZ_T1_S0+=("$XYZ_T1_S0")
+          xyz_S1_S0+=("$XYZ_S1_S0")
+          xyz_T1_S1+=("$XYZ_T1_S1")
+          xyz_T1_S0+=("$XYZ_T1_S0")
 
         if [ "$SPE_S0" == "0" ]; then
             if ! qjlist | grep -q "$GS"; then
@@ -278,7 +296,7 @@ done
 
 {
     for ((i=0; i<${#MoleculeNames[@]}; i++)); do
-        echo "${MoleculeNames[i]},${Functionals[i]},${spe_s0[i]},${spe_s1[i]},${spe_t1[i]},${energy_gap[i]},${fluorescence_rate[i]},${isc_rate_1[i]},${isc_rate_2[i]},${isc_rate_3[i]},${isc_rate_avg[i]},${risc_rate_1[i]},${risc_rate_2[i]},${risc_rate_3[i]},${risc_rate_avg[i]},${CT_S1[i]},${XYZ_S1_S0[i]},${XYZ_T1_S0[i]},${XYZ_T1_S1[i]}"
+        echo "${MoleculeNames[i]},${Functionals[i]},${spe_s0[i]},${spe_s1[i]},${spe_t1[i]},${energy_gap[i]},${fluorescence_rate[i]},${isc_rate_1[i]},${isc_rate_2[i]},${isc_rate_3[i]},${isc_rate_avg[i]},${risc_rate_1[i]},${risc_rate_2[i]},${risc_rate_3[i]},${risc_rate_avg[i]},${CT_S1[i]},${xyz_S1_S0[i]},${xyz_T1_S0[i]},${xyz_T1_S1[i]}"
     done
 } >> $output
 
