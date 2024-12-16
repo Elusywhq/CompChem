@@ -13,8 +13,7 @@ for file in "$@"; do
   fi
 
   nmode=$(grep "will need at least" $input.out | awk '{print $5}')
-
-  grep -A $nmode "The Huang-Rhys factor per mode is:" $input.out | tail -n +6 # > $file_HR
+  grep -A $((nmode + 5)) "The Huang-Rhys factor per mode is:" $input.out | tail -n +6 # > $file_HR
 
 
 
