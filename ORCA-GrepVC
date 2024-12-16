@@ -15,5 +15,6 @@ for file in "$@"; do
   nmode=$(grep "will need at least" $input.out | awk '{print $5}')
   # grep -A $((nmode + 5)) "The Huang-Rhys factor per mode is:" $input.out | tail -n +6 # > $file_HR
   grep -A $((nmode + 5)) "The K vector (a.u.) is:" $input.out | tail -n +6 # > $file_K
+  grep -A $((nmode + 5)) "The reorganization energy per mode is:" $input.out | tail -n +6 # > $file_lamda
 
 done
