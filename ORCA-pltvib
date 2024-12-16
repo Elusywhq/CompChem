@@ -1,0 +1,31 @@
+#!/bin/bash
+input=${1%.*}
+if [ ! -f $input.hess ]; then
+    echo "Error: $input.hess not found"
+    exit 1
+fi
+
+if [ -z "$2" ]; then
+  mode=6
+else
+  mode=$2
+fi
+
+if [[ $(hostname) == *"atlas"* ]]; then
+  Host="hpc"
+  scratch=/hpctmp/e0732532
+  ORCA_ROOT=/app1/ebapps/arches/flat/software/ORCA/6.0.1-foss-2023b/bin/
+#   echo "atlas"
+#   echo $scratch
+elif [[ $(hostname) == *"asp2a"* ]]; then
+  Host="nscc"
+  scratch=/home/users/nus/$USER/orca_6_0_0
+  ORCA_ROOT=/home/project/11003762/
+#   echo "nscc"
+elif [[ $(hostname) == *"Precision"* ]]; then
+  Host="bohr"
+  scratch=/home/scratch/hanqi/orca
+#   echo "bohr"
+fi
+
+$ORCA_ROOT/orca_pltvib $input.hess $mode
