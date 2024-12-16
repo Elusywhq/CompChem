@@ -100,10 +100,11 @@ for molecule in $molecules; do
         echo "ISC rate 1: $ISC_rate_1"
         echo "ISC rate 2: $ISC_rate_2"
         echo "ISC rate 3: $ISC_rate_3"
-        
+
         # Make sure 1 and 3 are equal if one of them is zero
-        if [ "$ISC_rate_3" == "0.00000000e+00" ] && [ "$ISC_rate_3" != "0.00000000e+00" ]; then
-            ISC_rate_1=$ISC_rate_3
+        if [ -z $ISC_rate_3 ] && [ "$ISC_rate_1" != "0.00000000e+00" ]; then
+            ISC_rate_3=$isc_rate_1
+            echo "Replaced ISC rate 3 with ISC rate 1"
         elif [ "$ISC_rate_3" == "0.00000000e+00" ] && [ "$ISC_rate_1" != "0.00000000e+00" ]; then
             ISC_rate_3=$ISC_rate_1
         fi
