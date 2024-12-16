@@ -191,6 +191,8 @@ for molecule in $molecules; do
         XYZ_S1_S0=$(printf "%.10f" "$XYZ_S1_S0")
         XYZ_T1_S1=$(printf "%.10f" "$XYZ_T1_S1")
         XYZ_T1_S0=$(printf "%.10f" "$XYZ_T1_S0")
+        
+
         # $DIndex_S1=$(printf "%.3e" "$$DIndex_S1")
         # CT_T1=$(printf "%.3e" "$CT_T1")
 
@@ -204,27 +206,28 @@ for molecule in $molecules; do
         # echo "Energy Gap (S1 - T1) for $molecule with $functional: $Energy_Gap eV"
         # Append the new data to the arrays
 
-        #   MoleculeNames+=("$molecule")
-        #   Functionals+=("$functional")
-        #   spe_s0+=("$SPE_S0")
-        #   spe_s1+=("$SPE_S1")
-        #   spe_t1+=("$SPE_T1")
-        #   energy_gap+=("$Energy_Gap")
-        #   fluorescence_rate+=("$Fluorescence_rate")
+          MoleculeNames+=("$molecule")
+          Functionals+=("$functional")
+          spe_s0+=("$SPE_S0")
+          spe_s1+=("$SPE_S1")
+          spe_t1+=("$SPE_T1")
+          energy_gap+=("$Energy_Gap")
+          fluorescence_rate+=("$Fluorescence_rate")
 
 
-        #   isc_rate_1+=("$ISC_rate_1")
-        #   isc_rate_2+=("$ISC_rate_2")
-        #   isc_rate_3+=("$ISC_rate_3")
-        #   isc_rate_avg+=("$ISC_average")
-        #   risc_rate_1+=("$RISC_rate_1")
-        #   risc_rate_2+=("$RISC_rate_2")
-        #   risc_rate_3+=("$RISC_rate_3")
-        #   risc_rate_avg+=("$RISC_average")
-        #   CT_S1+=("$DIndex_S1")
-        #   xyz_S1_S0+=("$XYZ_S1_S0")
-        #   xyz_T1_S1+=("$XYZ_T1_S1")
-        #   xyz_T1_S0+=("$XYZ_T1_S0")
+          isc_rate_1+=("$ISC_rate_1")
+          isc_rate_2+=("$ISC_rate_2")
+          isc_rate_3+=("$ISC_rate_3")
+          isc_rate_avg+=("$ISC_average")
+          risc_rate_1+=("$RISC_rate_1")
+          risc_rate_2+=("$RISC_rate_2")
+          risc_rate_3+=("$RISC_rate_3")
+          risc_rate_avg+=("$RISC_average")
+          CT_S1+=("$DIndex_S1")
+          xyz_S1_S0+=("$XYZ_S1_S0")
+          xyz_T1_S1+=("$XYZ_T1_S1")
+          xyz_T1_S0+=("$XYZ_T1_S0")
+          REF+=("$ref")
 
         if [ "$SPE_S0" == "0" ]; then
             if ! qjlist | grep -q "$GS"; then
@@ -275,27 +278,27 @@ for molecule in $molecules; do
         echo "writing to $output"
 
         # Debugging: Print the values of the variables
-        echo "Debug: molecule=$molecule, functional=$functional, SPE_S0=$SPE_S0, SPE_S1=$SPE_S1, SPE_T1=$SPE_T1, Energy_Gap=$Energy_Gap, Fluorescence_rate=$Fluorescence_rate, ISC_rate_1=$ISC_rate_1, ISC_rate_2=$ISC_rate_2, ISC_rate_3=$ISC_rate_3, ISC_average=$ISC_average, RISC_rate_1=$RISC_rate_1, RISC_rate_2=$RISC_rate_2, RISC_rate_3=$RISC_rate_3, RISC_average=$RISC_average, DIndex_S1=$DIndex_S1, XYZ_S1_S0=$XYZ_S1_S0, XYZ_T1_S0=$XYZ_T1_S0, XYZ_T1_S1=$XYZ_T1_S1, ref=$ref"
+        # echo "Debug: molecule=$molecule, functional=$functional, SPE_S0=$SPE_S0, SPE_S1=$SPE_S1, SPE_T1=$SPE_T1, Energy_Gap=$Energy_Gap, Fluorescence_rate=$Fluorescence_rate, ISC_rate_1=$ISC_rate_1, ISC_rate_2=$ISC_rate_2, ISC_rate_3=$ISC_rate_3, ISC_average=$ISC_average, RISC_rate_1=$RISC_rate_1, RISC_rate_2=$RISC_rate_2, RISC_rate_3=$RISC_rate_3, RISC_average=$RISC_average, DIndex_S1=$DIndex_S1, XYZ_S1_S0=$XYZ_S1_S0, XYZ_T1_S0=$XYZ_T1_S0, XYZ_T1_S1=$XYZ_T1_S1, ref=$ref"
 
         # echo "${molecule},${functional},\"${SPE_S0}\",\"${SPE_S1}\",\"${SPE_T1}\",\"${Energy_Gap}\",\"${Fluorescence_rate}\",\"${ISC_rate_1}\",\"${ISC_rate_2}\",\"${ISC_rate_3}\",\"${ISC_average}\",\"${RISC_rate_1}\",\"${RISC_rate_2}\",\"${RISC_rate_3}\",\"${RISC_average}\",\"${DIndex_S1}\",\"${XYZ_S1_S0}\",\"${XYZ_T1_S0}\",\"${XYZ_T1_S1}\",\"${ref}\"" >> $output
         # echo -e "${molecule}\t" >> $output
-       echo "About to write 'test' to $output"
+    #    echo "About to write 'test' to $output"
     #    echo "test" >> $output
-       echo "test" >> data.csv 2>> error.log
-        if echo "test" >> data.csv; then
-            echo "Write successful"
-        else
-            echo "Write failed"
-        fi
+    #    echo "test" >> data.csv 2>> error.log
+    #     if echo "test" >> data.csv; then
+    #         echo "Write successful"
+    #     else
+    #         echo "Write failed"
+    #     fi
 
 
     done
     cd ..
 done
-# {
-#     for ((i=0; i<${#MoleculeNames[@]}; i++)); do
-#         echo "${MoleculeNames[i]},${Functionals[i]},${spe_s0[i]},${spe_s1[i]},${spe_t1[i]},${energy_gap[i]},${fluorescence_rate[i]},${isc_rate_1[i]},${isc_rate_2[i]},${isc_rate_3[i]},${isc_rate_avg[i]},${risc_rate_1[i]},${risc_rate_2[i]},${risc_rate_3[i]},${risc_rate_avg[i]},${CT_S1[i]},${xyz_S1_S0[i]},${xyz_T1_S0[i]},${xyz_T1_S1[i]}"
-#     done
-# } >> $output
+{
+    for ((i=0; i<${#MoleculeNames[@]}; i++)); do
+        echo "${MoleculeNames[i]},${Functionals[i]},${spe_s0[i]},${spe_s1[i]},${spe_t1[i]},${energy_gap[i]},${fluorescence_rate[i]},${isc_rate_1[i]},${isc_rate_2[i]},${isc_rate_3[i]},${isc_rate_avg[i]},${risc_rate_1[i]},${risc_rate_2[i]},${risc_rate_3[i]},${risc_rate_avg[i]},${CT_S1[i]},${xyz_S1_S0[i]},${xyz_T1_S0[i]},${xyz_T1_S1[i]},${REF[i]}"
+    done
+} >> $output
 
 # echo "Data has been processed and saved to $output"
