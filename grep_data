@@ -117,18 +117,28 @@ for molecule in $molecules; do
         elif [ -z $RISC_rate_1 ] && [ "$RISC_rate_3" != "0.00000000e+00" ]; then
             RISC_rate_1=$RISC_rate_3
         fi
-        ISC_sum=$(echo "$ISC_rate_1 + $ISC_rate_2 + $ISC_rate_3" | bc -l 2>/dev/null)
-        # ISC_sum=$(echo "scale=8; $ISC_rate_1 + $ISC_rate_2 + $ISC_rate_3" | bc -l 2>/dev/null)
-        # RISC_sum=$(echo "scale=8; $RISC_rate_1 + $RISC_rate_2 + $RISC_rate_3" | bc -l 2>/dev/null)
+        ISC_sum=$(printf "%.10g + %.10g + %.10g\n" "$ISC_rate_1" "$ISC_rate_2" "$ISC_rate_3" | bc -l 2>/dev/null)
         RISC_sum=$(printf "%.10g + %.10g + %.10g\n" "$RISC_rate_1" "$RISC_rate_2" "$RISC_rate_3" | bc -l 2>/dev/null)
-        echo "ISC 1: $ISC_rate_1"
-        echo "ISC 2: $ISC_rate_2"
-        echo "ISC 3: $ISC_rate_3"
-        echo "ISC sum: $ISC_sum"
-        echo "RISC 1: $RISC_rate_1"
-        echo "RISC 2: $RISC_rate_2"
-        echo "RISC 3: $RISC_rate_3"
-        echo "RISC sum: $RISC_sum"
+        # echo "ISC 1: $ISC_rate_1"
+        # echo "ISC 2: $ISC_rate_2"
+        # echo "ISC 3: $ISC_rate_3"
+        # echo "ISC sum: $ISC_sum"
+        # echo "RISC 1: $RISC_rate_1"
+        # echo "RISC 2: $RISC_rate_2"
+        # echo "RISC 3: $RISC_rate_3"
+        # echo "RISC sum: $RISC_sum"
+        if [ "$ISC_sum" != "0.00000000e+00" ]; then
+            if (( $(echo "$ISC_sum < 0" | bc -l) )); then
+                echo "Negative ISC rate for $molecule with $functional"
+                ISC_average="NaN"
+            else
+                ISC_average=$(printf "%.10g / 3\n" "$ISC_sum" | bc -l 2>/dev/null)
+                echo "ISC average: $ISC_average"
+            fi
+
+        else
+            ISC_average=0.0000000000
+        fi
         # multiwfn_ana $FLUO s1
         # echo "RUNNING: multiwfn_ana $FLUO s1"
 
