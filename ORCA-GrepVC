@@ -1,0 +1,22 @@
+#!/bin/bash
+
+
+for file in "$@"; do
+  input=${file%.*}
+  file_K=${input}_Kvector.data
+  file_HR=${input}_HRfactor.data
+  file_lamda=${input}_lamda.data
+
+  if [ ! -f $input.out ]; then
+      echo "Error: $input.out not found"
+      continue
+  fi
+
+  nmode=$(grep "will need at least" $input.out | awk '{print $5}')
+
+  grep -A $nmode "The Huang-Rhys factor per mode is:" $input.out | tail -n +6 # > $file_HR
+
+
+
+
+done
