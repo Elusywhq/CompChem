@@ -112,7 +112,7 @@ for molecule in $molecules; do
         ISC_sum=$(echo "$ISC_rate_1 + $ISC_rate_2 + $ISC_rate_3" | bc -l)
         if [ "$ISC_sum" != "0" ]; then
             if (( $(echo "$ISC_sum > 0" | bc -l) )); then
-                ISC_average=$(echo "($ISC_rate_1 + $ISC_rate_2 + $ISC_rate_3) / 3" | bc -l)
+                ISC_average=$(echo "$ISC_sum / 3" | bc -l)
             else 
                 ISC_average="NaN"
             fi
@@ -127,7 +127,7 @@ for molecule in $molecules; do
         echo "RISC sum: $RISC_sum"
         if [ "$RISC_sum" != "0" ]; then
             if (( $(echo "$RISC_sum > 0" | bc -l) )); then
-                RISC_average=$(echo "($RISC_rate_1 + $RISC_rate_2 + $RISC_rate_3) / 3" | bc -l)
+                RISC_average=$(echo "($RISC_sum / 3" | bc -l)
             else 
                 RISC_average="NaN"
             fi
