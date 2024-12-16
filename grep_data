@@ -279,6 +279,7 @@ for molecule in $molecules; do
 
         # echo "${molecule},${functional},\"${SPE_S0}\",\"${SPE_S1}\",\"${SPE_T1}\",\"${Energy_Gap}\",\"${Fluorescence_rate}\",\"${ISC_rate_1}\",\"${ISC_rate_2}\",\"${ISC_rate_3}\",\"${ISC_average}\",\"${RISC_rate_1}\",\"${RISC_rate_2}\",\"${RISC_rate_3}\",\"${RISC_average}\",\"${DIndex_S1}\",\"${XYZ_S1_S0}\",\"${XYZ_T1_S0}\",\"${XYZ_T1_S1}\",\"${ref}\"" >> $output
         echo -e "${molecule}\t" >> $output
+        echo "test" >> $output
     done
     cd ..
 done
