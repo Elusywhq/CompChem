@@ -13,6 +13,7 @@ else
   output=$1
 fi
 
+echo "Molecule_Name,Functional,S0,S1,T1,Energy_Gap,Fluorescence_Rate,ISC1,ISC2,ISC3,ISC_Rate,RISC1,RISC2,RISC3,RISC_Rate,D_Index,XYZ_S1_S0,XYZ_T1_S0,XYZ_T1_S1" > $output
 
 
 for molecule in $molecules; do
@@ -279,6 +280,6 @@ echo $MoleculeNames
     for ((i=0; i<${#MoleculeNames[@]}; i++)); do
         echo "${MoleculeNames[i]},${Functionals[i]},${spe_s0[i]},${spe_s1[i]},${spe_t1[i]},${energy_gap[i]},${fluorescence_rate[i]},${isc_rate_1[i]},${isc_rate_2[i]},${isc_rate_3[i]},${isc_rate_avg[i]},${risc_rate_1[i]},${risc_rate_2[i]},${risc_rate_3[i]},${risc_rate_avg[i]},${CT_S1[i]},${XYZ_S1_S0[i]},${XYZ_T1_S0[i]},${XYZ_T1_S1[i]}"
     done
-} > $output
+} >> $output
 
 # echo "Data has been processed and saved to $output"
