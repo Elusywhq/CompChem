@@ -120,7 +120,7 @@ for molecule in $molecules; do
             ISC_average=0
         fi
 
-        RISC_sum=$(echo "$RISC_rate_1 + $RISC_rate_2 + $RISC_rate_3" | bc -l)
+        RISC_sum=$(printf "%.10g + %.10g + %.10g\n" "$RISC_rate_1" "$RISC_rate_2" "$RISC_rate_3" | bc -l)
         echo "RISC 1: $RISC_rate_1"
         echo "RISC 2: $RISC_rate_2"
         echo "RISC 3: $RISC_rate_3"
