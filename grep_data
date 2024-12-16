@@ -91,12 +91,18 @@ for molecule in $molecules; do
         ISC_rate_2=$(ORCA-Grepk -q "$ISC_2.out")
         ISC_rate_3=$(ORCA-Grepk -q "$ISC_3.out")
 
+
         RISC_rate_1=$(ORCA-Grepk -q "$RISC_1.out")
         RISC_rate_2=$(ORCA-Grepk -q "$RISC_2.out")
         RISC_rate_3=$(ORCA-Grepk -q "$RISC_3.out")
 
+
+        echo "ISC rate 1: $ISC_rate_1"
+        echo "ISC rate 2: $ISC_rate_2"
+        echo "ISC rate 3: $ISC_rate_3"
+        
         # Make sure 1 and 3 are equal if one of them is zero
-        if [ "$ISC_rate_1" == "0.00000000e+00" ] && [ "$ISC_rate_3" != "0.00000000e+00" ]; then
+        if [ "$ISC_rate_3" == "0.00000000e+00" ] && [ "$ISC_rate_3" != "0.00000000e+00" ]; then
             ISC_rate_1=$ISC_rate_3
         elif [ "$ISC_rate_3" == "0.00000000e+00" ] && [ "$ISC_rate_1" != "0.00000000e+00" ]; then
             ISC_rate_3=$ISC_rate_1
@@ -109,16 +115,17 @@ for molecule in $molecules; do
         fi
 
 
-        multiwfn_ana $FLUO s1
-        echo "RUNNING: multiwfn_ana $FLUO s1"
+        # multiwfn_ana $FLUO s1
+        # echo "RUNNING: multiwfn_ana $FLUO s1"
 
-        if [ -f "$FLUO.gbw" ]; then
-            echo "Multiwfn analysis for $FLUO"
-            DIndex_S1=$(multiwfn_ana $FLUO s1)
-        else
-            echo "Multiwfn analysis for $FLUO.gbw"
-            DIndex_S1=0
-        fi
+        # if [ -f "$FLUO.gbw" ]; then
+        #     echo "Multiwfn analysis for $FLUO"
+        #     DIndex_S1=$(multiwfn_ana $FLUO s1)
+        # else
+        #     echo "Multiwfn analysis for $FLUO.gbw"
+        #     DIndex_S1=0
+        # fi
+
         # DIndex_S1=$(~/bin/ORCA/multiwfn_ana $FLUO s1)
         # echo $FLUO
         # echo "D INdex: $DIndex_S1"
