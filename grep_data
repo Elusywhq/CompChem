@@ -120,8 +120,13 @@ for molecule in $molecules; do
 
         ISC_sum=$(echo "scale=8; $ISC_rate_1 + $ISC_rate_2 + $ISC_rate_3" | bc -l 2>/dev/null)
         RISC_sum=$(echo "scale=8; $RISC_rate_1 + $RISC_rate_2 + $RISC_rate_3" | bc -l 2>/dev/null)
-
+        echo "ISC 1: $ISC_rate_1"
+        echo "ISC 2: $ISC_rate_2"
+        echo "ISC 3: $ISC_rate_3"
         echo "ISC sum: $ISC_sum"
+        echo "RISC 1: $RISC_rate_1"
+        echo "RISC 2: $RISC_rate_2"
+        echo "RISC 3: $RISC_rate_3"
         echo "RISC sum: $RISC_sum"
         # multiwfn_ana $FLUO s1
         # echo "RUNNING: multiwfn_ana $FLUO s1"
