@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e  # Exit immediately if a command exits with a non-zero status
+# set -e  # Exit immediately if a command exits with a non-zero status
 input=${1%.*}
 if [ ! -f $input.gbw ]; then
     echo "Error: $input.gbw not found"
