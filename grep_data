@@ -129,11 +129,11 @@ for molecule in $molecules; do
         # echo "RISC sum: $RISC_sum"
         if [ "$ISC_sum" != "0.00000000e+00" ]; then
             if (( $(echo "$ISC_sum < 0" | bc -l) )); then
-                echo "Negative ISC rate for $molecule with $functional"
+                # echo "Negative ISC rate for $molecule with $functional"
                 ISC_average="NaN"
             else
                 ISC_average=$(printf "%.10g / 3\n" "$ISC_sum" | bc -l 2>/dev/null)
-                echo "ISC average: $ISC_average"
+                # echo "ISC average: $ISC_average"
             fi
         else
             ISC_average=0.0000000000
@@ -141,31 +141,31 @@ for molecule in $molecules; do
 
         if [ "$RISC_sum" != "0.00000000e+00" ]; then
             if (( $(echo "$RISC_sum < 0" | bc -l) )); then
-                echo "Negative RISC rate for $molecule with $functional"
+                # echo "Negative RISC rate for $molecule with $functional"
                 RISC_average="NaN"
             else
                 RISC_average=$(printf "%.10g / 3\n" "$RISC_sum" | bc -l 2>/dev/null)
-                echo "RISC average: $RISC_average"
+                # echo "RISC average: $RISC_average"
             fi
         else
             RISC_average=0.0000000000
         fi
-        
+
         # multiwfn_ana $FLUO s1
         # echo "RUNNING: multiwfn_ana $FLUO s1"
 
-        # if [ -f "$FLUO.gbw" ]; then
-        #     echo "Multiwfn analysis for $FLUO"
-        #     DIndex_S1=$(multiwfn_ana $FLUO s1)
-        # else
-        #     echo "Multiwfn analysis for $FLUO.gbw"
-        #     DIndex_S1=0
-        # fi
+        if [ -f "$FLUO.gbw" ]; then
+            # echo "Multiwfn analysis for $FLUO"
+            DIndex_S1=$(multiwfn_ana $FLUO s1)
+        else
+            # echo "Multiwfn analysis for $FLUO.gbw"
+            DIndex_S1=0
+        fi
 
-        # DIndex_S1=$(~/bin/ORCA/multiwfn_ana $FLUO s1)
+        DIndex_S1=$(~/bin/ORCA/multiwfn_ana $FLUO s1)
         # echo $FLUO
         # echo "D INdex: $DIndex_S1"
-        # CT_T1=$(multiwfn_ana $ES t1)
+        CT_T1=$(multiwfn_ana $ES t1)
 
         XYZ_S1_S0=$(calculate_rmsd $ES.xyz $GS.xyz 2>&1)
         XYZ_T1_S0=$(calculate_rmsd $TS.xyz $GS.xyz 2>&1)
