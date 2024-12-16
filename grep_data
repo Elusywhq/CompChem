@@ -135,10 +135,22 @@ for molecule in $molecules; do
                 ISC_average=$(printf "%.10g / 3\n" "$ISC_sum" | bc -l 2>/dev/null)
                 echo "ISC average: $ISC_average"
             fi
-
         else
             ISC_average=0.0000000000
         fi
+
+        if [ "$RISC_sum" != "0.00000000e+00" ]; then
+            if (( $(echo "$RISC_sum < 0" | bc -l) )); then
+                echo "Negative RISC rate for $molecule with $functional"
+                RISC_average="NaN"
+            else
+                RISC_average=$(printf "%.10g / 3\n" "$RISC_sum" | bc -l 2>/dev/null)
+                echo "RISC average: $RISC_average"
+            fi
+        else
+            RISC_average=0.0000000000
+        fi
+        
         # multiwfn_ana $FLUO s1
         # echo "RUNNING: multiwfn_ana $FLUO s1"
 
