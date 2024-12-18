@@ -154,25 +154,7 @@ for molecule in $molecules; do
         XYZ_S1_S0=$(printf "%.10f" "$XYZ_S1_S0")
         XYZ_T1_S1=$(printf "%.10f" "$XYZ_T1_S1")
         XYZ_T1_S0=$(printf "%.10f" "$XYZ_T1_S0")
-        
-
-
-
-        if [ "$Fluorescence_rate" == "0.00000000e+00" ]; then
-            if ! qjlist | grep -q "$FLUO"; then
-                echo "$FLUO"
-            fi
-        fi
-
-        if [ "$ISC_rate_1" == "0.00000000e+00" ]; then
-            echo "$ISC_1"
-        fi
-        if [ "$ISC_rate_2" == "0.00000000e+00" ]; then
-            echo "$ISC_2"
-        fi
-        if [ "$ISC_rate_3" == "0.00000000e+00" ]; then
-            echo "$ISC_3"
-        fi
+    
 
         # Debugging: Print the values of the variables
         # echo "Debug: molecule=$molecule, functional=$functional, SPE_S0=$SPE_S0, SPE_S1=$SPE_S1, SPE_T1=$SPE_T1, Energy_Gap=$Energy_Gap, Fluorescence_rate=$Fluorescence_rate, ISC_rate_1=$ISC_rate_1, ISC_rate_2=$ISC_rate_2, ISC_rate_3=$ISC_rate_3, ISC_average=$ISC_average, RISC_rate_1=$RISC_rate_1, RISC_rate_2=$RISC_rate_2, RISC_rate_3=$RISC_rate_3, RISC_average=$RISC_average, DIndex_S1=$DIndex_S1, XYZ_S1_S0=$XYZ_S1_S0, XYZ_T1_S0=$XYZ_T1_S0, XYZ_T1_S1=$XYZ_T1_S1, ref=$ref"
