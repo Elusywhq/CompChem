@@ -166,9 +166,9 @@ for molecule in $molecules; do
         # fi
        
         if [[ "${@}" =~ "offct" ]]; then
-            DIndex_S1=$(~/bin/ORCA/multiwfn_ana $FLUO s1)
+            DIndex_S1=$(grep "D index" multiwfn_$FLUO.out | tail -n 1 | awk '{print $9}')
         else 
-            DIndex_S1=$(grep "D index" $FLUO.out | tail -n 1 | awk '{print $9}')
+            DIndex_S1=$(~/bin/ORCA/multiwfn_ana $FLUO s1)
         fi
 
         XYZ_S1_S0=$(calculate_rmsd $ES.xyz $GS.xyz 2>&1)
