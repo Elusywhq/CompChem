@@ -1,7 +1,7 @@
 #!/bin/bash
 
-molecules=$(ls -d */ | sed 's:/*$::')
-# molecules="1DA1 1TD1 3TD1"
+# molecules=$(ls -d */ | sed 's:/*$::')
+molecules="1TD4"
 functionals=("O3LYP" "pbe0" "camB3LYP") # "M062X" "wB97XD4")
 states=("s0" "s1" "t1")
 
@@ -207,13 +207,6 @@ for molecule in $molecules; do
         # echo "Energy Gap (S1 - T1) for $molecule with $functional: $Energy_Gap eV"
         # Append the new data to the arrays
 
-          MoleculeNames+=("$molecule")
-          Functionals+=("$functional")
-          spe_s0+=("$SPE_S0")
-          spe_s1+=("$SPE_S1")
-          spe_t1+=("$SPE_T1")
-          energy_gap+=("$Energy_Gap")
-          fluorescence_rate+=("$Fluorescence_rate")
 
 
         if [ "$SPE_S0" == "0" ]; then
