@@ -119,12 +119,12 @@ for molecule in $molecules; do
 
         lamda_max_freq=$(sort -k2,2n ${ISC_1}_lamda.data | tail -n 1| awk '{print $3}')
         lamda_max_mode=$(sort -k2,2n ${ISC_1}_lamda.data | tail -n 1| awk '{print $1}')
-        lamda_maxmode_socme=$(grep "$lamda_max_mode " ${ISC_1}_socme.data | awk '{print $2}')
+        lamda_maxmode_socme=$(grep "$lamda_max_mode " ${ISC_1}_socme.data | awk '{print $2 $3}')
         echo "lamda_maxmode_socme: $lamda_maxmode_socme"
 
         HR_max_freq=$(sort -k2,2n ${ISC_1}_HR.data | tail -n 1| awk '{print $3}')
         HR_max_mode=$(sort -k2,2n ${ISC_1}_HR.data | tail -n 1| awk '{print $1}')
-        HR_maxmode_socme=$(grep "$HR_max_mode " ${ISC_1}_socme.data | awk '{print $2}') 
+        HR_maxmode_socme=$(grep "$HR_max_mode " ${ISC_1}_socme.data | awk '{print $2 $3}') 
         echo "HR_maxmode_socme: $HR_maxmode_socme"
 
 
