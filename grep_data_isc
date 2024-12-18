@@ -1,7 +1,7 @@
 #!/bin/bash
 
-molecules=$(ls -d */ | sed 's:/*$::')
-# molecules="1DA1 1TD1 3TD1"
+# molecules=$(ls -d */ | sed 's:/*$::')
+molecules="1TD4"
 functionals=("O3LYP" "pbe0" "camB3LYP") # "M062X" "wB97XD4")
 states=("s0" "s1" "t1")
 
@@ -9,10 +9,10 @@ states=("s0" "s1" "t1")
 if [ -z "$1" ]; then
   output="data.csv"
 else
-  output=$1
+  output=${1}_isc.csv
 fi
 
-echo "Molecule_Name,Functional,S0,S1,T1,Energy_Gap,Fluorescence_Rate,ISC1,ISC2,ISC3,ISC_Rate,RISC1,RISC2,RISC3,RISC_Rate,D_Index,XYZ_S1_S0,XYZ_T1_S0,XYZ_T1_S1,ref_molecule" > $output
+echo "Molecule_Name,Functional,Fluorescence_Rate,ISC_Rate,RISC_Rate,K_Vector_sum,lamda_sum(cm-1),lamda_max_freq,lamda_maxmode_socme(Re,Im),HR_max_freq,HR_maxmode_socme,XYZ_S1_S0,XYZ_T1_S0,XYZ_T1_S1,ref_molecule" > $output
 
 
 for molecule in $molecules; do
@@ -37,15 +37,7 @@ for molecule in $molecules; do
         RISC_2="$molecule"_"$functional"_svp_t1_esd_risc_T2
         RISC_3="$molecule"_"$functional"_svp_t1_esd_risc_T3
         files=($GS $ES $TS $FLUO $ISC_1 $ISC_2 $ISC_3 $RISC_1 $RISC_2 $RISC_3)
-        # for file in "${files[@]}"; do
-        #     echo "file: $file"
-        # done
-        # echo $file
-        # finish=$(ORCA-chkjob -q "$file")
-        # if [ "$finish" -eq 0 ]; then
-        #     echo "!!!!!!!!!!!!!!!!!!! Job $file not finished"
-        #     continue
-        # fi
+
 
         # check imaginary modes
         for s in $GS $ES $TS; do
@@ -63,30 +55,8 @@ for molecule in $molecules; do
                 fi
             fi
         done
-        # freq_S0=`grep "vibrational_frequencies" -A 8 $GS.hess | tail -n 1 | awk '{print $2}'`
-        # freq_S1=`grep "vibrational_frequencies" -A 8 $ES.hess | tail -n 1 | awk '{print $2}'`
-        # freq_T1=`grep "vibrational_frequencies" -A 8 $TS.hess | tail -n 1 | awk '{print $2}'`
-        # f=0
-        # for freq in $freq_S0 $freq_S1 $freq_T1; do
-        #     if [[ "$freq" == -* ]]; then
-        #         echo "***** Vibrational mode 6 is an imaginary mode for $molecule with $functional, at ${states[$f]}"
-        #         echo "Frequency 6: $freq"
-        #         hess=1
-        #     else
-        #         hess=0
-        #     fi
-        #     f=$((f+1))
-        # done
 
-        SPE_S0=$(ORCA-GrepSPE -q "$GS.out")
-        SPE_S1=$(ORCA-GrepSPE -q "$ES.out")
-        SPE_T1=$(ORCA-GrepSPE -q "$TS.out")
         
-        if [ "$SPE_S1" != "0" ] && [ "$SPE_T1" != "0" ]; then
-            Energy_Gap=$(echo "($SPE_S1 - $SPE_T1) * 27.2114079527" | bc -l 2>/dev/null)
-        else
-            Energy_Gap=0.0000000000
-        fi
         
         Fluorescence_rate=$(ORCA-Grepk -q "$FLUO.out")
         
@@ -98,13 +68,6 @@ for molecule in $molecules; do
         RISC_rate_1=$(ORCA-Grepk -q "$RISC_1.out")
         RISC_rate_2=$(ORCA-Grepk -q "$RISC_2.out")
         RISC_rate_3=$(ORCA-Grepk -q "$RISC_3.out")
-
-
-        # echo "ISC rate 1: $ISC_rate_1"
-        # echo "ISC rate 2: $ISC_rate_2"
-        # echo "ISC rate 3: $ISC_rate_3"
-
-
 
         # Make sure 1 and 3 are equal if one of them is zero
         if [ -z $ISC_rate_3 ] && [ "$ISC_rate_1" != "0.00000000e+00" ]; then
@@ -122,14 +85,7 @@ for molecule in $molecules; do
         fi
         ISC_sum=$(printf "%.10g + %.10g + %.10g\n" "$ISC_rate_1" "$ISC_rate_2" "$ISC_rate_3" | bc -l 2>/dev/null)
         RISC_sum=$(printf "%.10g + %.10g + %.10g\n" "$RISC_rate_1" "$RISC_rate_2" "$RISC_rate_3" | bc -l 2>/dev/null)
-        # echo "ISC 1: $ISC_rate_1"
-        # echo "ISC 2: $ISC_rate_2"
-        # echo "ISC 3: $ISC_rate_3"
-        # echo "ISC sum: $ISC_sum"
-        # echo "RISC 1: $RISC_rate_1"
-        # echo "RISC 2: $RISC_rate_2"
-        # echo "RISC 3: $RISC_rate_3"
-        # echo "RISC sum: $RISC_sum"
+
         if [ "$ISC_sum" != "0.00000000e+00" ]; then
             if (( $(echo "$ISC_sum < 0" | bc -l) )); then
                 # echo "Negative ISC rate for $molecule with $functional"
@@ -154,40 +110,27 @@ for molecule in $molecules; do
             RISC_average=0.0000000000
         fi
 
-        # multiwfn_ana $FLUO s1
-        # echo "RUNNING: multiwfn_ana $FLUO s1"
-
-        # if [ -f "$FLUO.gbw" ]; then
-        #     # echo "Multiwfn analysis for $FLUO"
-        #     DIndex_S1=$(multiwfn_ana $FLUO)
-        # else
-        #     # echo "Multiwfn analysis for $FLUO.gbw"
-        #     DIndex_S1=0
-        # fi
-       
-        if [[ "${@}" =~ "offct" ]]; then
-            DIndex_S1=$(~/bin/ORCA/multiwfn_ana $FLUO s1)
-        else 
-            DIndex_S1=$(grep "D index" $FLUO.out | tail -n 1 | awk '{print $9}')
-        fi
+        lamda=$(grep "The total reorganization energy is:" $ISC_1.out | awk '{print $6}')
+        K_vector=$(grep "The sum of K*K is:" $ISC_1.out | awk '{print $6}')
 
         if [[ "${@}" =~ "iscgrep" ]]; then
-            ORCA-GrepVC $ISC_1.out $ISC_2.out $RISC_1.out $RISC_2.out
+            ORCA-GrepVC $ISC_1.out $RISC_1.out 
         fi
 
+        lamda_max_freq=$(sort -k2,2n ${ISC_1}_lamda.data | tail -n 1| awk '{print $3}')
+        lamda_max_mode=$(sort -k2,2n ${ISC_1}_lamda.data | tail -n 1| awk '{print $1}')
+        lamda_maxmode_socme=$(grep $lamda_max_mode ${ISC_1}_socme.data | awk '{print $2}')
 
-
+        HR_max_freq=$(sort -k2,2n ${ISC_1}_HR.data | tail -n 1| awk '{print $3}')
+        HR_max_mode=$(sort -k2,2n ${ISC_1}_HR.data | tail -n 1| awk '{print $1}')
+        HR_maxmode_socme=$(grep $HR_max_mode ${ISC_1}_socme.data | awk '{print $2}') 
 
 
         XYZ_S1_S0=$(calculate_rmsd $ES.xyz $GS.xyz 2>&1)
         XYZ_T1_S0=$(calculate_rmsd $TS.xyz $GS.xyz 2>&1)
         XYZ_T1_S1=$(calculate_rmsd $TS.xyz $ES.xyz 2>&1)
-        
+      
 
-        SPE_S0=$(printf "%.10f" "$SPE_S0")
-        SPE_S1=$(printf "%.10f" "$SPE_S1")
-        SPE_T1=$(printf "%.10f" "$SPE_T1")
-        Energy_Gap=$(printf "%.10f" "$Energy_Gap")
         Fluorescence_rate=$(printf "%.8e" "$Fluorescence_rate")
         ISC_rate_1=$(printf "%.8e" "$ISC_rate_1")
         ISC_rate_2=$(printf "%.8e" "$ISC_rate_2")
@@ -202,45 +145,7 @@ for molecule in $molecules; do
         XYZ_T1_S0=$(printf "%.10f" "$XYZ_T1_S0")
         
 
-        # $DIndex_S1=$(printf "%.3e" "$$DIndex_S1")
-        # CT_T1=$(printf "%.3e" "$CT_T1")
 
-        # echo "SPE_S0: $SPE_S0"
-        # echo "SPE_S1: $SPE_S1"
-        # echo "SPE_T1: $SPE_T1"
-        # echo "Fluorescence rate for $molecule with $functional: $Fluorescence_rate"
-        # echo "Energy Gap (S1 - T1) for $molecule with $functional: $Energy_Gap eV"
-        # echo "ISC rate for $molecule with $functional: $ISC_average"
-        # echo "RISC rate for $molecule with $functional: $RISC_average"
-        # echo "Energy Gap (S1 - T1) for $molecule with $functional: $Energy_Gap eV"
-        # Append the new data to the arrays
-
-          MoleculeNames+=("$molecule")
-          Functionals+=("$functional")
-          spe_s0+=("$SPE_S0")
-          spe_s1+=("$SPE_S1")
-          spe_t1+=("$SPE_T1")
-          energy_gap+=("$Energy_Gap")
-          fluorescence_rate+=("$Fluorescence_rate")
-
-
-        if [ "$SPE_S0" == "0" ]; then
-            if ! qjlist | grep -q "$GS"; then
-                echo "$GS"  
-            fi
-        fi
-
-        if [ "$SPE_S1"  == "0" ]; then
-            if ! qjlist | grep -q "$ES"; then
-                echo "$ES"
-            fi
-        fi
-
-        if [ "$SPE_T1"  == "0" ]; then
-            if ! qjlist | grep -q "$TS"; then
-            echo "$TS"
-            fi
-        fi
 
         if [ "$Fluorescence_rate" == "0.00000000e+00" ]; then
             if ! qjlist | grep -q "$FLUO"; then
@@ -270,12 +175,12 @@ for molecule in $molecules; do
             echo "$RISC_3"
         fi
 
-        echo "writing to $output"
-
         # Debugging: Print the values of the variables
         # echo "Debug: molecule=$molecule, functional=$functional, SPE_S0=$SPE_S0, SPE_S1=$SPE_S1, SPE_T1=$SPE_T1, Energy_Gap=$Energy_Gap, Fluorescence_rate=$Fluorescence_rate, ISC_rate_1=$ISC_rate_1, ISC_rate_2=$ISC_rate_2, ISC_rate_3=$ISC_rate_3, ISC_average=$ISC_average, RISC_rate_1=$RISC_rate_1, RISC_rate_2=$RISC_rate_2, RISC_rate_3=$RISC_rate_3, RISC_average=$RISC_average, DIndex_S1=$DIndex_S1, XYZ_S1_S0=$XYZ_S1_S0, XYZ_T1_S0=$XYZ_T1_S0, XYZ_T1_S1=$XYZ_T1_S1, ref=$ref"
+# echo "Molecule_Name,Functional,Fluorescence_Rate,ISC_Rate,RISC_Rate,K_Vector_sum,lamda_sum(cm-1),lamda_max_freq,lamda_maxmode_socme(Re,Im),HR_max_freq,HR_maxmode_socme,XYZ_S1_S0,XYZ_T1_S0,XYZ_T1_S1,ref_molecule"
+        echo "${molecule},${functional},$Fluorescence_rate,$ISC_average,$K_vector,$lamda,$lamda_max_freq,\"$lamda_maxmode_socme\",$HR_max_freq,\"$HR_maxmode_socme\",$XYZ_S1_S0,$XYZ_T1_S0,$XYZ_T1_S1,$ref" >> ../$output
 
-        echo "${molecule},${functional},\"${SPE_S0}\",\"${SPE_S1}\",\"${SPE_T1}\",\"${Energy_Gap}\",\"${Fluorescence_rate}\",\"${ISC_rate_1}\",\"${ISC_rate_2}\",\"${ISC_rate_3}\",\"${ISC_average}\",\"${RISC_rate_1}\",\"${RISC_rate_2}\",\"${RISC_rate_3}\",\"${RISC_average}\",\"${DIndex_S1}\",\"${Lamda_isc}\",\"${Lamda_risc}\",\"${K_vector_isc}\",\"${K_vector_risc}\","${K_vector_risc}\",\"${XYZ_S1_S0}\",\"${XYZ_T1_S0}\",\"${XYZ_T1_S1}\",\"${ref}\"" >> ../$output
+        
 
 
     done
