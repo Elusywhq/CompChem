@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# molecules=$(ls -d */ | sed 's:/*$::')
-molecules="1TD4"
+molecules=$(ls -d */ | sed 's:/*$::')
+# molecules="1TD4"
 functionals=("O3LYP" "pbe0" "camB3LYP") # "M062X" "wB97XD4")
 states=("s0" "s1" "t1")
 
@@ -12,7 +12,7 @@ else
   output=${1}_isc.csv
 fi
 
-echo "Molecule_Name,Functional,Fluorescence_Rate,RISC_Rate,K_Vector_sum,lamda_sum(cm-1),lamda_max_freq,lamda_maxmode_socme(Re,Im),HR_max_freq,HR_maxmode_socme,XYZ_S1_S0,XYZ_T1_S0,XYZ_T1_S1,ref_molecule" > $output
+echo "Molecule_Name,Functional,Fluorescence_Rate,RISC_Rate,K_Vector_sum,lamda_sum(cm-1),lamda_max_freq,lamda_maxmode_socme,HR_max_freq,HR_maxmode_socme,XYZ_S1_S0,XYZ_T1_S0,XYZ_T1_S1,ref_molecule" > $output
 
 
 for molecule in $molecules; do
