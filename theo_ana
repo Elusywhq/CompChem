@@ -69,7 +69,7 @@ for molecule in "${molecule_list[@]}"; do
     sed -i "s/ACCEPTOR/$accepter/g" den_ana_$FLUO.in
     # cp $FLUO.cis orca.cis
     # theodore analyze_tden -f den_ana_$FLUO.in > /dev/null 2>&1
-    EHD=$(grep "1(1)A " summ_den_ana_$FLUO.txt | awk '{print $10}')
+    # EHD=$(grep "1(1)A " summ_den_ana_$FLUO.txt | awk '{print $10}')
     echo "e-h disctance for $func: $EHD"
     echo "$molecule,$func,$EHD" >> ../theo_ana.csv
   done
