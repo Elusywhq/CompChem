@@ -1,0 +1,64 @@
+#!/bin/bash
+
+atom_list="$(dirname "$0")/atom_list"
+functionals=("O3LYP" "pbe0" "camB3LYP") 
+template="/home/svu/e0732532/software/TheoDORE_3.2/template"
+
+echo "Reading atom list from $atom_list"
+if [[ $(hostname) == *"atlas"* ]]; then
+  Host="hpc"
+  scratch=/hpctmp/e0732532
+  ORCA_ROOT=/app1/ebapps/arches/flat/software/ORCA/6.0.1-foss-2023b/bin/
+#   echo "atlas"
+#   echo $scratch
+elif [[ $(hostname) == *"asp2a"* ]]; then
+  Host="nscc"
+  scratch=/home/users/nus/$USER/orca_6_0_0
+  ORCA_ROOT=/home/project/11003762/
+#   echo "nscc"
+elif [[ $(hostname) == *"Precision"* ]]; then
+  Host="bohr"
+  scratch=/home/scratch/hanqi/orca
+#   echo "bohr"
+fi
+
+
+
+molecule_list=()
+accepter_list=()
+donor1_list=()
+donor2_list=()
+
+while IFS=$'\t' read -r molecule Accepter Donor1 Donor2; do
+  molecule_list+=("$molecule")
+  accepter_list+=("$Accepter")
+  donor1_list+=("$Donor1")
+  donor2_list+=("$Donor2")
+done < "$atom_list"
+
+# echo "Molecule list: ${molecule_list[@]}" ; echo "Accepter list: ${accepter_list[@]}" ; echo "Donor1 list: ${donor1_list[@]}" ; echo "Donor2 list: ${donor2_list[@]}"
+
+molecule_list=("${molecule_list[0]}")
+accepter_list=("${accepter_list[0]}")
+donor1_list=("${donor1_list[0]}")
+donor2_list=("${donor2_list[0]}")
+
+echo "Molecule list: ${molecule_list[@]}"
+i=0
+for molecule in "${molecule_list[@]}"; do
+  molecule=${molecule_list[$i]}
+  accepter=${accepter_list[$i]}
+  donor1=${donor1_list[$i]}
+  # echo "Molecule: $molecule"  ; echo "Accepter: $accepter"; echo "Donor1: $donor1"; echo "Donor2: $donor2"
+  cd $molecule
+  for func in "${functionals[@]}"; do
+    echo "Functional: $func"
+    FLUO="$molecule"_"$functional"_svp_s1_esd_fluo
+    $ORCA_ROOT/orca_2mkl $FLUO -molden  # > /dev/null 2>&1
+    sed -e "s/NAME/$FLUO/g" $template > den_ana_$FLUO.in
+    sed -i "s/DONOR/$donor1/g" den_ana_$FLUO.in
+    sed -i "s/ACCEPTOR/$accepter/g" den_ana_$FLUO.in
+  done
+  cd ..
+  i=$((i+1))
+done
