@@ -1,8 +1,17 @@
 #!/bin/bash
 
 rm *${1}*isc_T3.inp
-for f in $(ls *${1}*isc*.inp); do 
-  echo $f
-  ORCA-submission -esd -n $f -t 120
-  qsub ${f%.inp}.sh
-done
+if [ "$1" == "-t" ]; then
+  for f in $(ls *${2}*t1*isc*.inp); do 
+    echo $f
+    sed -i "s/s1_Dscf/s1_tddft/g" $f
+    ORCA-submission -esd -n $f -t 120
+    qsub ${f%.inp}.sh
+  done
+else
+  for f in $(ls *${1}*t1*isc*.inp); do 
+    echo $f
+    ORCA-submission -esd -n $f -t 120
+    qsub ${f%.inp}.sh
+  done
+fi
