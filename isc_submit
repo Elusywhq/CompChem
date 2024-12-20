@@ -2,8 +2,9 @@
 
 
 if [ "$1" == "-t" ]; then
+   rm *${2}*isc_T3.inp 
   for f in $(ls *${2}*t1*isc*.inp); do 
-    rm *_T3.inp
+    
     echo $f
     sed -i "s/s1_Dscf/s1_tddft/g" $f
     ORCA-submission -esd -n $f -t 120
