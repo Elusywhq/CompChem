@@ -9,12 +9,16 @@ if [[ $(hostname) == *"atlas"* ]]; then
   Host="hpc"
   scratch=/hpctmp/e0732532
   ORCA_ROOT=/app1/ebapps/arches/flat/software/ORCA/6.0.1-foss-2023b/bin/
+  THEO_ROOT=/home/svu/e0732532/software/TheoDORE_3.2
+  template=/home/svu/e0732532/bin/dens_ana_template
 #   echo "atlas"
 #   echo $scratch
 elif [[ $(hostname) == *"asp2a"* ]]; then
   Host="nscc"
   scratch=/home/users/nus/$USER/orca_6_0_0
   ORCA_ROOT=/home/project/11003762/
+  THEO_ROOT=/home/users/nus/e0732533/Software/TheoDORE_3.2
+  template=/home/users/nus/e0732533/bin/dens_ana_template
 #   echo "nscc"
 elif [[ $(hostname) == *"Precision"* ]]; then
   Host="bohr"
@@ -58,6 +62,7 @@ for molecule in "${molecule_list[@]}"; do
     sed -e "s/NAME/$FLUO/g" $template > den_ana_$FLUO.in
     sed -i "s/DONOR/$donor1/g" den_ana_$FLUO.in
     sed -i "s/ACCEPTOR/$accepter/g" den_ana_$FLUO.in
+    
   done
   cd ..
   i=$((i+1))
