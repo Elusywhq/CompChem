@@ -16,7 +16,7 @@ if [[ $(hostname) == *"atlas"* ]]; then
 elif [[ $(hostname) == *"asp2a"* ]]; then
   Host="nscc"
   scratch=/home/users/nus/$USER/orca_6_0_0
-  ORCA_ROOT=/home/project/11003762/
+  ORCA_ROOT=/home/project/11004127/Elusy/software/orca_6_0_0
   THEO_ROOT=/home/users/nus/e0732533/Software/TheoDORE_3.2
   template=/home/users/nus/e0732533/bin/dens_ana_template
 #   echo "nscc"
@@ -62,7 +62,7 @@ for molecule in "${molecule_list[@]}"; do
     sed -e "s/NAME/$FLUO/g" $template > den_ana_$FLUO.in
     sed -i "s/DONOR/$donor1/g" den_ana_$FLUO.in
     sed -i "s/ACCEPTOR/$accepter/g" den_ana_$FLUO.in
-    
+    theodore analyze_tden -f den_ana_$FLUO.in 
   done
   cd ..
   i=$((i+1))
