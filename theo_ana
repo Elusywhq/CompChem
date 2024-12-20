@@ -50,7 +50,7 @@ done < "$atom_list"
 # donor1_list=("${donor1_list[0]}")
 # donor2_list=("${donor2_list[0]}")
 
-echo "Molecule list: ${molecule_list[@]}"
+# echo "Molecule list: ${molecule_list[@]}"
 i=0
 for molecule in "${molecule_list[@]}"; do
   molecule=${molecule_list[$i]}
@@ -68,7 +68,7 @@ for molecule in "${molecule_list[@]}"; do
     cp $FLUO.cis orca.cis
     theodore analyze_tden -f den_ana_$FLUO.in > /dev/null 2>&1
     EHD=$(grep "1(1)A " summ_den_ana_$FLUO.txt | awk '{print $10}')
-    # echo "e-h disctance for $func: $EHD"
+    echo "e-h disctance for $func: $EHD"
     echo "$molecule,$func,$EHD" >> ../theo_ana.csv
   done
   cd ..
