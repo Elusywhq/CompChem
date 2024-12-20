@@ -1,10 +1,10 @@
 #!/bin/bash
 
 atom_list="$(dirname "$0")/atom_list"
-functionals=("O3LYP" "pbe0" "camB3LYP") 
+# functionals=("O3LYP" "pbe0" "camB3LYP") 
 template="/home/svu/e0732532/software/TheoDORE_3.2/template"
 
-echo "Reading atom list from $atom_list"
+# echo "Reading atom list from $atom_list"
 if [[ $(hostname) == *"atlas"* ]]; then
   Host="hpc"
   scratch=/hpctmp/e0732532
@@ -42,10 +42,10 @@ done < "$atom_list"
 
 # echo "Molecule list: ${molecule_list[@]}" ; echo "Accepter list: ${accepter_list[@]}" ; echo "Donor1 list: ${donor1_list[@]}" ; echo "Donor2 list: ${donor2_list[@]}"
 
-molecule_list=("${molecule_list[0]}")
-accepter_list=("${accepter_list[0]}")
-donor1_list=("${donor1_list[0]}")
-donor2_list=("${donor2_list[0]}")
+# molecule_list=("${molecule_list[0]}")
+# accepter_list=("${accepter_list[0]}")
+# donor1_list=("${donor1_list[0]}")
+# donor2_list=("${donor2_list[0]}")
 
 echo "Molecule list: ${molecule_list[@]}"
 i=0
@@ -63,9 +63,9 @@ for molecule in "${molecule_list[@]}"; do
     sed -i "s/DONOR/$donor1/g" den_ana_$FLUO.in
     sed -i "s/ACCEPTOR/$accepter/g" den_ana_$FLUO.in
     cp $FLUO.cis orca.cis
-    theodore analyze_tden -f den_ana_$FLUO.in > /dev/null 2>&1
-    EHD=$(grep "1(1)A " summ_den_ana_$FLUO.txt | awk '{print $10}')
-    echo "e-h disctance for $func: $EHD"
+    # theodore analyze_tden -f den_ana_$FLUO.in > /dev/null 2>&1
+    # EHD=$(grep "1(1)A " summ_den_ana_$FLUO.txt | awk '{print $10}')
+    # echo "e-h disctance for $func: $EHD"
   done
   cd ..
   i=$((i+1))
