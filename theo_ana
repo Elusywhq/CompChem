@@ -1,7 +1,7 @@
 #!/bin/bash
 
 atom_list="$(dirname "$0")/atom_list"
-# functionals=("O3LYP" "pbe0" "camB3LYP") 
+functionals=("O3LYP" "pbe0" "camB3LYP")
 template="/home/svu/e0732532/software/TheoDORE_3.2/template"
 
 echo "Molecule_Name,Functional,Theodore_EHD" > theo_ana.csv
