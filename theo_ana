@@ -58,15 +58,17 @@ for molecule in "${molecule_list[@]}"; do
   donor1=${donor1_list[$i]}
   # echo "Molecule: $molecule"  ; echo "Accepter: $accepter"; echo "Donor1: $donor1"; echo "Donor2: $donor2"
   cd $molecule
-  for func in "${functionals[@]}"; do
+  for f in 0 1 2; do
+    func=${functionals[$f]}
     echo "Functional: $func"
     FLUO="$molecule"_"$func"_svp_s1_esd_fluo
     $ORCA_ROOT/orca_2mkl $FLUO -molden  # > /dev/null 2>&1
+
     sed -e "s/NAME/$FLUO/g" $template > den_ana_$FLUO.in
     sed -i "s/DONOR/$donor1/g" den_ana_$FLUO.in
     sed -i "s/ACCEPTOR/$accepter/g" den_ana_$FLUO.in
-    cp $FLUO.cis orca.cis
-    theodore analyze_tden -f den_ana_$FLUO.in > /dev/null 2>&1
+    # cp $FLUO.cis orca.cis
+    # theodore analyze_tden -f den_ana_$FLUO.in > /dev/null 2>&1
     EHD=$(grep "1(1)A " summ_den_ana_$FLUO.txt | awk '{print $10}')
     echo "e-h disctance for $func: $EHD"
     echo "$molecule,$func,$EHD" >> ../theo_ana.csv
