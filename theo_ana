@@ -62,6 +62,7 @@ for molecule in "${molecule_list[@]}"; do
     sed -e "s/NAME/$FLUO/g" $template > den_ana_$FLUO.in
     sed -i "s/DONOR/$donor1/g" den_ana_$FLUO.in
     sed -i "s/ACCEPTOR/$accepter/g" den_ana_$FLUO.in
+    cp $FLUO.cis orca.cis
     theodore analyze_tden -f den_ana_$FLUO.in 
   done
   cd ..
