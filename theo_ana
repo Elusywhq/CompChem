@@ -60,6 +60,7 @@ for molecule in "${molecule_list[@]}"; do
   cd $molecule
   for f in 0 1 2; do
     func=${functionals[$f]}
+    echo "mol: $molecule"
     echo "Functional: $func"
     FLUO="$molecule"_"$func"_svp_s1_esd_fluo
     $ORCA_ROOT/orca_2mkl $FLUO -molden  # > /dev/null 2>&1
