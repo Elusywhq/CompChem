@@ -11,8 +11,8 @@ if [ "$1" == "-t" ]; then
     qsub ${f%.inp}.sh
   done
 else
+  rm *${1}*isc_T3.inp
   for f in $(ls *${1}*t1*isc*.inp); do 
-    rm *${1}*isc_T3.inp
     echo $f
     ORCA-submission -esd -n $f -t 120
     qsub ${f%.inp}.sh
