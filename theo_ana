@@ -53,7 +53,7 @@ for molecule in "${molecule_list[@]}"; do
   cd $molecule
   for func in "${functionals[@]}"; do
     echo "Functional: $func"
-    FLUO="$molecule"_"$functional"_svp_s1_esd_fluo
+    FLUO="$molecule"_"$func"_svp_s1_esd_fluo
     $ORCA_ROOT/orca_2mkl $FLUO -molden  # > /dev/null 2>&1
     sed -e "s/NAME/$FLUO/g" $template > den_ana_$FLUO.in
     sed -i "s/DONOR/$donor1/g" den_ana_$FLUO.in
