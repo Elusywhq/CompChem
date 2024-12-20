@@ -16,7 +16,8 @@ if [[ $(hostname) == *"atlas"* ]]; then
 elif [[ $(hostname) == *"asp2a"* ]]; then
   Host="nscc"
   scratch=/home/users/nus/$USER/orca_6_0_0
-  ORCA_ROOT=/home/project/11004127/Elusy/software/orca_6_0_0
+  # ORCA_ROOT=/home/project/11004127/Elusy/software/orca_6_0_0
+  ORCA_ROOT=/home/project/11003762/orca_6_0_0
   THEO_ROOT=/home/users/nus/e0732533/Software/TheoDORE_3.2
   template=/home/users/nus/e0732533/bin/dens_ana_template
 #   echo "nscc"
