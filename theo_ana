@@ -56,7 +56,7 @@ for molecule in "${molecule_list[@]}"; do
   molecule=${molecule_list[$i]}
   accepter=${accepter_list[$i]}
   donor1=${donor1_list[$i]}
-  # echo "Molecule: $molecule"  ; echo "Accepter: $accepter"; echo "Donor1: $donor1"; echo "Donor2: $donor2"
+  echo "Molecule: $molecule"  ; echo "Accepter: $accepter"; echo "Donor1: $donor1"; echo "Donor2: $donor2"
   cd $molecule
   for f in 0 1 2; do
     func=${functionals[$f]}
@@ -68,9 +68,11 @@ for molecule in "${molecule_list[@]}"; do
     sed -i "s/ACCEPTOR/$accepter/g" den_ana_$FLUO.in
     cp $FLUO.cis orca.cis
     theodore analyze_tden -f den_ana_$FLUO.in > /dev/null 2>&1
-    EHD=$(grep "1(1)A " summ_den_ana_$FLUO.txt | awk '{print $10}')
-    echo "e-h disctance for $func: $EHD"
-    echo "$molecule,$func,$EHD" >> ../theo_ana.csv
+    EHD1=$(grep "1(1)A " summ_den_ana_$FLUO.txt | awk '{print $10}')
+    EHD2=$(grep "2(1)A " summ_den_ana_$FLUO.txt | awk '{print $10}')
+    EHD3=$(grep "3(1)A " summ_den_ana_$FLUO.txt | awk '{print $10}')
+    echo "e-h disctance for $func: $EHD1, $EHD2, $EHD3"
+    echo "$molecule,$func,$EHD1,$EHD2,$EHD3" >> ../theo_ana.csv
   done
   cd ..
   i=$((i+1))
