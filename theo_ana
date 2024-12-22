@@ -29,7 +29,7 @@ elif [[ $(hostname) == *"Precision"* ]]; then
 #   echo "bohr"
 fi
 
-template=//home/users/nus/e0732533/bin/dens_ana_template
+template="$(dirname "$0")/dens_ana_template"
 
 molecule_list=()
 accepter_list=()
