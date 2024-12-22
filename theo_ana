@@ -67,7 +67,7 @@ for molecule in "${molecule_list[@]}"; do
     sed -i "s/DONOR/$donor1/g" den_ana_$FLUO.in
     sed -i "s/ACCEPTOR/$accepter/g" den_ana_$FLUO.in
     cp $FLUO.cis orca.cis
-    theodore analyze_tden -f den_ana_$FLUO.in > /dev/null 2>&1
+    theodore analyze_tden -f den_ana_$FLUO.in > summ_den_ana_$FLUO.txt
     EHD1=$(grep "1(1)A " summ_den_ana_$FLUO.txt | awk '{print $10}')
     EHD2=$(grep "2(1)A " summ_den_ana_$FLUO.txt | awk '{print $10}')
     EHD3=$(grep "3(1)A " summ_den_ana_$FLUO.txt | awk '{print $10}')
