@@ -128,10 +128,11 @@ while [ $hess -eq 1 ]; do
 
   $HOME/bin/ORCA/ORCA-displacement $input
   cat ${input%.inp}_v006.xyz > $xyz
+  sed -i "s/$xyz/${input%.inp}_v006.xyz/" $input
   echo "Replacing xyz file and restart the calculation..."
 
   # actual execution
-  $ORCA_ROOT/bin/orca  $input > ${input%.inp}.out 2> ${input%.inp}.err 
+  $ORCA_ROOT/orca  $input > ${input%.inp}.out 2> ${input%.inp}.err 
 
   echo "Checking imaginary mode again. Iteration: $h "
 
