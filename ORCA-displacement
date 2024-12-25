@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-if [[ $(hostname) == *"atlas"* ]]; then
+if [[ $(whoami) == *"e0732532"* ]]; then
   Host="hpc"
   scratch=/hpctmp/e0732532
   ORCA_ROOT=/app1/ebapps/arches/flat/software/ORCA/6.0.1-foss-2023b/bin/
@@ -9,7 +9,7 @@ if [[ $(hostname) == *"atlas"* ]]; then
   template=/home/svu/e0732532/bin/dens_ana_template
 #   echo "atlas"
 #   echo $scratch
-elif [[ $(hostname) == *"asp2a"* ]]; then
+elif [[ $(whoami) == *"e0732533"* ]]; then
   Host="nscc"
   scratch=/home/users/nus/$USER/orca_6_0_0
   # ORCA_ROOT=/home/project/11004127/Elusy/software/orca_6_0_0
