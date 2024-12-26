@@ -51,11 +51,11 @@ for molecule in $molecules; do
 
         # check imaginary modes
         for s in $GS $ES $TS $ES_td $ES2; do
-            if [ ! -f "$s.xyz"]; then
+            if [ ! -f "$s.xyz" ]; then
                 continue
             fi
 
-            if [ ! -f "$s.inp"]; then
+            if [ ! -f "$s.inp" ]; then
                 continue
             fi
             
