@@ -191,10 +191,15 @@ for molecule in $molecules; do
         else 
             DIndex_S1=$(~/bin/ORCA/multiwfn_ana $FLUO s1)
         fi
-
-        XYZ_S1_S0=$(calculate_rmsd $ES.xyz $GS.xyz 2>&1)
-        XYZ_T1_S0=$(calculate_rmsd $TS.xyz $GS.xyz 2>&1)
-        XYZ_T1_S1=$(calculate_rmsd $TS.xyz $ES.xyz 2>&1)
+        if [ -f "$ES.xyz" ] && [ -f "$GS.xyz" ]; then
+            XYZ_S1_S0=$(calculate_rmsd $ES.xyz $GS.xyz 2>&1)
+        fi
+        if [ -f "$TS.xyz" ] && [ -f "$GS.xyz" ]; then
+            XYZ_T1_S0=$(calculate_rmsd $TS.xyz $GS.xyz 2>&1)
+        fi
+        if [ -f "$TS.xyz" ] && [ -f "$ES.xyz" ]; then
+            XYZ_T1_S1=$(calculate_rmsd $TS.xyz $ES.xyz 2>&1)
+        fi
         
 
         SPE_S0=$(printf "%.10f" "$SPE_S0")
