@@ -1,9 +1,8 @@
 #!/bin/bash
 
-# molecules=$(ls -d */ | sed 's:/*$::')
-# molecules=("1OB1") #"1OB2" "1OB3" "1OB4")
-molecules=("1DA3")
-functionals=("O3LYP" "pbe0" "camB3LYP" "M062X" ) #"wB97XD4")
+molecules=$(ls -d */ | sed 's:/*$::')
+# molecules="1TD4"
+functionals=("O3LYP" "pbe0" "camB3LYP") # "M062X" "wB97XD4")
 states=("s0" "s1" "t1")
 
 # csv_file="CM5192_calculation_data.csv"
@@ -29,10 +28,7 @@ for molecule in $molecules; do
     for functional in "${functionals[@]}"; do
         GS="$molecule"_"$functional"_svp_s0_scf_optfreq
         ES=${molecule}_${functional}_svp_s1_Dscf_optfreq
-        ES_td=${molecule}_${functional}_svp_s1_tddft_optfreq
-        ES2=${molecule}_${functional}_svp_s2_tddft_optfreq
         TS="$molecule"_"$functional"_svp_t1_Dscf_optfreq
-        TS_scf="$molecule"_"$functional"_svp_t1_scf_optfreq
         FLUO="$molecule"_"$functional"_svp_s1_esd_fluo
         ISC_1="$molecule"_"$functional"_svp_t1_esd_isc_T1
         ISC_2="$molecule"_"$functional"_svp_t1_esd_isc_T2
@@ -40,9 +36,7 @@ for molecule in $molecules; do
         RISC_1="$molecule"_"$functional"_svp_t1_esd_risc_T1
         RISC_2="$molecule"_"$functional"_svp_t1_esd_risc_T2
         RISC_3="$molecule"_"$functional"_svp_t1_esd_risc_T3
-        Energy_Gap=0
-
-        optimisations=($GS $ES $ES_td $ES2 $TS $TS_scf )
+        files=($GS $ES $TS $FLUO $ISC_1 $ISC_2 $ISC_3 $RISC_1 $RISC_2 $RISC_3)
         # for file in "${files[@]}"; do
         #     echo "file: $file"
         # done
@@ -53,17 +47,8 @@ for molecule in $molecules; do
         #     continue
         # fi
 
-        # check if the files exist
-        if [ ! -f "$GS.out" ]; then
-            # echo "$GS.out"
-            continue
-        fi
-
         # check imaginary modes
-        for s in "${optimisations[@]}" ; do
-            if [ ! -f "$s.inp" ]; then
-                continue
-            fi
+        for s in $GS $ES $TS; do
             if [ ! -f "$s.hess" ]; then
                 echo $s
                 hess=1
@@ -71,56 +56,38 @@ for molecule in $molecules; do
                 freq=`grep --text "vibrational_frequencies" -A 8 $s.hess | tail -n 1 | awk '{print $2}'`
                 if [[ "$freq" == -* ]]; then
                     echo $s.hess
-                    echo "Frequency 6: $freq"
+                    # echo "Frequency 6: $freq"
                     hess=1
                 else
                     hess=0
                 fi
             fi
         done
+        # freq_S0=`grep "vibrational_frequencies" -A 8 $GS.hess | tail -n 1 | awk '{print $2}'`
+        # freq_S1=`grep "vibrational_frequencies" -A 8 $ES.hess | tail -n 1 | awk '{print $2}'`
+        # freq_T1=`grep "vibrational_frequencies" -A 8 $TS.hess | tail -n 1 | awk '{print $2}'`
+        # f=0
+        # for freq in $freq_S0 $freq_S1 $freq_T1; do
+        #     if [[ "$freq" == -* ]]; then
+        #         echo "***** Vibrational mode 6 is an imaginary mode for $molecule with $functional, at ${states[$f]}"
+        #         echo "Frequency 6: $freq"
+        #         hess=1
+        #     else
+        #         hess=0
+        #     fi
+        #     f=$((f+1))
+        # done
 
         SPE_S0=$(ORCA-GrepSPE -q "$GS.out")
         SPE_S1=$(ORCA-GrepSPE -q "$ES.out")
+        SPE_T1=$(ORCA-GrepSPE -q "$TS.out")
         
-        echo "----------------------------"
-        smallest_spe=$(printf "%.10f" "$SPE_S1")
-        Energy_Gap=0
-
-        for S1 in $ES $ES_td; do
-            if [ -f "$TS.out" ]; then
-                T1="$TS"
-            elif [ -f "$TS_scf.out" ]; then
-                T1="$TS_scf"
-            else
-                echo "No T1 file found for $molecule with $functional"
-                break
-            fi
-            if [ ! -f "$S1.out" ]; then
-                continue
-            fi
-
-            SPE_T1=$(ORCA-GrepSPE -q "$T1.out")
-            echo "SPE_T1: $SPE_T1"
-            SPE=$(ORCA-GrepSPE -q "$S1.out")
-            echo "SPE $S1: $SPE"
-
-            if (( $(echo "$SPE < $SPE_T1" | bc -l) )); then
-                echo "$S1 is lower than $T1"
-                Energy_Gap=$(echo "($SPE_T1 - $SPE) * 219474.6" | bc)
-                
-                echo "Energy Gap: $Energy_Gap"
-                continue
-            fi
-            if (( $(echo "$SPE < $smallest_spe" | bc -l) )); then
-                echo "Smallest SPE $S1: $SPE"
-                smallest_spe=$SPE
-                SPE_S1=$SPE 
-                Energy_Gap=$(echo "($SPE_T1 - $SPE) * 219474.6" | bc)
-            fi
-            
-        done
+        if [ "$SPE_S1" != "0" ] && [ "$SPE_T1" != "0" ]; then
+            Energy_Gap=$(echo "($SPE_S1 - $SPE_T1) * 27.2114079527" | bc -l 2>/dev/null)
+        else
+            Energy_Gap=0.0000000000
+        fi
         
-        echo "Energy Gap final: $Energy_Gap"
         Fluorescence_rate=$(ORCA-Grepk -q "$FLUO.out")
         
         ISC_rate_1=$(ORCA-Grepk -q "$ISC_1.out")
@@ -199,19 +166,14 @@ for molecule in $molecules; do
         # fi
        
         if [[ "${@}" =~ "offct" ]]; then
-            DIndex_S1=$(grep "D index" multiwfn_$FLUO.out | tail -n 1 | awk '{print $9}')
-        else 
             DIndex_S1=$(~/bin/ORCA/multiwfn_ana $FLUO s1)
+        else 
+            DIndex_S1=$(grep "D index" $FLUO.out | tail -n 1 | awk '{print $9}')
         fi
-        if [ -f "$ES.xyz" ] && [ -f "$GS.xyz" ]; then
-            XYZ_S1_S0=$(calculate_rmsd $ES.xyz $GS.xyz 2>&1)
-        fi
-        if [ -f "$TS.xyz" ] && [ -f "$GS.xyz" ]; then
-            XYZ_T1_S0=$(calculate_rmsd $TS.xyz $GS.xyz 2>&1)
-        fi
-        if [ -f "$TS.xyz" ] && [ -f "$ES.xyz" ]; then
-            XYZ_T1_S1=$(calculate_rmsd $TS.xyz $ES.xyz 2>&1)
-        fi
+
+        XYZ_S1_S0=$(calculate_rmsd $ES.xyz $GS.xyz 2>&1)
+        XYZ_T1_S0=$(calculate_rmsd $TS.xyz $GS.xyz 2>&1)
+        XYZ_T1_S1=$(calculate_rmsd $TS.xyz $ES.xyz 2>&1)
         
 
         SPE_S0=$(printf "%.10f" "$SPE_S0")
@@ -244,7 +206,7 @@ for molecule in $molecules; do
         # echo "RISC rate for $molecule with $functional: $RISC_average"
         # echo "Energy Gap (S1 - T1) for $molecule with $functional: $Energy_Gap eV"
         # Append the new data to the arrays
-        echo "----------------------------"
+
 
 
         if [ "$SPE_S0" == "0" ]; then
