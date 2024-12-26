@@ -73,6 +73,7 @@ $ORCA_ROOT/orca  $input > ${input%.inp}.out 2> ${input%.inp}.err
 finish=0
 if [ -f $tdir/${input%.inp}.out ]; then
   finish=$(grep "****ORCA TERMINATED NORMALLY****" $tdir/${input%.inp}.out | wc -l)
+  echo "ORCA calculation is finished successfully."
  else 
   echo "$tdir/${input%.inp}.out is missing, exit..."
   exit 99
@@ -119,12 +120,13 @@ fi
 
 
 xyz=`grep "* XYZFILE 0" $input | awk '{print $5}'`
+echo "XYZ file: $xyz"
 
 while [ $hess -eq 1 ]; do
   h=$((h+1))
   cp -f $xyz ${input%.inp}.xyz.i$h
   echo "${input%.inp}.xyz.i$h is backed up."
-  cp -f ${input%.inp}.out > ${input%.inp}.out.i$h
+  cp -f ${input%.inp}.out ${input%.inp}.out.i$h
   echo "${input%.inp}.out.i$h is backed up."
 
   $HOME/bin/ORCA/ORCA-displacement $input
