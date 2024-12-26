@@ -23,7 +23,8 @@ else
             echo "File $file does not exist."
             continue
         fi
-        constant=$(grep --text "rate constant" $file | awk '{ print $7 }')
+        file=$(basename $file)
+        constant=$(grep --text "rate constant" ${file}.out | awk '{ print $7 }')
         if [ -z "$constant" ]; then
             constant=0
         fi
