@@ -84,6 +84,7 @@ for molecule in $molecules; do
         
         echo "----------------------------"
         smallest_spe=$(printf "%.10f" "$SPE_S1")
+        Energy_Gap=0
         for S1 in $ES $ES_td; do
             if [ -f "$TS.out" ]; then
                 T1="$TS"
@@ -101,8 +102,8 @@ for molecule in $molecules; do
 
             if (( $(echo "$SPE < $SPE_T1" | bc -l) )); then
                 echo "$S1 is lower than $T1"
-                Energy_Gap=$(ORCA-GrepAdDiff -q "$T1.out" "$S1.out")
-                ORCA-GrepAdDiff -q "$T1.out" "$S1.out"
+                Energy_Gap=$(echo "($SPE_T1 - $SPE) * 219474.6" | bc)
+                
                 echo "Energy Gap: $Energy_Gap"
                 continue
             fi
@@ -110,7 +111,7 @@ for molecule in $molecules; do
                 echo "Smallest SPE $S1: $SPE"
                 smallest_spe=$SPE
                 SPE_S1=$SPE 
-                Energy_Gap=$(ORCA-GrepAdDiff -q "$T1.out" "$S1.out")
+                Energy_Gap=$(echo "($SPE_T1 - $SPE) * 219474.6" | bc)
             fi
             
         done
