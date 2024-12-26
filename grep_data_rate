@@ -12,7 +12,7 @@ else
   output=${1}_rate.csv
 fi
 
-echo "Molecule_Name,Functional,S0,S1,T1,Energy_Gap,Fluorescence_Rate,ISC1,ISC2,ISC3,ISC_Rate,RISC1,RISC2,RISC3,RISC_Rate,D_Index,XYZ_S1_S0,XYZ_T1_S0,XYZ_T1_S1,ref_molecule" > $output
+echo "Molecule_Name,Functional,S0,S1_Dscf,S1_td,S2_td,T1,Energy_Gap,Fluorescence_Rate,ISC1,ISC2,ISC3,ISC_Rate,RISC1,RISC2,RISC3,RISC_Rate,D_Index,XYZ_S1_S0,XYZ_T1_S0,XYZ_T1_S1,ref_molecule" > $output
 
 
 for molecule in $molecules; do
@@ -28,6 +28,8 @@ for molecule in $molecules; do
     for functional in "${functionals[@]}"; do
         GS="$molecule"_"$functional"_svp_s0_scf_optfreq
         ES=${molecule}_${functional}_svp_s1_Dscf_optfreq
+        ES_td=${molecule}_${functional}_svp_s1_tddft_optfreq
+        ES_2=${molecule}_${functional}_svp_s2_tddft_optfreq
         TS="$molecule"_"$functional"_svp_t1_Dscf_optfreq
         FLUO="$molecule"_"$functional"_svp_s1_esd_fluo
         ISC_1="$molecule"_"$functional"_svp_t1_esd_isc_T1
@@ -80,6 +82,8 @@ for molecule in $molecules; do
 
         SPE_S0=$(ORCA-GrepSPE -q "$GS.out")
         SPE_S1=$(ORCA-GrepSPE -q "$ES.out")
+        SPE_S1_td=$(ORCA-GrepSPE -q "$ES_td.out")
+        SPE_S2=$(ORCA-GrepSPE -q "$ES_2.out")
         SPE_T1=$(ORCA-GrepSPE -q "$TS.out")
         
         if [ "$SPE_S1" != "0" ] && [ "$SPE_T1" != "0" ]; then
@@ -178,6 +182,8 @@ for molecule in $molecules; do
 
         SPE_S0=$(printf "%.10f" "$SPE_S0")
         SPE_S1=$(printf "%.10f" "$SPE_S1")
+        SPE_S1_td=$(printf "%.10f" "$SPE_S1_td")
+        SPE_S2=$(printf "%.10f" "$SPE_S2")
         SPE_T1=$(printf "%.10f" "$SPE_T1")
         Energy_Gap=$(printf "%.10f" "$Energy_Gap")
         Fluorescence_rate=$(printf "%.8e" "$Fluorescence_rate")
@@ -260,7 +266,7 @@ for molecule in $molecules; do
         # Debugging: Print the values of the variables
         # echo "Debug: molecule=$molecule, functional=$functional, SPE_S0=$SPE_S0, SPE_S1=$SPE_S1, SPE_T1=$SPE_T1, Energy_Gap=$Energy_Gap, Fluorescence_rate=$Fluorescence_rate, ISC_rate_1=$ISC_rate_1, ISC_rate_2=$ISC_rate_2, ISC_rate_3=$ISC_rate_3, ISC_average=$ISC_average, RISC_rate_1=$RISC_rate_1, RISC_rate_2=$RISC_rate_2, RISC_rate_3=$RISC_rate_3, RISC_average=$RISC_average, DIndex_S1=$DIndex_S1, XYZ_S1_S0=$XYZ_S1_S0, XYZ_T1_S0=$XYZ_T1_S0, XYZ_T1_S1=$XYZ_T1_S1, ref=$ref"
 
-        echo "${molecule},${functional},\"${SPE_S0}\",\"${SPE_S1}\",\"${SPE_T1}\",\"${Energy_Gap}\",\"${Fluorescence_rate}\",\"${ISC_rate_1}\",\"${ISC_rate_2}\",\"${ISC_rate_3}\",\"${ISC_average}\",\"${RISC_rate_1}\",\"${RISC_rate_2}\",\"${RISC_rate_3}\",\"${RISC_average}\",\"${DIndex_S1}\",\"${XYZ_S1_S0}\",\"${XYZ_T1_S0}\",\"${XYZ_T1_S1}\",\"${ref}\"" >> ../$output
+        echo "${molecule},${functional},\"${SPE_S0}\",\"${SPE_S1}\",\"${SPE_S1_td}\",\"${SPE_S2}\",\"${SPE_T1}\",\"${Energy_Gap}\",\"${Fluorescence_rate}\",\"${ISC_rate_1}\",\"${ISC_rate_2}\",\"${ISC_rate_3}\",\"${ISC_average}\",\"${RISC_rate_1}\",\"${RISC_rate_2}\",\"${RISC_rate_3}\",\"${RISC_average}\",\"${DIndex_S1}\",\"${XYZ_S1_S0}\",\"${XYZ_T1_S0}\",\"${XYZ_T1_S1}\",\"${ref}\"" >> ../$output
         
 
 
