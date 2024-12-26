@@ -1,17 +1,27 @@
 #!/bin/bash
 
-init=${1%.*}.out
-final=${2%.*}.out
+if [ "$1" == "-q" ]; then
+  init=${2%.*}.out
+  final=${3%.*}.out
+  Energy1=`grep --text "Electronic energy " $init | awk '{print $4}'`
 
+  Energy2=`grep --text "Electronic energy " $final | awk '{print $4}'`
 
-Energy1=`grep --text "Electronic energy " $init | awk '{print $4}'`
+  DiffEnergy=$(echo "($Energy2 - $Energy1) * 219474.6" | bc)
 
-Energy2=`grep --text "Electronic energy " $final | awk '{print $4}'`
+  echo "$DiffEnergy"
+else
+  init=${1%.*}.out
+  final=${2%.*}.out
+  Energy1=`grep --text "Electronic energy " $init | awk '{print $4}'`
 
-echo $Energy1
+  Energy2=`grep --text "Electronic energy " $final | awk '{print $4}'`
 
-echo $Energy2
+  echo $Energy1
 
-DiffEnergy=$(echo "($Energy2 - $Energy1) * 219474.6" | bc)
+  echo $Energy2
 
-echo "$DiffEnergy"
+  DiffEnergy=$(echo "($Energy2 - $Energy1) * 219474.6" | bc)
+
+  echo "$DiffEnergy"
+fi
