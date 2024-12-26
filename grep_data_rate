@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# molecules=$(ls -d */ | sed 's:/*$::')
-molecules="1DA3"
+molecules=$(ls -d */ | sed 's:/*$::')
+# molecules="1TD4"
 functionals=("O3LYP" "pbe0" "camB3LYP") # "M062X" "wB97XD4")
 states=("s0" "s1" "t1")
 
@@ -12,7 +12,7 @@ else
   output=${1}_rate.csv
 fi
 
-echo "Molecule_Name,Functional,S0,S1_Dscf,S1_td,T1,Energy_Gap_Dscf,Energy_Gap_td,Fluorescence_Rate,ISC1,ISC2,ISC3,ISC_Rate,RISC1,RISC2,RISC3,RISC_Rate,D_Index,XYZ_S1_S0,XYZ_T1_S0,XYZ_T1_S1,ref_molecule" > $output
+echo "Molecule_Name,Functional,S0,S1,T1,Energy_Gap,Fluorescence_Rate,ISC1,ISC2,ISC3,ISC_Rate,RISC1,RISC2,RISC3,RISC_Rate,D_Index,XYZ_S1_S0,XYZ_T1_S0,XYZ_T1_S1,ref_molecule" > $output
 
 
 for molecule in $molecules; do
@@ -28,8 +28,6 @@ for molecule in $molecules; do
     for functional in "${functionals[@]}"; do
         GS="$molecule"_"$functional"_svp_s0_scf_optfreq
         ES=${molecule}_${functional}_svp_s1_Dscf_optfreq
-        ES_td=${molecule}_${functional}_svp_s1_tddft_optfreq
-        ES2=${molecule}_${functional}_svp_s2_tddft_optfreq
         TS="$molecule"_"$functional"_svp_t1_Dscf_optfreq
         FLUO="$molecule"_"$functional"_svp_s1_esd_fluo
         ISC_1="$molecule"_"$functional"_svp_t1_esd_isc_T1
@@ -50,15 +48,7 @@ for molecule in $molecules; do
         # fi
 
         # check imaginary modes
-        for s in $GS $ES $TS $ES_td $ES2; do
-            if [ ! -f "$s.xyz" ]; then
-                continue
-            fi
-
-            if [ ! -f "$s.inp" ]; then
-                continue
-            fi
-            
+        for s in $GS $ES $TS; do
             if [ ! -f "$s.hess" ]; then
                 echo $s
                 hess=1
@@ -73,27 +63,29 @@ for molecule in $molecules; do
                 fi
             fi
         done
+        # freq_S0=`grep "vibrational_frequencies" -A 8 $GS.hess | tail -n 1 | awk '{print $2}'`
+        # freq_S1=`grep "vibrational_frequencies" -A 8 $ES.hess | tail -n 1 | awk '{print $2}'`
+        # freq_T1=`grep "vibrational_frequencies" -A 8 $TS.hess | tail -n 1 | awk '{print $2}'`
+        # f=0
+        # for freq in $freq_S0 $freq_S1 $freq_T1; do
+        #     if [[ "$freq" == -* ]]; then
+        #         echo "***** Vibrational mode 6 is an imaginary mode for $molecule with $functional, at ${states[$f]}"
+        #         echo "Frequency 6: $freq"
+        #         hess=1
+        #     else
+        #         hess=0
+        #     fi
+        #     f=$((f+1))
+        # done
 
         SPE_S0=$(ORCA-GrepSPE -q "$GS.out")
         SPE_S1=$(ORCA-GrepSPE -q "$ES.out")
-        if [ -f "$ES_td.out" ]; then
-            SPE_S1_td=$(ORCA-GrepSPE -q "$ES_td.out")
-        else
-            SPE_S1_td=0
-            Energy_Gap_td="NaN"
-        fi
         SPE_T1=$(ORCA-GrepSPE -q "$TS.out")
         
         if [ "$SPE_S1" != "0" ] && [ "$SPE_T1" != "0" ]; then
-            Energy_Gap_Dscf=$(echo "($SPE_S1 - $SPE_T1) * 27.2114079527" | bc -l 2>/dev/null)
+            Energy_Gap=$(echo "($SPE_S1 - $SPE_T1) * 27.2114079527" | bc -l 2>/dev/null)
         else
-            Energy_Gap_Dscf=0.0000000000
-        fi
-
-        if [ "$SPE_S1_td" != "0" ] && [ "$SPE_T1" != "0" ]; then
-            Energy_Gap_td=$(echo "($SPE_S1_td - $SPE_T1) * 27.2114079527" | bc -l 2>/dev/null)
-        else
-            Energy_Gap_td=0.0000000000
+            Energy_Gap=0.0000000000
         fi
         
         Fluorescence_rate=$(ORCA-Grepk -q "$FLUO.out")
@@ -187,8 +179,7 @@ for molecule in $molecules; do
         SPE_S0=$(printf "%.10f" "$SPE_S0")
         SPE_S1=$(printf "%.10f" "$SPE_S1")
         SPE_T1=$(printf "%.10f" "$SPE_T1")
-        Energy_Gap_Dscf=$(printf "%.10f" "$Energy_Gap_Dscf")
-        Energy_Gap_td=$(printf "%.10f" "$Energy_Gap_td")
+        Energy_Gap=$(printf "%.10f" "$Energy_Gap")
         Fluorescence_rate=$(printf "%.8e" "$Fluorescence_rate")
         ISC_rate_1=$(printf "%.8e" "$ISC_rate_1")
         ISC_rate_2=$(printf "%.8e" "$ISC_rate_2")
@@ -268,8 +259,8 @@ for molecule in $molecules; do
 
         # Debugging: Print the values of the variables
         # echo "Debug: molecule=$molecule, functional=$functional, SPE_S0=$SPE_S0, SPE_S1=$SPE_S1, SPE_T1=$SPE_T1, Energy_Gap=$Energy_Gap, Fluorescence_rate=$Fluorescence_rate, ISC_rate_1=$ISC_rate_1, ISC_rate_2=$ISC_rate_2, ISC_rate_3=$ISC_rate_3, ISC_average=$ISC_average, RISC_rate_1=$RISC_rate_1, RISC_rate_2=$RISC_rate_2, RISC_rate_3=$RISC_rate_3, RISC_average=$RISC_average, DIndex_S1=$DIndex_S1, XYZ_S1_S0=$XYZ_S1_S0, XYZ_T1_S0=$XYZ_T1_S0, XYZ_T1_S1=$XYZ_T1_S1, ref=$ref"
-        # echo "Molecule_Name,Functional,S0,S1_Dscf,S1_td,T1,Energy_Gap_td,Energy_Gap_Dscf,Fluorescence_Rate,ISC1,ISC2,ISC3,ISC_Rate,RISC1,RISC2,RISC3,RISC_Rate,D_Index,XYZ_S1_S0,XYZ_T1_S0,XYZ_T1_S1,ref_molecule" > $output
-        echo "${molecule},${functional},\"${SPE_S0}\",\"${SPE_S1}\",\"${SPE_S1_td}\"${SPE_T1}\",\"${Energy_Gap_Dscf}\",\"${Energy_Gap_td}\",\"${Fluorescence_rate}\",\"${ISC_rate_1}\",\"${ISC_rate_2}\",\"${ISC_rate_3}\",\"${ISC_average}\",\"${RISC_rate_1}\",\"${RISC_rate_2}\",\"${RISC_rate_3}\",\"${RISC_average}\",\"${DIndex_S1}\",\"${XYZ_S1_S0}\",\"${XYZ_T1_S0}\",\"${XYZ_T1_S1}\",\"${ref}\"" >> ../$output
+
+        echo "${molecule},${functional},\"${SPE_S0}\",\"${SPE_S1}\",\"${SPE_T1}\",\"${Energy_Gap}\",\"${Fluorescence_rate}\",\"${ISC_rate_1}\",\"${ISC_rate_2}\",\"${ISC_rate_3}\",\"${ISC_average}\",\"${RISC_rate_1}\",\"${RISC_rate_2}\",\"${RISC_rate_3}\",\"${RISC_average}\",\"${DIndex_S1}\",\"${XYZ_S1_S0}\",\"${XYZ_T1_S0}\",\"${XYZ_T1_S1}\",\"${ref}\"" >> ../$output
         
 
 
