@@ -4,7 +4,7 @@
 if [[ $(whoami) == *"e0732532"* ]]; then
   Host="hpc"
   scratch=/hpctmp/e0732532
-  ORCA_ROOT=/app1/ebapps/arches/flat/software/ORCA/6.0.1-foss-2023b/bin/
+  # ORCA_ROOT=/app1/ebapps/arches/flat/software/ORCA/6.0.1-foss-2023b/bin/
   THEO_ROOT=/home/svu/e0732532/software/TheoDORE_3.2
   template=/home/svu/e0732532/bin/dens_ana_template
 #   echo "atlas"
