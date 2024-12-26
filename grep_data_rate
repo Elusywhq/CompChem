@@ -85,6 +85,7 @@ for molecule in $molecules; do
         echo "----------------------------"
         smallest_spe=$(printf "%.10f" "$SPE_S1")
         Energy_Gap=0
+        
         for S1 in $ES $ES_td; do
             if [ -f "$TS.out" ]; then
                 T1="$TS"
@@ -93,6 +94,9 @@ for molecule in $molecules; do
             else
                 echo "No T1 file found for $molecule with $functional"
                 break
+            fi
+            if [ ! -f "$S1.out" ]; then
+                continue
             fi
 
             SPE_T1=$(ORCA-GrepSPE -q "$T1.out")
