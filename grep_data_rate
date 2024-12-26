@@ -95,7 +95,9 @@ for molecule in $molecules; do
             fi
 
             SPE_T1=$(ORCA-GrepSPE -q "$T1.out")
+            echo "SPE_T1: $SPE_T1"
             SPE=$(ORCA-GrepSPE -q "$S1.out")
+            echo "SPE: $SPE"
 
             if (( $(echo "$SPE < $SPE_T1" | bc -l) )); then
                 echo "$S1 is lower than $T1"
