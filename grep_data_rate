@@ -80,8 +80,7 @@ for molecule in $molecules; do
         SPE_S1=$(ORCA-GrepSPE -q "$ES.out")
         SPE_T1=$(ORCA-GrepSPE -q "$TS.out")
         
-        smallest_positive_gap=""
-
+        smallest_spe=$(printf "%.10f" "$SPE_S1")
         for S1 in $ES $ES_td; do
             if [ -f "$TS.out" ]; then
                 T1="$TS"
@@ -91,18 +90,14 @@ for molecule in $molecules; do
                 echo "No T1 file found for $molecule with $functional"
                 break
             fi
-
-            Energy_Gap=$(ORCA-GrepAdDiff "$S1.out" "$T1.out")
-            smallest_positive_gap=$Energy_Gap
-            if (( $(echo "$Energy_Gap > 0" | bc -l) )); then
-                echo "Positive gap between $S1 and $T1: $Energy_Gap"
-                if (( $(echo "$Energy_Gap < $smallest_positive_gap" | bc -l) )); then
-                    smallest_positive_gap=$Energy_Gap
-                    SPE_S1=$(ORCA-GrepSPE -q "$S1.out")
-                    echo "Smallest positive gap ($S1): $smallest_positive_gap"
-                fi
-            fi 
-
+            
+            SPE=$(ORCA-GrepSPE -q "$S1.out")
+            if (( $(echo "$SPE < $smallest_spe" | bc -l) )); then
+                echo "Smallest SPE $S1: $SPE"
+                smallest_spe=$SPE
+                SPE_S1=$SPE 
+            fi
+            
         done
         
         Energy_Gap=$smallest_positive_gap
