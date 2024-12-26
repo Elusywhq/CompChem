@@ -102,6 +102,7 @@ for molecule in $molecules; do
             if (( $(echo "$SPE < $SPE_T1" | bc -l) )); then
                 echo "$S1 is lower than $T1"
                 Energy_Gap=$(ORCA-GrepAdDiff -q "$T1.out" "$S1.out")
+                ORCA-GrepAdDiff -q "$T1.out" "$S1.out"
                 echo "Energy Gap: $Energy_Gap"
                 continue
             fi
