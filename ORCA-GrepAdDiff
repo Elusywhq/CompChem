@@ -14,4 +14,4 @@ echo $Energy2
 
 DiffEnergy=$(echo "($Energy2 - $Energy1) * 219474.6" | bc)
 
-echo "Adiabatic Difference (T1 - S0): $DiffEnergy"
+echo "$DiffEnergy"
