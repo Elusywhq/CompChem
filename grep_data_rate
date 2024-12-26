@@ -61,7 +61,7 @@ for molecule in $molecules; do
 
         # check imaginary modes
         for s in "${optimisations[@]}" ; do
-            if [ -f "$s.inp" ]; then
+            if [ ! -f "$s.inp" ]; then
                 continue
             fi
             if [ ! -f "$s.hess" ]; then
@@ -85,7 +85,7 @@ for molecule in $molecules; do
         echo "----------------------------"
         smallest_spe=$(printf "%.10f" "$SPE_S1")
         Energy_Gap=0
-        
+
         for S1 in $ES $ES_td; do
             if [ -f "$TS.out" ]; then
                 T1="$TS"
