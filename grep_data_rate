@@ -97,14 +97,14 @@ for molecule in $molecules; do
 
             if (( $(echo "$SPE < $SPE_T1" | bc -l) )); then
                 echo "$S1 is lower than $T1"
-                Energy_Gap=$(ORCA-GrepAdDiff -q "$S1.out" "$T1.out")
+                Energy_Gap=$(ORCA-GrepAdDiff -q "$T1.out" "$S1.out")
                 continue
             fi
             if (( $(echo "$SPE < $smallest_spe" | bc -l) )); then
                 echo "Smallest SPE $S1: $SPE"
                 smallest_spe=$SPE
                 SPE_S1=$SPE 
-                Energy_Gap=$(ORCA-GrepAdDiff -q "$S1.out" "$T1.out")
+                Energy_Gap=$(ORCA-GrepAdDiff -q "$T1.out" "$S1.out")
             fi
             
         done
