@@ -82,7 +82,7 @@ for molecule in $molecules; do
         SPE_S0=$(ORCA-GrepSPE -q "$GS.out")
         SPE_S1=$(ORCA-GrepSPE -q "$ES.out")
         
-        
+        echo "----------------------------"
         smallest_spe=$(printf "%.10f" "$SPE_S1")
         for S1 in $ES $ES_td; do
             if [ -f "$TS.out" ]; then
