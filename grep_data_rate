@@ -40,6 +40,8 @@ for molecule in $molecules; do
         RISC_1="$molecule"_"$functional"_svp_t1_esd_risc_T1
         RISC_2="$molecule"_"$functional"_svp_t1_esd_risc_T2
         RISC_3="$molecule"_"$functional"_svp_t1_esd_risc_T3
+        Energy_Gap=0
+
         optimisations=($GS $ES $ES_td $ES2 $TS $TS_scf )
         # for file in "${files[@]}"; do
         #     echo "file: $file"
@@ -233,7 +235,7 @@ for molecule in $molecules; do
         # echo "RISC rate for $molecule with $functional: $RISC_average"
         # echo "Energy Gap (S1 - T1) for $molecule with $functional: $Energy_Gap eV"
         # Append the new data to the arrays
-
+        echo "----------------------------"
 
 
         if [ "$SPE_S0" == "0" ]; then
