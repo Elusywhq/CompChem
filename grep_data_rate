@@ -93,22 +93,23 @@ for molecule in $molecules; do
             fi
 
             SPE_T1=$(ORCA-GrepSPE -q "$T1.out")
-
             SPE=$(ORCA-GrepSPE -q "$S1.out")
+
             if (( $(echo "$SPE < $SPE_T1" | bc -l) )); then
-                echo "$S1 if lower than $T1"
+                echo "$S1 is lower than $T1"
+                Energy_Gap=$(ORCA-GrepAdDiff -q "$S1.out" "$T1.out")
                 continue
             fi
-
             if (( $(echo "$SPE < $smallest_spe" | bc -l) )); then
                 echo "Smallest SPE $S1: $SPE"
                 smallest_spe=$SPE
                 SPE_S1=$SPE 
+                Energy_Gap=$(ORCA-GrepAdDiff -q "$S1.out" "$T1.out")
             fi
             
         done
         
-        Energy_Gap=$smallest_positive_gap
+        echo "Energy Gap: $Energy_Gap"
         Fluorescence_rate=$(ORCA-Grepk -q "$FLUO.out")
         
         ISC_rate_1=$(ORCA-Grepk -q "$ISC_1.out")
