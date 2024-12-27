@@ -6,11 +6,12 @@
 
 if [ "$1" == "-q" ]; then
     for file in "${@:2}"; do
-        if [ ! -f "$file" ]; then
+        f=${file%.*}
+        if [ ! -f "$f.out" ]; then
             # echo "File $file does not exist."
             continue
         fi
-        SPE=$(grep --text "FINAL SINGLE" "$file" | tail -n 1 | awk '{print $5}')
+        SPE=$(grep --text "FINAL SINGLE" "$f.out" | tail -n 1 | awk '{print $5}')
         if [ -z "$SPE" ]; then
             SPE=0
         fi
@@ -18,15 +19,16 @@ if [ "$1" == "-q" ]; then
     done
 else
     for file in "$@"; do
-        if [ ! -f "$file" ]; then
-            echo "File $file does not exist."
+        f=${file%.*}
+        if [ ! -f "$f.out" ]; then
+            echo "File $f.out does not exist."
             continue
         fi
-        SPE=$(grep --text "FINAL SINGLE" "$file" | tail -n 1 | awk '{print $5}')
+        SPE=$(grep --text "FINAL SINGLE" "$f.out" | tail -n 1 | awk '{print $5}')
         if [ -z "$SPE" ]; then
             SPE=0
         fi
-        echo -e "$file: \t $SPE"
+        echo -e "$f.out: \t $SPE"
         # echo ""
     done
 fi
