@@ -85,3 +85,5 @@ for molecule in "${molecule_list[@]}"; do
   cd ..
   i=$((i+1))
 done
+
+exit 0
