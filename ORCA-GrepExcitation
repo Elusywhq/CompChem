@@ -22,7 +22,7 @@ while [ "$#" -gt 0 ]; do
     -q)
       shift
       for file in "$@"; do
-        process_file "$file" 1
+      process_file "$file" 1 | awk '{print $3}'
       done
       break
       ;;
