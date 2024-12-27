@@ -10,7 +10,7 @@ process_file() {
   local tstat=$((state+1))
 
   if grep -q "STATE 1" "$file"; then
-    local list=$(grep -A 10 "STATE  $state:" "$file" | tail -n 10 | grep -B 5 "STATE  $tstat:" | head -n -2 | sort -k5,5n | tail -n 1)
+    local list=$(grep -A 10 "STATE  $state:" "$file" | tail -n 10 | grep -B 10 "STATE  $tstat:" | head -n -2 | sort -k5,5n | tail -n 1)
     local from=$(echo "$list" | awk '{print $1}' | cut -d'a' -f1)
     local to=$(echo "$list" | awk '{print $3}' | cut -d'a' -f1)
     local nexcit=$((to-from))
