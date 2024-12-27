@@ -17,7 +17,7 @@ while [ "$#" -gt 0 ]; do
       ;;
     -s)
       state=$2
-      for file in "$@"; do
+      for file in "${@:2}"; do
         f=${file%.*}
         if grep -q "STATE 1" "$file"; then
           tstat=$((state+1))
