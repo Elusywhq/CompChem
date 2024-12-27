@@ -1,6 +1,7 @@
 #!/bin/bash
 
 state=1
+quiet=0
 
 process_file() {
   local file=$1
@@ -13,26 +14,23 @@ process_file() {
     local from=$(echo "$list" | awk '{print $1}' | cut -d'a' -f1)
     local to=$(echo "$list" | awk '{print $3}' | cut -d'a' -f1)
     local nexcit=$((to-from))
-    echo -e "$f STATE $state: \t $from to $to \t $nexcit"
+    if [ "$quiet" -eq 1 ]; then
+      echo "$nexcit"
+    else
+      echo -e "$f STATE $state: \t $from to $to \t $nexcit"
+    fi
   fi
 }
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
     -q)
+      quiet=1
       shift
-      for file in "$@"; do
-      process_file "$file" 1 | awk '{print $7}'
-      done
-      break
       ;;
     -s)
       state=$2
       shift 2
-      for file in "$@"; do
-        process_file "$file" "$state"
-      done
-      break
       ;;
     *)
       for file in "$@"; do
