@@ -2,9 +2,9 @@
 
 molecules=$(ls -d */ | sed 's:/*$::')
 # molecules="1TD4"  
-functionals=("O3LYP" "pbe0" "camB3LYP") # "M062X" "wB97XD4")
+functionals=("O3LYP" "pbe0" "camB3LYP" "M062X") #"wB97XD4")
 states=("s0" "s1" "t1")
-
+ 
 # csv_file="CM5192_calculation_data.csv"
 if [ -z "$1" ]; then
   output="data.csv"
@@ -12,7 +12,7 @@ else
   output=${1}_risc.csv
 fi
 
-echo "Molecule_Name,Functional,Fluorescence_Rate,ISC_Rate,npoints1,npoints2,K_Vector_sum,lamda_sum(cm-1),lamda_max_freq,lamda_maxmode_socme,HR_max_freq,HR_maxmode_socme,XYZ_S1_S0,XYZ_T1_S0,XYZ_T1_S1,ref_molecule" > $output
+echo "Molecule_Name,Functional,Fluorescence_Rate,RISC_Rate,npoints1,npoints2,K_Vector_sum,lamda_sum(cm-1),lamda_max_freq,lamda_maxmode_socme,HR_max_freq,HR_maxmode_socme,XYZ_S1_S0,XYZ_T1_S0,XYZ_T1_S1,ref_molecule" > $output
 
 
 for molecule in $molecules; do
@@ -30,13 +30,10 @@ for molecule in $molecules; do
         ES=${molecule}_${functional}_svp_s1_Dscf_optfreq
         TS="$molecule"_"$functional"_svp_t1_Dscf_optfreq
         FLUO="$molecule"_"$functional"_svp_s1_esd_fluo
-        ISC_1="$molecule"_"$functional"_svp_t1_esd_isc_T1
-        ISC_2="$molecule"_"$functional"_svp_t1_esd_isc_T2
-        ISC_3="$molecule"_"$functional"_svp_t1_esd_isc_T3
         RISC_1="$molecule"_"$functional"_svp_t1_esd_risc_T1
         RISC_2="$molecule"_"$functional"_svp_t1_esd_risc_T2
         RISC_3="$molecule"_"$functional"_svp_t1_esd_risc_T3
-        files=($GS $ES $TS $FLUO $ISC_1 $ISC_2 $ISC_3 $RISC_1 $RISC_2 $RISC_3)
+        files=($GS $ES $TS $FLUO $RISC_1 $RISC_2 $RISC_3)
 
 
         # check imaginary modes
