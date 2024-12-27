@@ -4,7 +4,7 @@ atom_list="$(dirname "$0")/atom_list"
 functionals=("O3LYP" "pbe0" "camB3LYP")
 template="/home/svu/e0732532/software/TheoDORE_3.2/template"
 
-echo "Molecule_Name,Functional,Theodore_EHD1,Theodore_EHD2,Theodore_EHD3" > theo_ana.csv
+echo "Molecule_Name,Functional,Theodore_EHD1,Theodore_EHD2,Theodore_EHD3,Gap1,Gap2,Gap3" > theo_ana.csv
 
 # echo "Reading atom list from $atom_list"
 if [[ $(hostname) == *"atlas"* ]]; then
