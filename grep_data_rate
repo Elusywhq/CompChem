@@ -182,6 +182,10 @@ for molecule in $molecules; do
             echo "$TS.xyz not found"
             continue
         fi
+        if [ ! -f "$GS.xyz" ]; then
+            echo "$GS.xyz not found"
+            continue
+        fi
 
         XYZ_S1_S0=$(calculate_rmsd $ES.xyz $GS.xyz 2>&1)
         XYZ_T1_S0=$(calculate_rmsd $TS.xyz $GS.xyz 2>&1)
