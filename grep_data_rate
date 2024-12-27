@@ -2,7 +2,7 @@
 
 molecules=$(ls -d */ | sed 's:/*$::')
 # molecules="1TD4"
-functionals=("O3LYP" "pbe0" "camB3LYP") # "M062X" "wB97XD4")
+functionals=("O3LYP" "pbe0" "camB3LYP" "M062X" ) #"wB97XD4")
 states=("s0" "s1" "t1")
 
 # csv_file="CM5192_calculation_data.csv"
