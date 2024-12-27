@@ -29,8 +29,6 @@ while [ "$#" -gt 0 ]; do
         fi
       done
       ;;
-      shift
-      ;;
     *)
       for file in "$@"; do
         f=${file%.*}
