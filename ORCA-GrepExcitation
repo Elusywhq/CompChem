@@ -1,25 +1,34 @@
 #!/bin/bash
+state=1
 
-if [ "$1" == "-q" ]; then
-  for file in "${@:2}"; do
-    f=${file%.*}
-    if grep -q "STATE 1" "$file"; then
-      list=`grep -A 10 "STATE  1:" "$file" | tail -n 10 | grep -B 5 "STATE  2:" | head -n -2 | sort -k5,5n | tail -n 1`
-      from=$(echo "$list" | awk '{print $1}' | cut -d'a' -f1 )
-      to=$(echo "$list" | awk '{print $3}' | cut -d'a' -f1 )
-      nexcit=$((to-from))
-      echo "$nexcit"
-    fi
-  done
-else
-  for file in "$@"; do
+case "$1" in
+  -q)
+    for file in "${@:2}"; do
       f=${file%.*}
       if grep -q "STATE 1" "$file"; then
-        list=`grep -A 10 "STATE  1:" "$file" | tail -n 10 | grep -B 5 "STATE  2:" | head -n -2 | sort -k5,5n | tail -n 1`
-        from=$(echo "$list" | awk '{print $1}' | cut -d'a' -f1 )
-        to=$(echo "$list" | awk '{print $3}' | cut -d'a' -f1 )
+        list=$(grep -A 10 "STATE  1:" "$file" | tail -n 10 | grep -B 5 "STATE  2:" | head -n -2 | sort -k5,5n | tail -n 1)
+        from=$(echo "$list" | awk '{print $1}' | cut -d'a' -f1)
+        to=$(echo "$list" | awk '{print $3}' | cut -d'a' -f1)
+        nexcit=$((to-from))
+        echo "$nexcit"
+      fi
+    done
+    ;;
+  -s)
+    state=$2
+    shift
+    ;;
+  *)
+    for file in "$@"; do
+      f=${file%.*}
+      if grep -q "STATE 1" "$file"; then
+        tstat=$((state+1))
+        list=$(grep -A 10 "STATE  $state:" "$file" | tail -n 10 | grep -B 5 "STATE  $tstat:" | head -n -2 | sort -k5,5n | tail -n 1)
+        from=$(echo "$list" | awk '{print $1}' | cut -d'a' -f1)
+        to=$(echo "$list" | awk '{print $3}' | cut -d'a' -f1)
         nexcit=$((to-from))
         echo -e "$f:\t$from to $to \t $nexcit"
       fi
-  done
-fi
+    done
+    ;;
+esac

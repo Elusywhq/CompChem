@@ -4,7 +4,7 @@ atom_list="$(dirname "$0")/atom_list"
 functionals=("O3LYP" "pbe0" "camB3LYP")
 template="/home/svu/e0732532/software/TheoDORE_3.2/template"
 
-echo "Molecule_Name,Functional,Theodore_EHD1,Theodore_EHD2,Theodore_EHD3,Gap1,Gap2,Gap3" > theo_ana.csv
+echo "Molecule_Name,Functional,Theodore_EHD1,Theodore_EHD2,Theodore_EHD3,Gap1,Gap2,Gap3,Excitation_Orbital" > theo_ana.csv
 
 # echo "Reading atom list from $atom_list"
 if [[ $(hostname) == *"atlas"* ]]; then
@@ -66,11 +66,15 @@ for molecule in "${molecule_list[@]}"; do
     sed -e "s/NAME/$FLUO/g" $template > den_ana_$FLUO.in
     sed -i "s/DONOR/$donor1/g" den_ana_$FLUO.in
     sed -i "s/ACCEPTOR/$accepter/g" den_ana_$FLUO.in
+    exc_orb=$(ORCA-GrepExcitation -q $FLUO.out)
     cp $FLUO.cis orca.cis
     theodore analyze_tden -f den_ana_$FLUO.in > summ_den_ana_$FLUO.txt
     EHD1=$(grep "1(1)A " summ_den_ana_$FLUO.txt | awk '{print $10}')
     EHD2=$(grep "2(1)A " summ_den_ana_$FLUO.txt | awk '{print $10}')
     EHD3=$(grep "3(1)A " summ_den_ana_$FLUO.txt | awk '{print $10}')
+    gap1=$(grep "1(1)A " summ_den_ana_$FLUO.txt | awk '{print $2}')
+    gap2=$(grep "2(1)A " summ_den_ana_$FLUO.txt | awk '{print $2}')
+    gap3=$(grep "3(1)A " summ_den_ana_$FLUO.txt | awk '{print $2}')
     echo "e-h disctance for $func: $EHD1, $EHD2, $EHD3"
     echo "$molecule,$func,$EHD1,$EHD2,$EHD3" >> ../theo_ana.csv
   done
