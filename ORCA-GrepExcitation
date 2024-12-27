@@ -13,7 +13,7 @@ process_file() {
     local from=$(echo "$list" | awk '{print $1}' | cut -d'a' -f1)
     local to=$(echo "$list" | awk '{print $3}' | cut -d'a' -f1)
     local nexcit=$((to-from))
-    echo -e "$f \t state $state $from to $to \t $nexcit"
+    echo -e "$f STATE $state:: \t $from to $to \t $nexcit"
   fi
 }
 
