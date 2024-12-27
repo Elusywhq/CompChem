@@ -24,6 +24,9 @@ for molecule in $molecules; do
     echo "Molecule: $molecule"
     ref="0${molecule:1:2}0"
     echo "Reference: $ref"
+    if [ "$ref" == "0OB0" ]; then
+        ref="0DB0"
+    fi
 
     for functional in "${functionals[@]}"; do
         GS="$molecule"_"$functional"_svp_s0_scf_optfreq
