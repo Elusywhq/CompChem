@@ -19,7 +19,7 @@ else
         from=$(echo "$list" | awk '{print $1}' | cut -d'a' -f1 )
         to=$(echo "$list" | awk '{print $3}' | cut -d'a' -f1 )
         nexcit=$((to-from))
-        echo "$f.out: $nexcit"
+        echo "$f.out: from $from to $to, $nexcit"
       fi
   done
 fi
