@@ -4,7 +4,7 @@ atom_list="$(dirname "$0")/atom_list"
 functionals=("O3LYP" "pbe0" "camB3LYP" "M062X")
 template="/home/svu/e0732532/software/TheoDORE_3.2/template"
 
-echo "Molecule_Name,Functional,Theodore_EHD1,Theodore_EHD2,Theodore_EHD3,Gap1,Gap2,Gap3,Excitation_Orbital1, Excitation_Orbital2" > theo_ana.csv
+echo "Molecule_Name,Functional,Theodore_EHD1,Theodore_EHD2,Theodore_EHD3,Gap1,Gap2,Gap3,Excitation_Orbital1,Excitation_Orbital2" > theo_ana.csv
 
 # echo "Reading atom list from $atom_list"
 if [[ $(hostname) == *"atlas"* ]]; then
@@ -68,7 +68,7 @@ for molecule in "${molecule_list[@]}"; do
     sed -i "s/ACCEPTOR/$accepter/g" den_ana_$FLUO.in
     exc_orb1=$(ORCA-GrepExcitation -q $FLUO.out)
     exc_orb2=$(ORCA-GrepExcitation -q -s 2 $FLUO.out)
-    
+    $ORCA_ROOT/orca_2mkl $input -molden > /dev/null 2>&1
     cp $FLUO.cis orca.cis
     theodore analyze_tden -f den_ana_$FLUO.in > summ_den_ana_$FLUO.txt
     EHD1=$(grep "1(1)A " theo_$FLUO.txt | awk '{print $10}')
