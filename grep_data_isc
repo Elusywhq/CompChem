@@ -9,7 +9,7 @@ states=("s0" "s1" "t1")
 if [ -z "$1" ]; then
   output="data.csv"
 else
-  output=${1}_risc.csv
+  output=${1}_isc.csv
 fi
 
 echo "Molecule_Name,Functional,Fluorescence_Rate,ISC_Rate,npoints1,npoints2,K_Vector_sum,lamda_sum(cm-1),lamda_max_freq,lamda_maxmode_socme,HR_max_freq,HR_maxmode_socme,XYZ_S1_S0,XYZ_T1_S0,XYZ_T1_S1,ref_molecule" > $output
@@ -138,10 +138,6 @@ for molecule in $molecules; do
     cd ..
 done
 
-# {
-#     for ((i=0; i<${#MoleculeNames[@]}; i++)); do
-#         echo "${MoleculeNames[i]},${Functionals[i]},${spe_s0[i]},${spe_s1[i]},${spe_t1[i]},${energy_gap[i]},${fluorescence_rate[i]},${isc_rate_1[i]},${isc_rate_2[i]},${isc_rate_3[i]},${isc_rate_avg[i]},${risc_rate_1[i]},${risc_rate_2[i]},${risc_rate_3[i]},${risc_rate_avg[i]},${CT_S1[i]},${xyz_S1_S0[i]},${xyz_T1_S0[i]},${xyz_T1_S1[i]},${REF[i]}"
-#     done
-# } >> $output
+
 
 # echo "Data has been processed and saved to $output"
