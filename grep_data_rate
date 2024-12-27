@@ -48,7 +48,10 @@ for molecule in $molecules; do
         #     echo "!!!!!!!!!!!!!!!!!!! Job $file not finished"
         #     continue
         # fi
-
+        if [ ! -f "$GS.out" ]; then
+            echo "$GS.out not found"
+            continue
+        fi
         # check imaginary modes
         for s in $GS $ES $TS; do
             if [ ! -f "$s.hess" ]; then
@@ -173,6 +176,11 @@ for molecule in $molecules; do
             DIndex_S1=$(~/bin/ORCA/multiwfn_ana $FLUO s1)
         else 
             DIndex_S1=$(grep "D index" $FLUO.out | tail -n 1 | awk '{print $9}')
+        fi
+
+        if [ ! -f "$TS.xyz" ]; then
+            echo "$TS.xyz not found"
+            continue
         fi
 
         XYZ_S1_S0=$(calculate_rmsd $ES.xyz $GS.xyz 2>&1)
