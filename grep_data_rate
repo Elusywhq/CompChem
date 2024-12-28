@@ -1,7 +1,7 @@
 #!/bin/bash
 
 molecules=$(ls -d */ | sed 's:/*$::')
-molecules=("1OB1" "1OB2" "1OB3" "1OB4")
+# molecules=("1OB1" "1OB2" "1OB3" "1OB4")
 functionals=("O3LYP" "pbe0" "camB3LYP" "M062X" ) #"wB97XD4")
 states=("s0" "s1" "t1")
 echo "Molecules: ${molecules[@]}"
