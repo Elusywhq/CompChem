@@ -51,13 +51,29 @@ echo "Molecule list: ${molecule_list[@]}" # ; echo "Accepter list: ${accepter_li
 # donor2_list=("${donor2_list[0]}")
 
 # echo "Molecule list: ${molecule_list[@]}"
+if [ -n "$1" ]; then
+  molecule_list=("$1")
+  index=-1
+  for i in "${!molecule_list[@]}"; do
+    if [[ "${molecule_list[$i]}" == "$1" ]]; then
+      index=$i
+      break
+    fi
+  done
+  accepter_list=("${accepter_list[$index]}")
+  donor1_list=("${donor1_list[$index]}")
+  donor2_list=("${donor2_list[$index]}")
+fi
+
 i=0
 for molecule in "${molecule_list[@]}"; do
   molecule=${molecule_list[$i]}
   accepter=${accepter_list[$i]}
   donor1=${donor1_list[$i]}
   echo "Molecule: $molecule"  ; echo "Accepter: $accepter"; echo "Donor1: $donor1"; echo "Donor2: $donor2"
-  cd $molecule
+  if [ -z $1 ]; then 
+    cd $molecule
+  fi
   for f in 0 1 2; do
     func=${functionals[$f]}
     FLUO="$molecule"_"$func"_svp_s1_esd_fluo
@@ -83,7 +99,9 @@ for molecule in "${molecule_list[@]}"; do
     echo "$molecule,$func,$EHD1,$EHD2,$EHD3,$gap1,$gap2,$gap3,$exc_orb1,$exc_orb2,$exc_orb3" >> ../theo_ana.csv
 
   done
-  cd ..
+  if [ -z $1 ]; then
+    cd ..
+  fi
   i=$((i+1))
 done
 
