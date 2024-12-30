@@ -165,9 +165,6 @@ for molecule in ${molecules[@]}; do
         fi
 
         if [ -f "$FLUO.spectrum" ]; then
-            if [ "$func" == "O3LYP" ]; then
-                cp -v "$FLUO.spectrum" ../Spectrums/${molecule}.spectrum
-            fi
             emission=$(ORCA-GrepSpectrum "$FLUO.spectrum")
             emission_wave=$(echo "$emission" | awk '{printf "%.2f\n", 1e7/$1}')
         else
