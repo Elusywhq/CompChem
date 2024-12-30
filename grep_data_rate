@@ -165,7 +165,7 @@ for molecule in ${molecules[@]}; do
         fi
 
         if [ -f "$FLUO.spectrum" ]; then
-            if [ $func == "O3LYP" ]; then
+            if [ "$func" == "O3LYP" ]; then
                 cp "$FLUO.spectrum" ../Spectrums/${molecule}.spectrum
             fi
             emission=$(ORCA-GrepSpectrum "$FLUO.spectrum")
