@@ -1,0 +1,17 @@
+#!/bin/bash
+
+input_file=$1
+output_file=$2
+if [ ! -f $input_file ]; then
+    echo "Error: $input_file not found"
+    exit 1
+fi
+# Find the maximum value in the second column
+
+# max_value=$(awk '{if ($1 > max) max = $1} END {print max}' "$input_file")
+
+# Find the row with the maximum value in the second column
+TotalSpectrum=$(awk 'NR>1 && $2+0 > max {max = $2+0; row = $1} END {print row}' "$input_file")
+# 
+echo $TotalSpectrum
+# Find the row with the maximum value in the third column 
