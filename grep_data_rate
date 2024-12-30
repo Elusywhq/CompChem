@@ -163,8 +163,12 @@ for molecule in ${molecules[@]}; do
         else
             RISC_average=0.0000000000
         fi
-        emission=$(ORCA-GrepSpectrum "$FLUO.spectrum")
-        emission_wave=$(echo "$emission" | awk '{printf "%.2f\n", 1e7/$1}')
+        if [ -f "$FLUO.spectrum" ]; then
+            emission=$(ORCA-GrepSpectrum "$FLUO.spectrum")
+            emission_wave=$(echo "$emission" | awk '{printf "%.2f\n", 1e7/$1}')
+        else
+            emission_wave=0.00
+        fi
         # multiwfn_ana $FLUO s1
         # echo "RUNNING: multiwfn_ana $FLUO s1"
 
