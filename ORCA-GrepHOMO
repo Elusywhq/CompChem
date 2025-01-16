@@ -10,8 +10,8 @@ fi
 for file in "$@"; do
     
     file=${file%.*}
-    if [ ! -f "$file.out" ]; then
-        echo "File not found: $file.out"
+    if [ ! -f "$file.gbw" ]; then
+        echo "File not found: $file.gbw"
         continue
     fi
     # Check if the molden file exists
