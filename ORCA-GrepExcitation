@@ -2,6 +2,8 @@
 
 state=1
 quiet=0
+initial=0
+final=0
 
 process_file() {
   local file=$1
@@ -10,15 +12,10 @@ process_file() {
   local tstat=$((state+1))
 
   if grep -q "STATE 1" "$file"; then
-    local list=$(grep -A 15 "STATE  $state:" "$f.out" | tail -n 15 | grep -B 10 "STATE  $tstat:" | head -n -2 | sort -k5,5n | tail -n 1)
+    local list=$(grep -A 15 "STATE  $state:" "$f.out" | tail -n 20 | grep -B 15 "STATE  $tstat:" | head -n -2 | sort -k5,5n | tail -n 1)
     local from=$(echo "$list" | awk '{print $1}' | cut -d'a' -f1)
     local to=$(echo "$list" | awk '{print $3}' | cut -d'a' -f1)
     local nexcit=$((to-from))
-    if [ "$quiet" -eq 1 ]; then
-      echo "$nexcit"
-    else
-      echo -e "$f STATE $state: \t $from to $to \t $nexcit"
-    fi
   fi
 }
 
@@ -32,11 +29,29 @@ while [ "$#" -gt 0 ]; do
       state=$2
       shift 2
       ;;
+    -i)
+      initial=1
+      shift
+    -f)
+      final=1
+      shift
     *)
-      for file in "$@"; do
-        process_file "$file" "$state"
-      done
       break
       ;;
   esac
+done
+
+for file in "$@"; do
+  process_file "$file" "$state"
+  if [ "$quiet" -eq 1 ]; then
+    echo "$nexcit"
+    continue
+  elif [ "$initial" -eq 1 ]; then
+    echo "$from"
+  elif [ "$final" -eq 1 ]; then
+    echo "$to"
+  else
+    echo -e "$f STATE $state: \t $from to $to \t $nexcit"
+  fi
+
 done
