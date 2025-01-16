@@ -32,9 +32,11 @@ while [ "$#" -gt 0 ]; do
     -i)
       initial=1
       shift
+      ;;
     -f)
       final=1
       shift
+      ;;
     *)
       break
       ;;
