@@ -4,7 +4,7 @@ atom_list="$(dirname "$0")/atom_list"
 functionals=("O3LYP" "pbe0" "camB3LYP" "M062X")
 template="/home/svu/e0732532/software/TheoDORE_3.2/template"
 
-echo "Molecule_Name,Functional,Theodore_EHD1,Theodore_EHD2,Theodore_EHD3,Gap1,Gap2,Gap3,S1_Initial_1,S1_Initial_2,S1_Initial_3,CT1,CT2,CT3,TR1,TR2,TR3" > theo_ana.csv
+echo "Molecule_Name,Functional,HOMO,Theodore_EHD1,Theodore_EHD2,Theodore_EHD3,Gap1,Gap2,Gap3,CT1,CT2,CT3,S1_Initial_1,S1_Initial_2,S1_Initial_3,S1_Final_1,S1_Final_2,S1_Final_3,T1_Initial_1,T1_Initial_2,T1_Initial_3,T1_Final_1,T1_Final_2,T1_Final_3" > theo_ana.csv
 
 # echo "Reading atom list from $atom_list"
 if [[ $(hostname) == *"atlas"* ]]; then
@@ -82,9 +82,19 @@ for molecule in "${molecule_list[@]}"; do
     sed -e "s/NAME/$FLUO/g" $template > den_ana_$FLUO.in
     sed -i "s/DONOR/$donor1/g" den_ana_$FLUO.in
     sed -i "s/ACCEPTOR/$accepter/g" den_ana_$FLUO.in
-    exc_orb1=$(ORCA-GrepExcitation -q $FLUO.out)
-    exc_orb2=$(ORCA-GrepExcitation -q -s 2 $FLUO.out)
-    exc_orb3=$(ORCA-GrepExcitation -q -s 3 $FLUO.out)
+    S1_Initial_1=$(ORCA-GrepExcitation -i $FLUO.out)
+    S1_Initial_2=$(ORCA-GrepExcitation -i -s 2 $FLUO.out)
+    S1_Initial_3=$(ORCA-GrepExcitation -i -s 3 $FLUO.out)
+    S1_Final_1=$(ORCA-GrepExcitation -f $FLUO.out)
+    S1_Final_2=$(ORCA-GrepExcitation -f -s 2 $FLUO.out)
+    S1_Final_3=$(ORCA-GrepExcitation -f -s 3 $FLUO.out)
+    T1_Initial_1=$(ORCA-GrepExcitation -i -s 11 $FLUO.out)
+    T1_Initial_2=$(ORCA-GrepExcitation -i -s 12 $FLUO.out)
+    T1_Initial_3=$(ORCA-GrepExcitation -i -s 13 $FLUO.out)
+    T1_Final_1=$(ORCA-GrepExcitation -f -s 11 $FLUO.out)
+    T1_Final_2=$(ORCA-GrepExcitation -f -s 12 $FLUO.out)
+    T1_Final_3=$(ORCA-GrepExcitation -f -s 13 $FLUO.out)
+
     $ORCA_ROOT/orca_2mkl $input -molden > /dev/null 2>&1
     cp $FLUO.cis orca.cis
     theodore analyze_tden -f den_ana_$FLUO.in > summ_den_ana_$FLUO.txt
@@ -98,9 +108,10 @@ for molecule in "${molecule_list[@]}"; do
     CT2=$(grep "2(1)A " theo_$FLUO.txt | awk '{print $7}')
     CT3=$(grep "3(1)A " theo_$FLUO.txt | awk '{print $7}')
     echo "e-h disctance for $func: $EHD1, $EHD2, $EHD3"
-
-# echo "Molecule_Name,Functional,Theodore_EHD1,Theodore_EHD2,Theodore_EHD3,Gap1,Gap2,Gap3,Excitation_Orbital1, Excitation_Orbital2" > theo_ana.csv
-    echo "$molecule,$func,$EHD1,$EHD2,$EHD3,$gap1,$gap2,$gap3,$exc_orb1,$exc_orb2,$exc_orb3,$CT1,$CT2,$CT3,$TR1,$TR2,$TR3" >> ../theo_ana.csv
+    # echo "Gap for $func: $gap1, $gap2, $gap3"
+    echo "CT for $func: $CT1, $CT2, $CT3"
+# echo "Molecule_Name,Functional,HOMO,Theodore_EHD1,Theodore_EHD2,Theodore_EHD3,Gap1,Gap2,Gap3,CT1,CT2,CT3,S1_Initial_1,S1_Initial_2,S1_Initial_3,S1_Final_1,S1_Final_2,S1_Final_3,T1_Initial_1,T1_Initial_2,T1_Initial_3,T1_Final_1,T1_Final_2,T1_Final_3"
+    echo "$molecule,$func,$HOMO,$EHD1,$EHD2,$EHD3,$gap1,$gap2,$gap3,$exc_orb3,$CT1,$CT2,$CT3,$S1_Initial_1,$S1_Initial_2,$S1_Initial_3,$S1_Final_1,$S1_Final_2,$S1_Final_3,$T1_Initial_1,$T1_Initial_2,$T1_Initial_3,$T1_Final_1,$T1_Final_2,$T1_Final_3" >> ../theo_ana.csv
 
   done
   if [ -z $1 ]; then
