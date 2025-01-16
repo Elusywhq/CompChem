@@ -13,9 +13,9 @@ process_file() {
 
   if grep -q "STATE 1" "$file"; then
     local list=$(grep -A 15 "STATE  $state:" "$f.out" | tail -n 20 | grep -B 15 "STATE  $tstat:" | head -n -2 | sort -k5,5n | tail -n 1)
-    local from=$(echo "$list" | awk '{print $1}' | cut -d'a' -f1)
-    local to=$(echo "$list" | awk '{print $3}' | cut -d'a' -f1)
-    local nexcit=$((to-from))
+     from=$(echo "$list" | awk '{print $1}' | cut -d'a' -f1)
+     to=$(echo "$list" | awk '{print $3}' | cut -d'a' -f1)
+     nexcit=$((to-from))
   fi
 }
 
