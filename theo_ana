@@ -82,6 +82,9 @@ for molecule in "${molecule_list[@]}"; do
     sed -e "s/NAME/$FLUO/g" $template > den_ana_$FLUO.in
     sed -i "s/DONOR/$donor1/g" den_ana_$FLUO.in
     sed -i "s/ACCEPTOR/$accepter/g" den_ana_$FLUO.in
+
+    HOMO=$(ORCA-GrepHOMO -q $FLUO.out)
+
     S1_Initial_1=$(ORCA-GrepExcitation -i $FLUO.out)
     S1_Initial_2=$(ORCA-GrepExcitation -i -s 2 $FLUO.out)
     S1_Initial_3=$(ORCA-GrepExcitation -i -s 3 $FLUO.out)
@@ -94,7 +97,7 @@ for molecule in "${molecule_list[@]}"; do
     T1_Final_1=$(ORCA-GrepExcitation -f -s 11 $FLUO.out)
     T1_Final_2=$(ORCA-GrepExcitation -f -s 12 $FLUO.out)
     T1_Final_3=$(ORCA-GrepExcitation -f -s 13 $FLUO.out)
-
+    
     $ORCA_ROOT/orca_2mkl $input -molden > /dev/null 2>&1
     cp $FLUO.cis orca.cis
     theodore analyze_tden -f den_ana_$FLUO.in > summ_den_ana_$FLUO.txt
