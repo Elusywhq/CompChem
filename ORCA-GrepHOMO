@@ -1,27 +1,42 @@
 #!/bin/bash
 
+quiet_mode=false
+
+if [ "$1" == "-q" ]; then
+    quiet_mode=true
+    shift
+fi
+
 for file in "$@"; do
-  
-  file=${file%.*}
-  # Check if the molden file exists
-  if [ ! -f "$file.molden.input" ]; then
-    echo "File not found: $file.molden.input"
-    $ORCA_ROOT/orca_2mkl "$file" -molden  
-  fi
-  # Grep the HOMO + 1 orbital
-  HOMO1=$(grep "Occup= 2" $file.molden.input | wc -l)
+    
+    file=${file%.*}
+    if [ ! -f "$file.out" ]; then
+        echo "File not found: $file.out"
+        continue
+    fi
+    # Check if the molden file exists
+    if [ ! -f "$file.molden.input" ]; then
+        echo "File not found: $file.molden.input"
+        $ORCA_ROOT/orca_2mkl "$file" -molden  
+    fi
+    # Grep the HOMO + 1 orbital
+    HOMO1=$(grep "Occup= 2" $file.molden.input | wc -l)
 
-  if [ "$HOMO1" -eq 0 ]; then
-    HOMO1=$(grep "Occup= 1" $file.molden.input | wc -l)
-  fi  
+    if [ "$HOMO1" -eq 0 ]; then
+        HOMO1=$(grep "Occup= 1" $file.molden.input | wc -l)
+    fi  
 
-  if [ "$HOMO1" -gt 0 ]; then
-    HOMO=$(($HOMO1 - 1))
-    echo "$file: $HOMO"
-  else 
-    echo "HOMO is not positive, please check file: $file.molden.input"
-    continue
-  fi
+    if [ "$HOMO1" -gt 0 ]; then
+        HOMO=$(($HOMO1 - 1))
+        if [ "$quiet_mode" = true ]; then
+            echo "$HOMO"
+        else
+            echo "$file: $HOMO"
+        fi
+    else 
+        echo "HOMO is not positive, please check file: $file.molden.input"
+        continue
+    fi
 
 done
 
