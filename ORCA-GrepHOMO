@@ -17,10 +17,11 @@ for file in "$@"; do
 
   if [ "$HOMO1" -gt 0 ]; then
     HOMO=$(($HOMO1 - 1))
+    echo "$file: $HOMO"
   else 
     echo "HOMO is not positive, please check file: $file.molden.input"
     continue
   fi
-  
+
 done
 
