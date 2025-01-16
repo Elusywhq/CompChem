@@ -9,10 +9,10 @@ for file in "$@"; do
     $ORCA_ROOT/orca_2mkl "$file" -molden  
   fi
   # Grep the HOMO + 1 orbital
-  HOMO1=(grep "Occup= 2" $file.molden.input | wc -l)
+  HOMO1=$(grep "Occup= 2" $file.molden.input | wc -l)
 
   if [ "$HOMO1" -eq 0 ]; then
-    HOMO1=(grep "Occup= 1" $file.molden.input | wc -l)
+    HOMO1=$(grep "Occup= 1" $file.molden.input | wc -l)
   fi  
 
   if [ "$HOMO1" -gt 0 ]; then
