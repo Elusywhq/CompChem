@@ -4,7 +4,7 @@ atom_list="$(dirname "$0")/atom_list"
 functionals=("O3LYP" "pbe0" "camB3LYP" "M062X")
 template="/home/svu/e0732532/software/TheoDORE_3.2/template"
 
-echo "Molecule_Name,Functional,Theodore_EHD1,Theodore_EHD2,Theodore_EHD3,Gap1,Gap2,Gap3,Excitation_Orbital1,Excitation_Orbital2,Excitation_Orbital3,CT1,CT2,CT3" > theo_ana.csv
+echo "Molecule_Name,Functional,Theodore_EHD1,Theodore_EHD2,Theodore_EHD3,Gap1,Gap2,Gap3,S1_Initial_1,S1_Initial_2,S1_Initial_3,CT1,CT2,CT3,TR1,TR2,TR3" > theo_ana.csv
 
 # echo "Reading atom list from $atom_list"
 if [[ $(hostname) == *"atlas"* ]]; then
@@ -100,7 +100,7 @@ for molecule in "${molecule_list[@]}"; do
     echo "e-h disctance for $func: $EHD1, $EHD2, $EHD3"
 
 # echo "Molecule_Name,Functional,Theodore_EHD1,Theodore_EHD2,Theodore_EHD3,Gap1,Gap2,Gap3,Excitation_Orbital1, Excitation_Orbital2" > theo_ana.csv
-    echo "$molecule,$func,$EHD1,$EHD2,$EHD3,$gap1,$gap2,$gap3,$exc_orb1,$exc_orb2,$exc_orb3,$CT1,$CT2,$CT3" >> ../theo_ana.csv
+    echo "$molecule,$func,$EHD1,$EHD2,$EHD3,$gap1,$gap2,$gap3,$exc_orb1,$exc_orb2,$exc_orb3,$CT1,$CT2,$CT3,$TR1,$TR2,$TR3" >> ../theo_ana.csv
 
   done
   if [ -z $1 ]; then
