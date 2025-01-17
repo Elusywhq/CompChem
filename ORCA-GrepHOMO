@@ -24,6 +24,7 @@ for file in "$@"; do
 
     if [ "$HOMO1" -eq 0 ]; then
         HOMO1=$(grep "Occup= 1" $file.molden.input | wc -l)
+        HOMO1=$(($HOMO1 / 2))
     fi  
 
     if [ "$HOMO1" -gt 0 ]; then
