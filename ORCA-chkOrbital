@@ -23,7 +23,7 @@ for filename in "$@"; do
     LUMO=$(($HOMO + 1))
     # echo $HOMO
     from=$(($HOMO - 10))
-    to=$(($HOMO + 5))
+    to=$(($HOMO + 12))
     # for ((i=0; i<norb; i++)); do
     #     Ene=$(grep "Ene=" $file.molden.input | sed -n "$((i+1))p" | awk '{print $2}')
     #     Occup=$(grep "Occup" $file.molden.input | sed -n "$((i+1))p" | awk '{print $2}')
@@ -44,7 +44,7 @@ for filename in "$@"; do
     if $quiet_mode; then
         echo "$excited_orbital"
     else
-        grep "SPIN UP ORBITALS" $file.out -A $to | tail -n 8  | sort -k3 -n | grep $LUMO -B 3 -A 3
+        grep "ORBITAL ENERGIES" $file.out -A $to | tail -n 8  | sort -k3 -n | grep $LUMO -B 3 -A 3
         echo "$excited_orbital -> $LUMO"
     fi
 done
