@@ -5,16 +5,16 @@
 if [[ $(hostname) == *"atlas"* ]]; then
   Host="hpc"
   scratch=/hpctmp/e0732532
-  echo "atlas"
+#   echo "atlas"
 #   echo $scratch
 elif [[ $(hostname) == *"asp2a"* ]]; then
   Host="nscc"
   scratch=/home/users/nus/$USER/scratch/orcacalc
-  echo "nscc"
+#   echo "nscc"
 elif [[ $(hostname) == *"Precision"* ]]; then
   Host="bohr"
   scratch=/home/scratch/hanqi/orca
-  echo "bohr"
+#   echo "bohr"
 fi
 
 if [ "$1" == "-q" ]; then
