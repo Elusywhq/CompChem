@@ -21,7 +21,7 @@ for filename in "$@"; do
     norb=$(grep "Alpha" $file.molden.input | wc -l)
     HOMO=$(ORCA-GrepHOMO -q $file)
     LUMO=$(($HOMO + 1))
-    # echo $HOMO
+    echo "HOMO: $HOMO"
     from=$(($HOMO - 10))
     to=$(($HOMO + 12))
     occ=$(grep "ORBITAL ENERGIES" $file.out -A 5 | tail -n 1 | awk '{print $2}')
@@ -35,6 +35,7 @@ for filename in "$@"; do
     fi
 
     # grep "$search" $file.out -A $to | tail -n 20 | sort -k3 -n | grep $LUMO -B 3 -A 3
+    grep "$search"  $file.out -A $to | tail -n 20  | sort -k3 -n | grep $LUMO -B 1
     orbital=$(grep "$search"  $file.out -A $to | tail -n 20  | sort -k3 -n | grep $LUMO -B 1 | head -n 1 | awk '{print $1}')
     excited_orbital=$(($orbital + 1))
     
