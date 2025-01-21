@@ -2,7 +2,7 @@
 
 atom_list="$(dirname "$0")/atom_list"
 functionals=("O3LYP" "pbe0" "camB3LYP" "M062X")
-template="/home/svu/e0732532/software/TheoDORE_3.2/template"
+template="$(dirname "$0")/dens_ana_template"
 
 echo "Molecule_Name,Functional,HOMO,Theodore_EHD1,Theodore_EHD2,Theodore_EHD3,Gap1,Gap2,Gap3,CT1,CT2,CT3,S1_Initial,S2_Initial,S3_Initial,S1_Final,S2_Final,S3_Final,T1_Initial,T2_Initial,T3_Initial,T1_Final,T2_Final,T3_Final,S1_Dscf_excit,S2_Dscf_excit,PRNTO_ST,CT_ST" > theo_ana.csv
 
