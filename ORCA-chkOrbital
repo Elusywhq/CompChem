@@ -23,29 +23,25 @@ for filename in "$@"; do
     LUMO=$(($HOMO + 1))
     # echo $HOMO
     from=$(($HOMO - 10))
-    to=$(($HOMO + 22))
-    # for ((i=0; i<norb; i++)); do
-    #     Ene=$(grep "Ene=" $file.molden.input | sed -n "$((i+1))p" | awk '{print $2}')
-    #     Occup=$(grep "Occup" $file.molden.input | sed -n "$((i+1))p" | awk '{print $2}')
-    #     # echo -e "$i\t $Ene" > $op
-    # done
-    # output=""
-    # for ((i=$from; i<$to; i++)); do
-    #     Ene=$(grep "Ene=" $file.molden.input | sed -n "$((i+1))p" | awk '{print $2}')
-    #     Occup=$(grep "Occup" $file.molden.input | sed -n "$((i+1))p" | awk '{print $2}')
-    #     output+="$i\t $Ene\t $Occup\n"
-    # done
-    # echo -e "$output" | sort -k2 -n
-    # echo $HOMO
-    # grep "SPIN UP ORBITALS" $file.out -A $to | tail -n 8  | sort -k3 -n | grep $LUMO -B 3 -A 3
-    grep "ORBITAL ENERGIES" $file.out -A $to | tail -n 10 | sort -k3 -n | grep $LUMO -B 3 -A 3
-    orbital=$(grep "SPIN UP ORBITALS" $file.out -A $to | tail -n 8  | sort -k3 -n | grep $LUMO -B 1 | head -n 1 | awk '{print $1}')
+    to=$(($HOMO + 12))
+    occ=$(grep "ORBITAL ENERGIES" $file.out -A 5 | tail -n 1 | awk '{print $2}')
+
+    if [ "$(echo "$occ == 1.0" | bc)" -eq 1 ]; then
+        # echo "1"
+        search="SPIN UP ORBITALS"
+    else
+        # echo "Not 1"
+        search="ORBITAL ENERGIES"
+    fi
+
+    grep "$search" $file.out -A $to | tail -n 20 | sort -k3 -n | grep $LUMO -B 3 -A 3
+    orbital=$(grep "$search"  $file.out -A $to | tail -n 8  | sort -k3 -n | grep $LUMO -B 1 | head -n 1 | awk '{print $1}')
     excited_orbital=$(($orbital + 1))
     
     if $quiet_mode; then
         echo "$excited_orbital"
     else
-        grep "ORBITAL ENERGIES" $file.out -A $to | tail -n 10 | sort -k3 -n | grep $LUMO -B 3 -A 3
+         grep "$search" $file.out -A $to | tail -n 10 | sort -k3 -n | grep $LUMO -B 3 -A 3
         echo "$excited_orbital -> $LUMO"
     fi
 done
