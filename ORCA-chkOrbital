@@ -35,13 +35,13 @@ for filename in "$@"; do
     fi
 
     grep "$search" $file.out -A $to | tail -n 20 | sort -k3 -n | grep $LUMO -B 3 -A 3
-    orbital=$(grep "$search"  $file.out -A $to | tail -n 8  | sort -k3 -n | grep $LUMO -B 1 | head -n 1 | awk '{print $1}')
+    orbital=$(grep "$search"  $file.out -A $to | tail -n 20  | sort -k3 -n | grep $LUMO -B 1 | head -n 1 | awk '{print $1}')
     excited_orbital=$(($orbital + 1))
     
     if $quiet_mode; then
         echo "$excited_orbital"
     else
-         grep "$search" $file.out -A $to | tail -n 10 | sort -k3 -n | grep $LUMO -B 3 -A 3
+         grep "$search" $file.out -A $to | tail -n 20 | sort -k3 -n | grep $LUMO -B 3 -A 3
         echo "$excited_orbital -> $LUMO"
     fi
 done
