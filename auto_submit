@@ -71,3 +71,23 @@ for molecule in $molecules; do
     done
     cd ..
 done
+
+
+for molecule in $molecules; do
+    cd $molecule
+    opt_files=$(ls *M062*opt*inp)
+    esd_files=$(ls *M062*esd*inp)
+
+    for file in $opt_files; do
+        if qjlist | grep -q "${file%.inp}"; then
+            echo "${file%.inp} is in the queue, skipping"
+        elif [ -f "${file%.inp}".out ]; then
+            echo "${file%.inp} is in the queue, skipping"
+        else
+            echo "${file%.inp} is not in the queue, submitting the job"
+            ORCA-submission -m 240 -n ${file%.inp} 
+            # qsub ${file%.inp}.sh > ${file%.inp}.pbss
+        fi
+    done
+
+done
