@@ -137,9 +137,8 @@ for molecule in $molecules; do
             qsub ${file%.inp}.sh > ${file%.inp}.pbs
             cat ${file%.inp}.pbs
         fi
-done
+
+        echo "done"
+    done
     cd ..
-
-
-
 done
