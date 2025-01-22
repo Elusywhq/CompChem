@@ -29,105 +29,45 @@ for molecule in $molecules; do
         RISC_2="$molecule"_"$functional"_svp_t1_esd_risc_T2
         
 
-        # Check Ground state file 
-        if [ ! -f "$GS.out" ]; then
-            echo "#### File not found: $GS.out"
-            echo "Submitting file"
-            if [ -f $molecule.xyz ]; then
-                echo "Running:: ORCA-Input $molecule $molecyule.xyz $s0 $optfreq $m062x"
-                ORCA-Input $molecule $molecyule.xyz $s0 $optfreq $m062x > /dev/null
-            fi
-
-            if [ -f ${molecule}_S0.xyz ]; then
-                echo "Running:: ORCA-Input $molecule ${molecule}_S0.xyz $s0 $optfreq $m062x"
-                ORCA-Input $molecule ${molecule}_S0.xyz $s0 $optfreq $m062x > /dev/null
-            fi
-        else 
-            finished=$(grep -c "****ORCA TERMINATED NORMALLY****" $GS.out)
-            if [ $finish -eq 1 ]; then
-                echo "#### $GS.out ORCA terminated normally."
-            else
-                echo "#### $GS.out ORCA did not terminate normally."
-                if [ -f $molecule.xyz ]; then
-                    echo "Running:: ORCA-Input $molecule $molecyule.xyz $s0 $optfreq $m062x"
-                    ORCA-Input $molecule $molecyule.xyz $s0 $optfreq $m062x > /dev/null
-                fi
-
-                if [ -f ${molecule}_S0.xyz ]; then
-                    echo "Running:: ORCA-Input $molecule ${molecule}_S0.xyz $s0 $optfreq $m062x"
-                    ORCA-Input $molecule ${molecule}_S0.xyz $s0 $optfreq $m062x > /dev/null
-                fi
-            fi
+        # Generate Ground state input 
+        if [ -f $molecule.xyz ]; then
+            echo "Running:: ORCA-Input $molecule $molecule.xyz $s0 $optfreq $m062x"
+            ORCA-Input $molecule $molecule.xyz $s0 $optfreq $m062x > /dev/null
         fi
+
+        if [ -f ${molecule}_S0.xyz ]; then
+            echo "Running:: ORCA-Input $molecule ${molecule}_S0.xyz $s0 $optfreq $m062x"
+            ORCA-Input $molecule ${molecule}_S0.xyz $s0 $optfreq $m062x > /dev/null
+        fi
+
+        # Generate S1
+        echo "Running:: ORCA-Input $molecule $GS.xyz $s1 $optfreq $m062x $Dscf "
+        ORCA-Input $molecule $GS.xyz $s1 $optfreq $m062x $Dscf > /dev/null
+
+        # Generate T1
+
+        if [ -f ${molecule}_T1.xyz ]; then
+            echo "Running:: ORCA-Input $molecule ${molecule}_T1.xyz $t1 $optfreq $m062x 1"
+            ORCA-Input $molecule ${molecule}_T1.xyz $t1 $optfreq $m062x 1 > /dev/null
+            echo "Running:: ORCA-Input $molecule ${molecule}_T1.xyz $t1 $optfreq $m062x $Dscf"
+            ORCA-Input $molecule ${molecule}_T1.xyz $t1 $optfreq $m062x $Dscf > /dev/null
+        else
+            echo "ORCA-Input $molecule $GS.xyz $t1 $optfreq $m062x 1"
+            OORCA-Input $molecule $GS.xyz $t1 $optfreq $m062x 1 > /dev/null
+            echo "Running:: ORCA-Input $molecule $GS.xyz $t1 $optfreq $m062x $Dscf"
+            ORCA-Input $molecule $GS.xyz $t1 $optfreq $m062x $Dscf > /dev/null
+        fi
+      
+        # Generate Fluorescence
+        echo "Running:: ORCA-Input $molecule $GS.xyz $s0 $fluo $m062x"
+        ORCA-Input $molecule  $molecule $GS.xyz $s0 $fluo $m062x > /dev/null
+
+        # Generate ISC and RISC
+        for esd in $(seq 5 6); do
+            echo "Running:: ORCA-Input $molecule $GS.xyz $t1 $esd $m062x $Dscf"
+            ORCA-Input $molecule $GS.xyz $t1 $esd $m062x > /dev/null
+        done
         
-        # Check Excited state file
-        if [ ! -f $ES.out ]; then
-            echo "#### File not found: $ES.out"
-            echo "Submitting file"
-
-            echo "Running:: ORCA-Input $molecule $GS.xyz $s1 $Dscf $m062x"
-            ORCA-Input $molecule $molecyule.xyz $s1 $Dscf $m062x > /dev/null
-        else
-            finished=$(grep -c "****ORCA TERMINATED NORMALLY****" $ES.out)
-            if [ $finish -eq 1 ]; then
-                echo "#### $ES.out ORCA terminated normally."
-            else
-                echo "#### $ES.out ORCA did not terminate normally."
-                echo "Running:: ORCA-Input $molecule $GS.xyz $s1 $Dscf $m062x"
-                ORCA-Input $molecule $molecyule.xyz $s1 $Dscf $m062x > /dev/null
-            fi
-        fi
-
-        if [ ! -f $TS.out ]; then 
-            echo "#### File not found: $TS.out"
-            echo "Submitting file"
-
-            echo "Running:: ORCA-Input $molecule $GS.xyz $t1 $Dscf $m062x"
-            ORCA-Input $molecule $molecyule.xyz $t1 $Dscf $m062x > /dev/null
-        else
-            finished=$(grep -c "****ORCA TERMINATED NORMALLY****" $TS.out)
-            if [ $finish -eq 1 ]; then
-                echo "#### $TS.out ORCA terminated normally."
-            else
-                echo "#### $TS.out ORCA did not terminate normally."
-                echo "Running:: ORCA-Input $molecule $GS.xyz $t1 $Dscf $m062x"
-                ORCA-Input $molecule $molecyule.xyz $t1 $Dscf $m062x > /dev/null
-            fi
-        fi
-        
-        if [ ! -f $TS_scf.out ]; then
-            echo "#### File not found: $TS_scf.out"
-            echo "Submitting file"
-
-            echo "Running:: ORCA-Input $molecule $GS.xyz $t1 $tddft $m062x"
-            ORCA-Input $molecule $molecyule.xyz $t1 $tddft $m062x > /dev/null
-        else
-            finished=$(grep -c "****ORCA TERMINATED NORMALLY****" $TS_scf.out)
-            if [ $finish -eq 1 ]; then
-                echo "#### $TS_scf.out ORCA terminated normally."
-            else
-                echo "#### $TS_scf.out ORCA did not terminate normally."
-                echo "Running:: ORCA-Input $molecule $GS.xyz $t1 $tddft $m062x"
-                ORCA-Input $molecule $molecyule.xyz $t1 $tddft $m062x > /dev/null
-            fi
-        fi        
-
-        if [ ! -f $FLUO.out ]; then
-            echo "#### File not found: $FLUO.out"
-            echo "Submitting file"
-
-            echo "Running:: ORCA-Input $molecule $GS.xyz $s0 $fluo $m062x"
-            ORCA-Input $molecule  $molecule $GS.xyz $s0 $fluo $m062x > /dev/null
-        else
-            finished=$(grep -c "****ORCA TERMINATED NORMALLY****" $FLUO.out)
-            if [ $finish -eq 1 ]; then
-                echo "#### $FLUO.out ORCA terminated normally."
-            else
-                echo "#### $FLUO.out ORCA did not terminate normally."
-                echo "Running:: ORCA-Input  $molecule $GS.xyz $s0 $fluo $m062x"
-                ORCA-Input $molecule  $molecule $GS.xyz $s0 $fluo $m062x > /dev/null
-            fi
-        fi
     done
     cd ..
 done
