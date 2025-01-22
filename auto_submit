@@ -45,10 +45,10 @@ for molecule in $molecules; do
         ORCA-Input $molecule $GS.xyz $s1 $optfreq $m062x $Dscf > /dev/null
         echo "Running:: ORCA-Input $molecule $GS.xyz $s1 $optfreq $m062x $tddft "
         ORCA-Input $molecule $GS.xyz $s1 $optfreq $m062x $tddft > /dev/null
-        
+
         # Generate T1
         echo "ORCA-Input $molecule $GS.xyz $t1 $optfreq $m062x 1"
-        OORCA-Input $molecule $GS.xyz $t1 $optfreq $m062x 1 > /dev/null
+        ORCA-Input $molecule $GS.xyz $t1 $optfreq $m062x 1 > /dev/null
         echo "Running:: ORCA-Input $molecule $GS.xyz $t1 $optfreq $m062x $Dscf"
         ORCA-Input $molecule $GS.xyz $t1 $optfreq $m062x $Dscf > /dev/null
 
