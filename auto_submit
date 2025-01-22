@@ -8,69 +8,69 @@ states=("s0" "s1" "t1")
   o3lyp=1; pbe0=2; cam=3; m062x=4; wb97x=5
   tddft=1;Dscf=2
   optfreq=1; fluo=4; isc=5; risc=6
-# for molecule in $molecules; do
-#     # echo "molecule: $molecule"
-#     if [[ ! "$molecule" =~ ^[0-9] ]]; then
-#       continue
-#     fi
-#     cd $molecule
-#     echo "Molecule: $molecule"
+for molecule in $molecules; do
+    # echo "molecule: $molecule"
+    if [[ ! "$molecule" =~ ^[0-9] ]]; then
+      continue
+    fi
+    cd $molecule
+    echo "Molecule: $molecule"
 
-#     for functional in "${functionals[@]}"; do
-#         GS="$molecule"_"$functional"_svp_s0_scf_optfreq
-#         ES=${molecule}_${functional}_svp_s1_Dscf_optfreq
-#         ES_tddft=${molecule}_${functional}_svp_s1_tddft_optfreq
-#         TS="$molecule"_"$functional"_svp_t1_Dscf_optfreq
-#         TS_scf="$molecule"_"$functional"_svp_t1_scf_optfreq
-#         FLUO="$molecule"_"$functional"_svp_s1_esd_fluo
-#         ISC_1="$molecule"_"$functional"_svp_t1_esd_isc_T1
-#         ISC_2="$molecule"_"$functional"_svp_t1_esd_isc_T2
-#         RISC_1="$molecule"_"$functional"_svp_t1_esd_risc_T1
-#         RISC_2="$molecule"_"$functional"_svp_t1_esd_risc_T2
+    for functional in "${functionals[@]}"; do
+        GS="$molecule"_"$functional"_svp_s0_scf_optfreq
+        ES=${molecule}_${functional}_svp_s1_Dscf_optfreq
+        ES_tddft=${molecule}_${functional}_svp_s1_tddft_optfreq
+        TS="$molecule"_"$functional"_svp_t1_Dscf_optfreq
+        TS_scf="$molecule"_"$functional"_svp_t1_scf_optfreq
+        FLUO="$molecule"_"$functional"_svp_s1_esd_fluo
+        ISC_1="$molecule"_"$functional"_svp_t1_esd_isc_T1
+        ISC_2="$molecule"_"$functional"_svp_t1_esd_isc_T2
+        RISC_1="$molecule"_"$functional"_svp_t1_esd_risc_T1
+        RISC_2="$molecule"_"$functional"_svp_t1_esd_risc_T2
         
 
-#         # Generate Ground state input 
-#         if [ -f $molecule.xyz ]; then
-#             echo "Running:: ORCA-Input $molecule $molecule.xyz $s0 $optfreq $m062x"
-#             ORCA-Input $molecule $molecule.xyz $s0 $optfreq $m062x > /dev/null
-#         fi
+        # Generate Ground state input 
+        if [ -f $molecule.xyz ]; then
+            echo "Running:: ORCA-Input $molecule $molecule.xyz $s0 $optfreq $m062x"
+            ORCA-Input $molecule $molecule.xyz $s0 $optfreq $m062x > /dev/null
+        fi
 
-#         if [ -f ${molecule}_S0.xyz ]; then
-#             echo "Running:: ORCA-Input $molecule ${molecule}_S0.xyz $s0 $optfreq $m062x"
-#             ORCA-Input $molecule ${molecule}_S0.xyz $s0 $optfreq $m062x > /dev/null
-#         fi
+        if [ -f ${molecule}_S0.xyz ]; then
+            echo "Running:: ORCA-Input $molecule ${molecule}_S0.xyz $s0 $optfreq $m062x"
+            ORCA-Input $molecule ${molecule}_S0.xyz $s0 $optfreq $m062x > /dev/null
+        fi
 
-#         # Generate S1
-#         echo "Running:: ORCA-Input $molecule $GS.xyz $s1 $optfreq $m062x $Dscf "
-#         ORCA-Input $molecule $GS.xyz $s1 $optfreq $m062x $Dscf > /dev/null
+        # Generate S1
+        echo "Running:: ORCA-Input $molecule $GS.xyz $s1 $optfreq $m062x $Dscf "
+        ORCA-Input $molecule $GS.xyz $s1 $optfreq $m062x $Dscf > /dev/null
 
-#         # Generate T1
+        # Generate T1
 
-#         if [ -f ${molecule}_T1.xyz ]; then
-#             echo "Running:: ORCA-Input $molecule ${molecule}_T1.xyz $t1 $optfreq $m062x 1"
-#             ORCA-Input $molecule ${molecule}_T1.xyz $t1 $optfreq $m062x 1 > /dev/null
-#             echo "Running:: ORCA-Input $molecule ${molecule}_T1.xyz $t1 $optfreq $m062x $Dscf"
-#             ORCA-Input $molecule ${molecule}_T1.xyz $t1 $optfreq $m062x $Dscf > /dev/null
-#         else
-#             echo "ORCA-Input $molecule $GS.xyz $t1 $optfreq $m062x 1"
-#             OORCA-Input $molecule $GS.xyz $t1 $optfreq $m062x 1 > /dev/null
-#             echo "Running:: ORCA-Input $molecule $GS.xyz $t1 $optfreq $m062x $Dscf"
-#             ORCA-Input $molecule $GS.xyz $t1 $optfreq $m062x $Dscf > /dev/null
-#         fi
+        if [ -f ${molecule}_T1.xyz ]; then
+            echo "Running:: ORCA-Input $molecule ${molecule}_T1.xyz $t1 $optfreq $m062x 1"
+            ORCA-Input $molecule ${molecule}_T1.xyz $t1 $optfreq $m062x 1 > /dev/null
+            echo "Running:: ORCA-Input $molecule ${molecule}_T1.xyz $t1 $optfreq $m062x $Dscf"
+            ORCA-Input $molecule ${molecule}_T1.xyz $t1 $optfreq $m062x $Dscf > /dev/null
+        else
+            echo "ORCA-Input $molecule $GS.xyz $t1 $optfreq $m062x 1"
+            OORCA-Input $molecule $GS.xyz $t1 $optfreq $m062x 1 > /dev/null
+            echo "Running:: ORCA-Input $molecule $GS.xyz $t1 $optfreq $m062x $Dscf"
+            ORCA-Input $molecule $GS.xyz $t1 $optfreq $m062x $Dscf > /dev/null
+        fi
       
-#         # Generate Fluorescence
-#         echo "Running:: ORCA-Input $molecule $GS.xyz $s0 $fluo $m062x"
-#         ORCA-Input $molecule  $molecule $GS.xyz $s0 $fluo $m062x > /dev/null
+        # Generate Fluorescence
+        echo "Running:: ORCA-Input $molecule $GS.xyz $s0 $fluo $m062x"
+        ORCA-Input $molecule  $molecule $GS.xyz $s0 $fluo $m062x > /dev/null
 
-#         # Generate ISC and RISC
-#         for esd in $(seq 5 6); do
-#             echo "Running:: ORCA-Input $molecule $GS.xyz $t1 $esd $m062x $Dscf"
-#             ORCA-Input $molecule $GS.xyz $t1 $esd $m062x > /dev/null
-#         done
+        # Generate ISC and RISC
+        for esd in $(seq 5 6); do
+            echo "Running:: ORCA-Input $molecule $GS.xyz $t1 $esd $m062x $Dscf"
+            ORCA-Input $molecule $GS.xyz $t1 $esd $m062x > /dev/null
+        done
         
-#     done
-#     cd ..
-# done
+    done
+    cd ..
+done
 
 
 for molecule in $molecules; do
