@@ -61,7 +61,7 @@ for molecule in $molecules; do
       
         # Generate Fluorescence
         echo "Running:: ORCA-Input $molecule $GS.xyz $s0 $fluo $m062x"
-        ORCA-Input $molecule  $molecule $GS.xyz $s0 $fluo $m062x > /dev/null
+        ORCA-Input $molecule $GS.xyz $s1 $fluo $m062x > /dev/null
 
         # Generate ISC and RISC
         for esd in $(seq 5 6); do
