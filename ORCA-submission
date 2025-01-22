@@ -126,6 +126,7 @@ sed -i "s/RN/$name.inp/g" ./$name.sh
 sed -i "s/MRY/$memory/g" ./$name.sh
 sed -i "s/WT/$wt/g" ./$name.sh
 orca_root=$(echo $ORCA_ROOT)
+echo $orca_root
 set -i "s/PATHTOORCA/$orca_root/g" ./$name.sh
 
 if [ "$scr" = false ]; then
