@@ -105,38 +105,39 @@ for molecule in $molecules; do
             if [ $finish -eq 1 ]; then
                 echo "${file%.inp} is finished, skipping"
                 continue
+            else
+                echo "${file%.inp} is not finished, resubmitting"
             fi
-        else
-            echo "${file%.inp} is not in the queue, submitting the job"
-
-            ORCA-submission -m 240 -n ${file%.inp} 
-            XYZFILE=`grep "* XYZFILE" $file | awk '{print $5}'` 
-            gsid=$(cat ${XYZFILE%.*}.pbs)
-            if [ "${file%.inp}" == "$ES" ]; then
-                if [ ! -f $XYZFILE ]; then
-                    qsub -W depend=afterok:$gsis ${file%.inp}.sh > ${file%.inp}.pbs4
-                    cat ${file%.inp}.pbs
-                    continue
-                else
-                    qsub ${file%.inp}.sh > ${file%.inp}.pbs
-                    cat ${file%.inp}.pbs
-                    continue
-                fi
-            elif [ "$file" == "$TS" ]; then
-                if [ ! -f $XYZFILE ]; then
-                    gsid=$(cat ${XYZFILE%.*}.pbs)
-                    qsub -W depend=afterok:$gsis ${file%.inp}.sh > ${file%.inp}.pbs4
-                    cat ${file%.inp}.pbs
-                    continue
-                else
-                    qsub ${file%.inp}.sh > ${file%.inp}.pbs
-                    cat ${file%.inp}.pbs
-                    continue
-                fi
-            fi
-            qsub ${file%.inp}.sh > ${file%.inp}.pbs
-            cat ${file%.inp}.pbs
         fi
+
+        echo "${file%.inp} is not in the queue, submitting the job"
+        ORCA-submission -m 240 -n ${file%.inp} 
+        XYZFILE=`grep "* XYZFILE" $file | awk '{print $5}'` 
+        gsid=$(cat ${XYZFILE%.*}.pbs)
+        if [ "${file%.inp}" == "$ES" ]; then
+            if [ ! -f $XYZFILE ]; then
+                qsub -W depend=afterok:$gsis ${file%.inp}.sh > ${file%.inp}.pbs4
+                cat ${file%.inp}.pbs
+                continue
+            else
+                qsub ${file%.inp}.sh > ${file%.inp}.pbs
+                cat ${file%.inp}.pbs
+                continue
+            fi
+        elif [ "$file" == "$TS" ]; then
+            if [ ! -f $XYZFILE ]; then
+                gsid=$(cat ${XYZFILE%.*}.pbs)
+                qsub -W depend=afterok:$gsis ${file%.inp}.sh > ${file%.inp}.pbs4
+                cat ${file%.inp}.pbs
+                continue
+            else
+                qsub ${file%.inp}.sh > ${file%.inp}.pbs
+                cat ${file%.inp}.pbs
+                continue
+            fi
+        fi
+        qsub ${file%.inp}.sh > ${file%.inp}.pbs
+        cat ${file%.inp}.pbs
 
         echo "done"
     done
