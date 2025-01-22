@@ -95,14 +95,14 @@ for molecule in $molecules; do
             else
                 echo "${file%.inp} is not finished, resubmitting"
                 ORCA-submission -m 240 -n ${file%.inp} 
-                # qsub ${file%.inp}.sh > ${file%.inp}.pbs
-                # cat ${file%.inp}.pbs
+                qsub ${file%.inp}.sh > ${file%.inp}.pbs
+                cat ${file%.inp}.pbs
             fi
         else
             echo "${file%.inp} is not in the queue, submitting the job"
             ORCA-submission -m 240 -n ${file%.inp} 
-            # qsub ${file%.inp}.sh > ${file%.inp}.pbs
-            # cat ${file%.inp}.pbs
+            qsub ${file%.inp}.sh > ${file%.inp}.pbs
+            cat ${file%.inp}.pbs
         fi
     done
     cd ..
