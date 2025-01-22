@@ -104,11 +104,6 @@ for molecule in $molecules; do
             if [ $finish -eq 1 ]; then
                 echo "${file%.inp} is finished, skipping"
                 continue
-            else
-                echo "${file%.inp} is not finished, resubmitting"
-                ORCA-submission -m 240 -n ${file%.inp} 
-                qsub ${file%.inp}.sh > ${file%.inp}.pbs
-                cat ${file%.inp}.pbs
             fi
         else
             echo "${file%.inp} is not in the queue, submitting the job"
