@@ -74,6 +74,10 @@ done
 
 
 for molecule in $molecules; do
+    echo "molecule: $molecule"
+    if [[ ! "$molecule" =~ ^[0-9] ]]; then
+      continue
+    fi
     cd $molecule
     opt_files=$(ls *M062*opt*inp)
     esd_files=$(ls *M062*esd*inp)
@@ -81,12 +85,23 @@ for molecule in $molecules; do
     for file in $opt_files; do
         if qjlist | grep -q "${file%.inp}"; then
             echo "${file%.inp} is in the queue, skipping"
+            continue
         elif [ -f "${file%.inp}".out ]; then
-            echo "${file%.inp} is in the queue, skipping"
+            finish=$(grep "ORCA TERMINATED NORMALLY" "${file%.inp}".out)
+            if [ $finish -eq 1 ]; then
+                echo "${file%.inp} is finished, skipping"
+                continue
+            else
+                echo "${file%.inp} is not finished, resubmitting"
+                ORCA-submission -m 240 -n ${file%.inp} 
+                # qsub ${file%.inp}.sh > ${file%.inp}.pbs
+                # cat ${file%.inp}.pbs
+            fi
         else
             echo "${file%.inp} is not in the queue, submitting the job"
             ORCA-submission -m 240 -n ${file%.inp} 
-            # qsub ${file%.inp}.sh > ${file%.inp}.pbss
+            # qsub ${file%.inp}.sh > ${file%.inp}.pbs
+            # cat ${file%.inp}.pbs
         fi
     done
 
