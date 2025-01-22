@@ -74,7 +74,17 @@ done
 
 
 for molecule in $molecules; do
-    
+    GS="$molecule"_"$functional"_svp_s0_scf_optfreq
+    ES=${molecule}_${functional}_svp_s1_Dscf_optfreq
+    ES_tddft=${molecule}_${functional}_svp_s1_tddft_optfreq
+    TS="$molecule"_"$functional"_svp_t1_Dscf_optfreq
+    TS_scf="$molecule"_"$functional"_svp_t1_scf_optfreq
+    FLUO="$molecule"_"$functional"_svp_s1_esd_fluo
+    ISC_1="$molecule"_"$functional"_svp_t1_esd_isc_T1
+    ISC_2="$molecule"_"$functional"_svp_t1_esd_isc_T2
+    RISC_1="$molecule"_"$functional"_svp_t1_esd_risc_T1
+    RISC_2="$molecule"_"$functional"_svp_t1_esd_risc_T2
+
     if [[ ! "$molecule" =~ ^[0-9] ]]; then
       continue
     fi
@@ -87,7 +97,9 @@ for molecule in $molecules; do
         if qjlist | grep -q "${file%.inp}"; then
             echo "${file%.inp} is in the queue, skipping"
             continue
-        elif [ -f "${file%.inp}".out ]; then
+        fi
+
+        if [ -f "${file%.inp}".out ]; then
             finish=$(grep -c "ORCA TERMINATED NORMALLY" "${file%.inp}".out)
             if [ $finish -eq 1 ]; then
                 echo "${file%.inp} is finished, skipping"
@@ -100,11 +112,38 @@ for molecule in $molecules; do
             fi
         else
             echo "${file%.inp} is not in the queue, submitting the job"
+
             ORCA-submission -m 240 -n ${file%.inp} 
+            XYZFILE=`grep "* XYZFILE" $file | awk '{print $5}'` 
+            gsid=$(cat ${XYZFILE%.*}.pbs)
+            if [ "${file%.inp}" == "$ES" ]; then
+                if [ ! -f $XYZFILE ]; then
+                    qsub -W depend=afterok:$gsis ${file%.inp}.sh > ${file%.inp}.pbs4
+                    cat ${file%.inp}.pbs
+                    continue
+                else
+                    qsub ${file%.inp}.sh > ${file%.inp}.pbs
+                    cat ${file%.inp}.pbs
+                    continue
+                fi
+            elif [ "$file" == "$TS" ]; then
+                if [ ! -f $XYZFILE ]; then
+                    gsid=$(cat ${XYZFILE%.*}.pbs)
+                    qsub -W depend=afterok:$gsis ${file%.inp}.sh > ${file%.inp}.pbs4
+                    cat ${file%.inp}.pbs
+                    continue
+                else
+                    qsub ${file%.inp}.sh > ${file%.inp}.pbs
+                    cat ${file%.inp}.pbs
+                    continue
+                fi
+            fi
             qsub ${file%.inp}.sh > ${file%.inp}.pbs
             cat ${file%.inp}.pbs
         fi
-    done
+done
     cd ..
+
+
 
 done
