@@ -74,7 +74,7 @@ for molecule in "${molecule_list[@]}"; do
   if [ -z $1 ]; then 
     cd $molecule
   fi
-  for f in 0 1 2; do
+  for f in 0 1 2 3; do
     func=${functionals[$f]}
     FLUO="$molecule"_"$func"_svp_s1_esd_fluo
     DSCF_S1=${molecule}_${functional}_svp_s1_Dscf_optfreq
