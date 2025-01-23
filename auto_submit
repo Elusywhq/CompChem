@@ -166,11 +166,16 @@ if [[ " $@ " =~ "-opt" ]]; then
             fi
 
             if [ -f "${file%.inp}".out ]; then
+
                 finish=$(grep -c "ORCA TERMINATED NORMALLY" "${file%.inp}".out)
                 if [ $finish -eq 1 ]; then
                     echo "${file%.inp} is finished, skipping"
-                    continue
+                    continue 
                 else
+                    if [ "$file" == "$TS.inp" ]; then
+                        echo "Skipping $TS, continuing"
+                        continue 
+                    fi
                     echo "${file%.inp} is not finished, resubmitting"
                 fi
             fi
