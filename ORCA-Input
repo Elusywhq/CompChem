@@ -336,7 +336,7 @@ echo "Basis set: $basis_set"
   fi
   
   if [ -z "$8" ]; then
-    TS="${molecule}_${functional}_svp_t1_Dscf_optfreq"
+    TS="${molecule}_${functional}_svp_t1_scf_optfreq"
   fi
 
   if [ "$job_type" == "Fluorescence" ]; then

@@ -123,10 +123,6 @@ if [[ " $@ " =~ "-g" ]]; then
                     fi
                 fi
             fi
-        
-            # Generate Fluorescence
-            echo "Running:: ORCA-Input $molecule $GS.xyz $s0 $fluo $m062x"
-            ORCA-Input $molecule $GS.xyz $s1 $fluo $m062x > /dev/null
 
             # Generate ISC and RISC
             for esd in $(seq 5 6); do
@@ -159,7 +155,7 @@ if [[ " $@ " =~ "-opt" ]]; then
         echo "molecule: $molecule"
         cd $molecule
         opt_files=$(ls *M062*opt*inp)
-        esd_files=$(ls *M062*esd*inp)
+
 
         for file in $opt_files; do
             echo $file
@@ -204,6 +200,107 @@ if [[ " $@ " =~ "-opt" ]]; then
                     continue
                 fi
             fi
+            qsub ${file%.inp}.sh > ${file%.inp}.pbs
+            cat ${file%.inp}.pbs
+
+            echo "done"
+        done
+        cd ..
+    done
+fi
+
+if [[ " $@ " =~ "-esd" ]]; then 
+    for molecule in $molecules; do
+        GS="$molecule"_"$functional"_svp_s0_scf_optfreq
+        ES=${molecule}_${functional}_svp_s1_Dscf_optfreq
+        ES_tddft=${molecule}_${functional}_svp_s1_tddft_optfreq
+        TS="$molecule"_"$functional"_svp_t1_Dscf_optfreq
+        TS_scf="$molecule"_"$functional"_svp_t1_scf_optfreq
+        FLUO="$molecule"_"$functional"_svp_s1_esd_fluo
+        ISC_1="$molecule"_"$functional"_svp_t1_esd_isc_T1
+        ISC_2="$molecule"_"$functional"_svp_t1_esd_isc_T2
+        ISC_3="$molecule"_"$functional"_svp_t1_esd_isc_T3
+        RISC_1="$molecule"_"$functional"_svp_t1_esd_risc_T1
+        RISC_2="$molecule"_"$functional"_svp_t1_esd_risc_T2
+        RISC_3="$molecule"_"$functional"_svp_t1_esd_risc_T3
+
+        if [[ ! "$molecule" =~ ^[0-9] ]]; then
+            continue
+        fi
+
+        echo "molecule: $molecule"
+        cd $molecule
+        esd_files=$(ls *M062*isc*esd*inp)
+
+        # Check fluorescence first
+        if [ ! -f $FLUO.out ]; then
+            if qjlist | grep -q "${file%.inp}"; then
+                echo "${file%.inp} is in the queue, skipping"
+                continue
+            fi
+
+            if [ ! -f $GS.out ]; then
+                echo "$GS calculation is not finished, continuing"
+                continue
+            elif [ ! -f $ES.out ]; then
+                echo "$ES calculation is not finished, continuing"
+                continue
+            fi
+
+            echo "Running:: ORCA-Input $molecule $GS.xyz $s1 $fluo $m062x"
+            ORCA-Input $molecule $GS.xyz $s1 $fluo $m062x > /dev/null
+            ORCA-submission -esd -m 240 -n $FLUO
+            qsub $FLUO.sh > $FLUO.pbs
+            cat $FLUO.pbs
+        else
+            if qjlist | grep -q "${file%.inp}"; then
+                echo "${file%.inp} is in the queue, skipping"
+                continue
+            fi
+
+            finish=$(grep -c "ORCA TERMINATED NORMALLY" $FLUO.out)
+
+            if [ $finish -eq 1 ]; then
+                echo "$FLUO is finished, skipping"
+            fi
+
+            if [ $finish -eq 0 ]; then
+                echo "Running:: ORCA-Input $molecule $GS.xyz $s1 $fluo $m062x"
+                ORCA-Input $molecule $GS.xyz $s1 $fluo $m062x > /dev/null
+                ORCA-submission -esd -m 240 -n $FLUO
+                qsub $FLUO.sh > $FLUO.pbs
+                cat $FLUO.pbs
+            fi
+        fi
+
+
+        for file in $esd_files; do
+           ORCA-Input $molecule $GS.xyz $t1 5 $m062x
+           ORCA-Input $molecule $GS.xyz $t1 6 $m062x
+
+            if qjlist | grep -q "${file%.inp}"; then
+                echo "${file%.inp} is in the queue, skipping"
+                continue
+            fi
+
+            if [ -f "${file%.inp}".out ]; then
+                finish=$(grep -c "ORCA ESD FINISHED WITHOUT ERROR" "${file%.inp}".out)
+                if [ $finish -eq 1 ]; then
+                    echo "${file%.inp} is finished, skipping"
+                    continue
+                fi
+
+                if [ $finish -eq 0 ]; then
+                    echo "${file%.inp} is not finished, resubmitting"
+                fi
+            fi
+
+            echo "${file%.inp} is not in the queue, submitting the job"
+
+            ORCA-submission -esd -m 240 -n ${file%.inp} 
+
+            XYZFILE=`grep "* XYZFILE" $file | awk '{print $5}'` 
+
             qsub ${file%.inp}.sh > ${file%.inp}.pbs
             cat ${file%.inp}.pbs
 
