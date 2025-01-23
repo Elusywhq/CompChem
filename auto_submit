@@ -234,6 +234,7 @@ if [[ " $@ " =~ "-esd" ]]; then
         echo "molecule: $molecule"
         cd $molecule
         esd_files=$(ls *M062*esd*isc*inp)
+        rm 
 
         # Check fluorescence first
         if [ ! -f $FLUO.out ]; then
@@ -252,7 +253,7 @@ if [[ " $@ " =~ "-esd" ]]; then
 
             echo "Running:: ORCA-Input $molecule $GS.xyz $s1 $fluo $m062x"
             ORCA-Input $molecule $GS.xyz $s1 $fluo $m062x > /dev/null
-            ORCA-submission -esd -m 240 -n $FLUO
+            ORCA-submission -esd -m 240 -n $FLUO -t 48
             qsub $FLUO.sh > $FLUO.pbs
             cat $FLUO.pbs
         else

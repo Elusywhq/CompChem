@@ -15,7 +15,7 @@ DiffEnergyT1=$(echo "($DEnergyT1 + 0.5) / 1" | bc)
  echo "Energy gap between S1 and T1 = $DiffEnergyT1 cm-1"
  echo "Creating input files for ISC calculation"
 
-   for i in 1 2 3; do
+   for i in 1 2; do
      op="${1%.inp}_T$i"
      s=$(( $i - 2 ))
      sed -e "s/TROOTSSL/TROOTSSL $s/g" $1 > $op.inp
