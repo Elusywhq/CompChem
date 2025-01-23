@@ -234,8 +234,8 @@ if [[ " $@ " =~ "-esd" ]]; then
 
         # Check fluorescence first
         if [ ! -f $FLUO.out ]; then
-            if qjlist | grep -q "${file%.inp}"; then
-                echo "${file%.inp} is in the queue, skipping"
+            if qjlist | grep -q "$FLUO"; then
+                echo "$FLUO is in the queue, skipping"
                 continue
             fi
 
