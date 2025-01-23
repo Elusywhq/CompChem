@@ -8,15 +8,140 @@ states=("s0" "s1" "t1")
   o3lyp=1; pbe0=2; cam=3; m062x=4; wb97x=5
   tddft=1;Dscf=2
   optfreq=1; fluo=4; isc=5; risc=6
-for molecule in $molecules; do
-    # echo "molecule: $molecule"
-    if [[ ! "$molecule" =~ ^[0-9] ]]; then
-      continue
-    fi
-    cd $molecule
-    echo "Molecule: $molecule"
 
-    for functional in "${functionals[@]}"; do
+if [[ " $@ " =~ "-g" ]]; then
+    for molecule in $molecules; do
+        # echo "molecule: $molecule"
+        if [[ ! "$molecule" =~ ^[0-9] ]]; then
+            continue
+        fi
+        cd $molecule
+        echo "Molecule: $molecule"
+
+        for functional in "${functionals[@]}"; do
+            GS="$molecule"_"$functional"_svp_s0_scf_optfreq
+            ES=${molecule}_${functional}_svp_s1_Dscf_optfreq
+            ES_tddft=${molecule}_${functional}_svp_s1_tddft_optfreq
+            TS="$molecule"_"$functional"_svp_t1_Dscf_optfreq
+            TS_scf="$molecule"_"$functional"_svp_t1_scf_optfreq
+            FLUO="$molecule"_"$functional"_svp_s1_esd_fluo
+            ISC_1="$molecule"_"$functional"_svp_t1_esd_isc_T1
+            ISC_2="$molecule"_"$functional"_svp_t1_esd_isc_T2
+            RISC_1="$molecule"_"$functional"_svp_t1_esd_risc_T1
+            RISC_2="$molecule"_"$functional"_svp_t1_esd_risc_T2
+            
+            opts=$($GS $ES $ES_tddft $TS $TS_scf)
+
+
+            if [ ! -f $GS.xyz ]; then
+                if [ -f $molecule.xyz ]; then
+                    echo "Running:: ORCA-Input $molecule $molecule.xyz $s0 $optfreq $m062x"
+                    ORCA-Input $molecule $molecule.xyz $s0 $optfreq $m062x > /dev/null
+                fi
+
+                if [ -f ${molecule}_S0.xyz ]; then
+                    echo "Running:: ORCA-Input $molecule ${molecule}_S0.xyz $s0 $optfreq $m062x"
+                    ORCA-Input $molecule ${molecule}_S0.xyz $s0 $optfreq $m062x > /dev/null
+                fi
+            fi
+            # Generate Ground state input             
+
+            # Generate S1
+            if [ ! -f $ES.out ]; then
+                echo "Running:: ORCA-Input $molecule $GS.xyz $s1 $optfreq $m062x $Dscf "
+                ORCA-Input $molecule $GS.xyz $s1 $optfreq $m062x $Dscf > /dev/null
+            else                
+                finish=$(grep -c "ORCA TERMINATED NORMALLY" $ES.out)
+                if [ $finish -eq 1 ]; then
+                    echo "$ES is finished, skipping"
+                else
+                    echo "Running:: ORCA-Input $molecule $GS.xyz $s1 $optfreq $m062x $Dscf "
+                    ORCA-Input $molecule $GS.xyz $s1 $optfreq $m062x $Dscf > /dev/null
+                fi
+            fi
+
+            if [ ! -f $ES_tddft.out ]; then
+                echo "Running:: ORCA-Input $molecule $GS.xyz $s1 $optfreq $m062x $tddft "
+                ORCA-Input $molecule $GS.xyz $s1 $optfreq $m062x $tddft > /dev/null            
+            else
+                finish=$(grep -c "ORCA TERMINATED NORMALLY" $ES_tddft.out)
+                if [ $finish -eq 1 ]; then
+                    echo "$ES_tddft is finished, skipping"
+                else
+                    echo "Running:: ORCA-Input $molecule $GS.xyz $s1 $optfreq $m062x $tddft "
+                    ORCA-Input $molecule $GS.xyz $s1 $optfreq $m062x $tddft > /dev/null
+                fi
+            fi
+
+
+            # Generate T1
+            if [ ! -f $TS.out ]; then
+                if [ ! -f ${molecule}_T1.xyz ]; then
+                    echo "Running:: ORCA-Input $molecule $GS.xyz $t1 $optfreq $m062x $Dscf"
+                    ORCA-Input $molecule $GS.xyz $t1 $optfreq $m062x $Dscf > /dev/null
+                else
+                    echo "Running:: ORCA-Input $molecule ${molecule}_T1.xyz $t1 $optfreq $m062x $Dscf"
+                    ORCA-Input $molecule ${molecule}_T1.xyz $t1 $optfreq $m062x $Dscf > /dev/null
+                    break
+                fi
+
+            else
+                finish=$(grep -c "ORCA TERMINATED NORMALLY" $TS.out)
+                if [ $finish -eq 1 ]; then
+                    echo "$TS is finished, skipping"
+                else
+                    if [ ! -f ${molecule}_T1.xyz ]; then
+                        echo "Running:: ORCA-Input $molecule $GS.xyz $t1 $optfreq $m062x $Dscf"
+                        ORCA-Input $molecule $GS.xyz $t1 $optfreq $m062x $Dscf > /dev/null
+                    else
+                        echo "Running:: ORCA-Input $molecule ${molecule}_T1.xyz $t1 $optfreq $m062x $Dscf"
+                        ORCA-Input $molecule ${molecule}_T1.xyz $t1 $optfreq $m062x $Dscf > /dev/null
+                    fi
+                fi
+            fi
+
+
+            if [ ! -f $TS_scf.out ]; then
+                if [ ! -f ${molecule}_T1.xyz ]; then
+                    echo "Running:: ORCA-Input $molecule $GS.xyz $t1 $optfreq $m062x 1"
+                    ORCA-Input $molecule $GS.xyz $t1 $optfreq $m062x 1 > /dev/null
+                else
+                    echo "Running:: ORCA-Input $molecule ${molecule}_T1.xyz $t1 $optfreq $m062x 1"
+                    ORCA-Input $molecule ${molecule}_T1.xyz $t1 $optfreq $m062x 1 > /dev/null
+                fi
+            else
+                finish=$(grep -c "ORCA TERMINATED NORMALLY" $TS_scf.out)
+                if [ $finish -eq 1 ]; then
+                    echo "$TS_scf is finished, skipping"
+                else
+                    if [ ! -f ${molecule}_T1.xyz ]; then
+                        echo "Running:: ORCA-Input $molecule $GS.xyz $t1 $optfreq $m062x 1"
+                        ORCA-Input $molecule $GS.xyz $t1 $optfreq $m062x 1 > /dev/null
+                    else
+                        echo "Running:: ORCA-Input $molecule ${molecule}_T1.xyz $t1 $optfreq $m062x 1"
+                        ORCA-Input $molecule ${molecule}_T1.xyz $t1 $optfreq $m062x 1 > /dev/null
+                    fi
+                fi
+            fi
+        
+            # Generate Fluorescence
+            echo "Running:: ORCA-Input $molecule $GS.xyz $s0 $fluo $m062x"
+            ORCA-Input $molecule $GS.xyz $s1 $fluo $m062x > /dev/null
+
+            # Generate ISC and RISC
+            for esd in $(seq 5 6); do
+                echo "Running:: ORCA-Input $molecule $GS.xyz $t1 $esd $m062x $Dscf"
+                ORCA-Input $molecule $GS.xyz $t1 $esd $m062x > /dev/null
+            done
+            
+        done
+        cd ..
+    done
+fi
+
+
+if [[ " $@ " =~ "-opt" ]]; then 
+    for molecule in $molecules; do
         GS="$molecule"_"$functional"_svp_s0_scf_optfreq
         ES=${molecule}_${functional}_svp_s1_Dscf_optfreq
         ES_tddft=${molecule}_${functional}_svp_s1_tddft_optfreq
@@ -27,120 +152,63 @@ for molecule in $molecules; do
         ISC_2="$molecule"_"$functional"_svp_t1_esd_isc_T2
         RISC_1="$molecule"_"$functional"_svp_t1_esd_risc_T1
         RISC_2="$molecule"_"$functional"_svp_t1_esd_risc_T2
-        
 
-        # Generate Ground state input 
-        if [ -f $molecule.xyz ]; then
-            echo "Running:: ORCA-Input $molecule $molecule.xyz $s0 $optfreq $m062x"
-            ORCA-Input $molecule $molecule.xyz $s0 $optfreq $m062x > /dev/null
+        if [[ ! "$molecule" =~ ^[0-9] ]]; then
+        continue
         fi
+        echo "molecule: $molecule"
+        cd $molecule
+        opt_files=$(ls *M062*opt*inp)
+        esd_files=$(ls *M062*esd*inp)
 
-        if [ -f ${molecule}_S0.xyz ]; then
-            echo "Running:: ORCA-Input $molecule ${molecule}_S0.xyz $s0 $optfreq $m062x"
-            ORCA-Input $molecule ${molecule}_S0.xyz $s0 $optfreq $m062x > /dev/null
-        fi
+        for file in $opt_files; do
+            echo $file
+            if qjlist | grep -q "${file%.inp}"; then
+                echo "${file%.inp} is in the queue, skipping"
+                continue
+            fi
 
-        # Generate S1
-        echo "Running:: ORCA-Input $molecule $GS.xyz $s1 $optfreq $m062x $Dscf "
-        ORCA-Input $molecule $GS.xyz $s1 $optfreq $m062x $Dscf > /dev/null
-        echo "Running:: ORCA-Input $molecule $GS.xyz $s1 $optfreq $m062x $tddft "
-        ORCA-Input $molecule $GS.xyz $s1 $optfreq $m062x $tddft > /dev/null
+            if [ -f "${file%.inp}".out ]; then
+                finish=$(grep -c "ORCA TERMINATED NORMALLY" "${file%.inp}".out)
+                if [ $finish -eq 1 ]; then
+                    echo "${file%.inp} is finished, skipping"
+                    continue
+                else
+                    echo "${file%.inp} is not finished, resubmitting"
+                fi
+            fi
 
-        # Generate T1
-        echo "ORCA-Input $molecule $GS.xyz $t1 $optfreq $m062x 1"
-        ORCA-Input $molecule $GS.xyz $t1 $optfreq $m062x 1 > /dev/null
-        echo "Running:: ORCA-Input $molecule $GS.xyz $t1 $optfreq $m062x $Dscf"
-        ORCA-Input $molecule $GS.xyz $t1 $optfreq $m062x $Dscf > /dev/null
+            echo "${file%.inp} is not in the queue, submitting the job"
+            ORCA-submission -m 240 -n ${file%.inp} 
+            XYZFILE=`grep "* XYZFILE" $file | awk '{print $5}'` 
+            gsid=$(cat ${XYZFILE%.*}.pbs)
+            if [ "${file%.inp}" == "$ES" ]; then
+                if [ ! -f $XYZFILE ]; then
+                    qsub -W depend=afterok:$gsis ${file%.inp}.sh > ${file%.inp}.pbs
+                    cat ${file%.inp}.pbs
+                    continue
+                else
+                    qsub ${file%.inp}.sh > ${file%.inp}.pbs
+                    cat ${file%.inp}.pbs
+                    continue
+                fi
+            elif [ "$file" == "$TS" ]; then
+                if [ ! -f $XYZFILE ]; then
+                    gsid=$(cat ${XYZFILE%.*}.pbs)
+                    qsub -W depend=afterok:$gsis ${file%.inp}.sh > ${file%.inp}.pbs
+                    cat ${file%.inp}.pbs
+                    continue
+                else
+                    qsub ${file%.inp}.sh > ${file%.inp}.pbs
+                    cat ${file%.inp}.pbs
+                    continue
+                fi
+            fi
+            qsub ${file%.inp}.sh > ${file%.inp}.pbs
+            cat ${file%.inp}.pbs
 
-        if [ -f ${molecule}_T1.xyz ]; then
-            echo "Running:: ORCA-Input $molecule ${molecule}_T1.xyz $t1 $optfreq $m062x 1"
-            ORCA-Input $molecule ${molecule}_T1.xyz $t1 $optfreq $m062x 1 > /dev/null
-            echo "Running:: ORCA-Input $molecule ${molecule}_T1.xyz $t1 $optfreq $m062x $Dscf"
-            ORCA-Input $molecule ${molecule}_T1.xyz $t1 $optfreq $m062x $Dscf > /dev/null
-        fi
-      
-        # Generate Fluorescence
-        echo "Running:: ORCA-Input $molecule $GS.xyz $s0 $fluo $m062x"
-        ORCA-Input $molecule $GS.xyz $s1 $fluo $m062x > /dev/null
-
-        # Generate ISC and RISC
-        for esd in $(seq 5 6); do
-            echo "Running:: ORCA-Input $molecule $GS.xyz $t1 $esd $m062x $Dscf"
-            ORCA-Input $molecule $GS.xyz $t1 $esd $m062x > /dev/null
+            echo "done"
         done
-        
+        cd ..
     done
-    cd ..
-done
-
-
-for molecule in $molecules; do
-    GS="$molecule"_"$functional"_svp_s0_scf_optfreq
-    ES=${molecule}_${functional}_svp_s1_Dscf_optfreq
-    ES_tddft=${molecule}_${functional}_svp_s1_tddft_optfreq
-    TS="$molecule"_"$functional"_svp_t1_Dscf_optfreq
-    TS_scf="$molecule"_"$functional"_svp_t1_scf_optfreq
-    FLUO="$molecule"_"$functional"_svp_s1_esd_fluo
-    ISC_1="$molecule"_"$functional"_svp_t1_esd_isc_T1
-    ISC_2="$molecule"_"$functional"_svp_t1_esd_isc_T2
-    RISC_1="$molecule"_"$functional"_svp_t1_esd_risc_T1
-    RISC_2="$molecule"_"$functional"_svp_t1_esd_risc_T2
-
-    if [[ ! "$molecule" =~ ^[0-9] ]]; then
-      continue
-    fi
-    echo "molecule: $molecule"
-    cd $molecule
-    opt_files=$(ls *M062*opt*inp)
-    esd_files=$(ls *M062*esd*inp)
-
-    for file in $opt_files; do
-        echo $file
-        if qjlist | grep -q "${file%.inp}"; then
-            echo "${file%.inp} is in the queue, skipping"
-            continue
-        fi
-
-        if [ -f "${file%.inp}".out ]; then
-            finish=$(grep -c "ORCA TERMINATED NORMALLY" "${file%.inp}".out)
-            if [ $finish -eq 1 ]; then
-                echo "${file%.inp} is finished, skipping"
-                continue
-            else
-                echo "${file%.inp} is not finished, resubmitting"
-            fi
-        fi
-
-        echo "${file%.inp} is not in the queue, submitting the job"
-        ORCA-submission -m 240 -n ${file%.inp} 
-        XYZFILE=`grep "* XYZFILE" $file | awk '{print $5}'` 
-        gsid=$(cat ${XYZFILE%.*}.pbs)
-        if [ "${file%.inp}" == "$ES" ]; then
-            if [ ! -f $XYZFILE ]; then
-                qsub -W depend=afterok:$gsis ${file%.inp}.sh > ${file%.inp}.pbs
-                cat ${file%.inp}.pbs
-                continue
-            else
-                qsub ${file%.inp}.sh > ${file%.inp}.pbs
-                cat ${file%.inp}.pbs
-                continue
-            fi
-        elif [ "$file" == "$TS" ]; then
-            if [ ! -f $XYZFILE ]; then
-                gsid=$(cat ${XYZFILE%.*}.pbs)
-                qsub -W depend=afterok:$gsis ${file%.inp}.sh > ${file%.inp}.pbs
-                cat ${file%.inp}.pbs
-                continue
-            else
-                qsub ${file%.inp}.sh > ${file%.inp}.pbs
-                cat ${file%.inp}.pbs
-                continue
-            fi
-        fi
-        qsub ${file%.inp}.sh > ${file%.inp}.pbs
-        cat ${file%.inp}.pbs
-
-        echo "done"
-    done
-    cd ..
-done
+fi
