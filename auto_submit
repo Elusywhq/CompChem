@@ -138,6 +138,7 @@ fi
 
 if [[ " $@ " =~ "-opt" ]]; then 
     for molecule in $molecules; do
+      for functional in "${functionals[@]}"; do
         GS="$molecule"_"$functional"_svp_s0_scf_optfreq
         ES=${molecule}_${functional}_svp_s1_Dscf_optfreq
         ES_tddft=${molecule}_${functional}_svp_s1_tddft_optfreq
@@ -205,12 +206,14 @@ if [[ " $@ " =~ "-opt" ]]; then
 
             echo "done"
         done
+      done
         cd ..
     done
 fi
 
 if [[ " $@ " =~ "-esd" ]]; then 
     for molecule in $molecules; do
+      for functional in "${functionals[@]}"; do
         GS="$molecule"_"$functional"_svp_s0_scf_optfreq
         ES=${molecule}_${functional}_svp_s1_Dscf_optfreq
         ES_tddft=${molecule}_${functional}_svp_s1_tddft_optfreq
@@ -306,6 +309,7 @@ if [[ " $@ " =~ "-esd" ]]; then
 
             echo "done"
         done
+      done
         cd ..
     done
 fi
