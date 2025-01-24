@@ -321,7 +321,7 @@ if [[ " $@ " =~ "-esd" ]]; then
 
     #         echo "done"
     #     done
-    #   done
+      done
         cd ..
     done
 fi
