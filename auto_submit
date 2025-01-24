@@ -254,11 +254,12 @@ if [[ " $@ " =~ "-esd" ]]; then
             elif [ ! -f $ES.out ]; then
                 echo "$ES calculation is not finished, continuing"
                 continue
-            else 
+            elif [ -f $ES.out]; then
                 finish=$(grep -c "ORCA TERMINATED NORMALLY" $ES.out)
                 if [ $finish -eq 0 ]; then
                     echo "$ES not finished, skipping...."
                     continue
+                fi
             fi
 
             echo "Running:: ORCA-Input $molecule $GS.xyz $s1 $fluo $m062x"
