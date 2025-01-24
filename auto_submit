@@ -283,39 +283,39 @@ if [[ " $@ " =~ "-esd" ]]; then
         fi
 
 
-        for file in $esd_files; do
-           ORCA-Input $molecule $GS.xyz $t1 5 $m062x
-           ORCA-Input $molecule $GS.xyz $t1 6 $m062x
+    #     for file in $esd_files; do
+    #        ORCA-Input $molecule $GS.xyz $t1 5 $m062x
+    #        ORCA-Input $molecule $GS.xyz $t1 6 $m062x
 
-            if qjlist | grep -q "${file%.inp}"; then
-                echo "${file%.inp} is in the queue, skipping"
-                continue
-            fi
+    #         if qjlist | grep -q "${file%.inp}"; then
+    #             echo "${file%.inp} is in the queue, skipping"
+    #             continue
+    #         fi
 
-            if [ -f "${file%.inp}".out ]; then
-                finish=$(grep -c "ORCA ESD FINISHED WITHOUT ERROR" "${file%.inp}".out)
-                if [ $finish -eq 1 ]; then
-                    echo "${file%.inp} is finished, skipping"
-                    continue
-                fi
+    #         if [ -f "${file%.inp}".out ]; then
+    #             finish=$(grep -c "ORCA ESD FINISHED WITHOUT ERROR" "${file%.inp}".out)
+    #             if [ $finish -eq 1 ]; then
+    #                 echo "${file%.inp} is finished, skipping"
+    #                 continue
+    #             fi
 
-                if [ $finish -eq 0 ]; then
-                    echo "${file%.inp} is not finished, resubmitting"
-                fi
-            fi
+    #             if [ $finish -eq 0 ]; then
+    #                 echo "${file%.inp} is not finished, resubmitting"
+    #             fi
+    #         fi
 
-            echo "${file%.inp} is not in the queue, submitting the job"
+    #         echo "${file%.inp} is not in the queue, submitting the job"
 
-            ORCA-submission -esd -m 240 -n ${file%.inp} 
+    #         ORCA-submission -esd -m 240 -n ${file%.inp} 
 
-            XYZFILE=`grep "* XYZFILE" $file | awk '{print $5}'` 
+    #         XYZFILE=`grep "* XYZFILE" $file | awk '{print $5}'` 
 
-            qsub ${file%.inp}.sh > ${file%.inp}.pbs
-            cat ${file%.inp}.pbs
+    #         qsub ${file%.inp}.sh > ${file%.inp}.pbs
+    #         cat ${file%.inp}.pbs
 
-            echo "done"
-        done
-      done
+    #         echo "done"
+    #     done
+    #   done
         cd ..
     done
 fi
