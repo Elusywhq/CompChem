@@ -239,7 +239,6 @@ if [[ " $@ " =~ "-esd" ]]; then
         echo "molecule: $molecule"
         cd $molecule
         esd_files=$(ls *M062*esd*isc*inp)
-        rm 
 
         # Check fluorescence first
         if [ ! -f $FLUO.out ]; then
