@@ -23,6 +23,20 @@ if [ "$1" == "-q" ]; then
         finish=$(grep -c "****ORCA TERMINATED NORMALLY****" $scratch/${file%.*}/${file%.*}.out)
         echo "$finish"
     done
+elif [ "$1" == "-loc" ]; then
+    shift
+    for file in "$@"; do
+        if [ ! -f ${file%.*}.out ]; then
+            echo "WARNING: ${file%.*}.out ORCA output file does not exist in your current folder."
+            continue
+        fi
+        finish=$(grep -c "****ORCA TERMINATED NORMALLY****" ${file%.*}.out)
+        if [ $finish -eq 1 ]; then
+            echo "${file%.*}.out ORCA terminated normally."
+        else
+            echo "${file%.*}.out ORCA did not terminate normally."
+        fi
+    done
 else
     for file in "$@"; do
         if [ ! -f ${file%.*}.out ]; then
@@ -43,20 +57,5 @@ else
     done
 fi
 
-if [ "$1" == "-loc" ]; then
-    shift
-    for file in "$@"; do
-        if [ ! -f ${file%.*}.out ]; then
-            echo "WARNING: ${file%.*}.out ORCA output file does not exist in your current folder."
-            continue
-        fi
-        finish=$(grep -c "****ORCA TERMINATED NORMALLY****" ${file%.*}.out)
-        if [ $finish -eq 1 ]; then
-            echo "${file%.*}.out ORCA terminated normally."
-        else
-            echo "${file%.*}.out ORCA did not terminate normally."
-        fi
-    done
-fi
 
 exit 0
