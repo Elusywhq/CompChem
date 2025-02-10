@@ -31,9 +31,7 @@ elif [ "$1" == "-loc" ]; then
             continue
         fi
         finish=$(grep -c "****ORCA TERMINATED NORMALLY****" ${file%.*}.out)
-        if [ $finish -eq 1 ]; then
-            echo "${file%.*}.out ORCA terminated normally."
-        else
+        if [ $finish -eq 0 ]; then
             echo "${file%.*}.out ORCA did not terminate normally."
         fi
     done
