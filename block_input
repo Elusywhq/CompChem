@@ -228,7 +228,6 @@ function xyz_Triplet(){
      echo -e "\n%tddft"
      echo " nroots 10"
      echo " iroot 1"
-     echo " TRIPLETS TRUE"
      echo "end"
 
     # esd_fluo
