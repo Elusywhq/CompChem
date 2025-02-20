@@ -76,9 +76,9 @@ for molecule in "${molecule_list[@]}"; do
   fi
   for f in 0 1 2 3; do
     func=${functionals[$f]}
-    FLUO=${molecule}_${functional}_svp_s1_tddft_scf
-    DSCF_S1=${molecule}_${functional}_svp_s1_Dscf_optfreq
-    DSCF_S2=${molecule}_${functional}_svp_s2_Dscf_optfreq
+    FLUO=${molecule}_${func}_svp_s1_tddft_scf
+    DSCF_S1=${molecule}_${func}_svp_s1_Dscf_optfreq
+    DSCF_S2=${molecule}_${func}_svp_s2_Dscf_optfreq
     echo "Calculating e-h distance for $FLUO"
     $ORCA_ROOT/orca_2mkl $FLUO -molden  > /dev/null 2>&1
     sed -e "s/NAME/$FLUO/g" $template > den_ana_$FLUO.in
