@@ -101,14 +101,14 @@ for molecule in "${molecule_list[@]}"; do
     T1_Final_2=$(ORCA-GrepExcitation -f -s 12 $FLUO.out)
     T1_Final_3=$(ORCA-GrepExcitation -f -s 13 $FLUO.out)
     
-    if [ -f $DSCF_S1 ];then
+    if [ -f $DSCF_S1.out ];then
       S1_Dscf_excit=$(ORCA-chkOrbital -q $DSCF_S1.out)
       echo "S1_Dscf_excit: $S1_Dscf_excit"
     else
       S1_Dscf_excit=0
     fi
 
-    if [ -f $DSCF_S2 ]; then
+    if [ -f $DSCF_S2.out ]; then
       S2_Dscf_excit=$(ORCA-chkOrbital -q $DSCF_S2.out)
     else
       S2_Dscf_excit=0
