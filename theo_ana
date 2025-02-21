@@ -70,7 +70,7 @@ for molecule in "${molecule_list[@]}"; do
   molecule=${molecule_list[$i]}
   accepter=${accepter_list[$i]}
   donor1=${donor1_list[$i]}
-  echo "Molecule: $molecule"  ; echo "Accepter: $accepter"; echo "Donor1: $donor1"; echo "Donor2: $donor2"
+  # echo "Molecule: $molecule"  ; echo "Accepter: $accepter"; echo "Donor1: $donor1"; echo "Donor2: $donor2"
   if [ -z $1 ]; then 
     cd $molecule
   fi
@@ -79,6 +79,7 @@ for molecule in "${molecule_list[@]}"; do
     FLUO=${molecule}_${func}_svp_s1_tddft_scf
     DSCF_S1=${molecule}_${func}_svp_s1_Dscf_optfreq
     DSCF_S2=${molecule}_${func}_svp_s2_Dscf_optfreq
+    echo "-------------------------------------------------------"
     echo "Calculating e-h distance for $FLUO"
     $ORCA_ROOT/orca_2mkl $FLUO -molden  > /dev/null 2>&1
     sed -e "s/NAME/$FLUO/g" $template > den_ana_$FLUO.in
@@ -102,6 +103,7 @@ for molecule in "${molecule_list[@]}"; do
     
     if [ -f $DSCF_S1 ];then
       S1_Dscf_excit=$(ORCA-chkOrbital -q $DSCF_S1.out)
+      echo "S1_Dscf_excit: $S1_Dscf_excit"
     else
       S1_Dscf_excit=0
     fi
