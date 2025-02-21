@@ -40,7 +40,8 @@ for filename in "$@"; do
     excited_orbital=$(($orbital + 1))
     
     if $quiet_mode; then
-        echo "$excited_orbital"
+        # echo "$excited_orbital"
+        echo "$excited_orbital -> $LUMO"
     else
         grep "$search" $file.out -A $to | tail -n 20 | sort -k3 -n | grep $LUMO -B 3 -A 3
         echo "$excited_orbital -> $LUMO"
