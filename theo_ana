@@ -43,7 +43,7 @@ while IFS=$'\t' read -r molecule Accepter Donor1 Donor2; do
   donor2_list+=("$Donor2")
 done < "$atom_list"
 
-echo "Molecule list: ${molecule_list[@]}" # ; echo "Accepter list: ${accepter_list[@]}" ; echo "Donor1 list: ${donor1_list[@]}" ; echo "Donor2 list: ${donor2_list[@]}"
+# echo "Molecule list: ${molecule_list[@]}" # ; echo "Accepter list: ${accepter_list[@]}" ; echo "Donor1 list: ${donor1_list[@]}" ; echo "Donor2 list: ${donor2_list[@]}"
 
 # molecule_list=("${molecule_list[0]}")
 # accepter_list=("${accepter_list[0]}")
