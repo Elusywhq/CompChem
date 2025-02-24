@@ -104,16 +104,19 @@ for molecule in "${molecule_list[@]}"; do
     if [ -f $DSCF_S1.out ];then
       S1_Dscf_Initial=$(ORCA-chkOrbital -q $DSCF_S1.out | awk '{print $1}')
       S1_Dscf_Final=$(ORCA-chkOrbital -q $DSCF_S1.out | awk '{print $3}') 
-      echo "S1_Dscf_excit: $S1_Dscf_excit"
+      echo "S1_Dscf_excit: $S1_Dscf_Initial -> $S1_Dscf_Final"
     else
-      S1_Dscf_excit=0
+      S1_Dscf_Initial=0
+      S1_Dscf_Final=0
     fi
 
     if [ -f $DSCF_S2.out ]; then
       S2_Dscf_Initial=$(ORCA-chkOrbital -q $DSCF_S2.out | awk '{print $1}')
       S2_Dscf_Final=$(ORCA-chkOrbital -q $DSCF_S2.out | awk '{print $3}') 
+      echo "S2_Dscf_excit: $S2_Dscf_Initial -> $S2_Dscf_Final" 
     else
-      S2_Dscf_excit=0
+      S2_Dscf_Initial=0
+      S2_Dscf_Final=0
     fi
 
     $ORCA_ROOT/orca_2mkl $input -molden > /dev/null 2>&1
