@@ -128,18 +128,18 @@ for molecule in "${molecule_list[@]}"; do
       theodore analyze_tden_es2es -r 1 -f den_ana_$FLUO.in > summ_den_ana_es2es_s1_$FLUO.txt
       theodore analyze_tden_es2es -r 2 -f den_ana_$FLUO.in > summ_den_ana_es2es_s2_$FLUO.txt
     fi 
-    
-    EHD1=$(grep "1(1)A " theo_$FLUO.txt | awk '{print $9}')
-    EHD2=$(grep "2(1)A " theo_$FLUO.txt | awk '{print $9}')
-    EHD3=$(grep "3(1)A " theo_$FLUO.txt | awk '{print $9}')
-    gap1=$(grep "1(1)A " theo_$FLUO.txt | awk '{print $2}')
-    gap2=$(grep "2(1)A " theo_$FLUO.txt | awk '{print $2}')
-    gap3=$(grep "3(1)A " theo_$FLUO.txt | awk '{print $2}')
-    GapT1=$(grep "1(3)A " theo_$FLUO.txt | awk '{print $2}')
-    GapT2=$(grep "2(3)A " theo_$FLUO.txt | awk '{print $2}')
-    CT1=$(grep "1(1)A " theo_$FLUO.txt | awk '{print $7}')
-    CT2=$(grep "2(1)A " theo_$FLUO.txt | awk '{print $7}')
-    CT3=$(grep "3(1)A " theo_$FLUO.txt | awk '{print $7}')
+
+    EHD1=$(grep "1(1)A " summ_den_ana_$FLUO.txt | awk '{print $9}')
+    EHD2=$(grep "2(1)A " summ_den_ana_$FLUO.txt | awk '{print $9}')
+    EHD3=$(grep "3(1)A " summ_den_ana_$FLUO.txt | awk '{print $9}')
+    gap1=$(grep "1(1)A " summ_den_ana_$FLUO.txt | awk '{print $2}')
+    gap2=$(grep "2(1)A " summ_den_ana_$FLUO.txt | awk '{print $2}')
+    gap3=$(grep "3(1)A " summ_den_ana_$FLUO.txt | awk '{print $2}')
+    GapT1=$(grep "1(3)A " summ_den_ana_$FLUO.txt | awk '{print $2}')
+    GapT2=$(grep "2(3)A " summ_den_ana_$FLUO.txt | awk '{print $2}')
+    CT1=$(grep "1(1)A " summ_den_ana_$FLUO.txt | awk '{print $7}')
+    CT2=$(grep "2(1)A " summ_den_ana_$FLUO.txt | awk '{print $7}')
+    CT3=$(grep "3(1)A " summ_den_ana_$FLUO.txt | awk '{print $7}')
     echo "e-h disctance for $func: $EHD1, $EHD2, $EHD3"
     # echo "Gap for $func: $gap1, $gap2, $gap3"
     echo "CT for $func: $CT1, $CT2, $CT3"
