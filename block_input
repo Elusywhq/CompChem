@@ -29,7 +29,7 @@ function initial_input(){
 }
 
 function scf{
-    echo ""
+    echo ' '
 }
 
 # --- basis set
