@@ -28,6 +28,10 @@ function initial_input(){
     echo "end"
 }
 
+function scf{
+    echo ""
+}
+
 # --- basis set
 function basis(){
     echo -e "\n%basis"
