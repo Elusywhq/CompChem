@@ -55,6 +55,7 @@ func=$5
 met=$6
 ES=$7
 TS=$8
+name=$9
 
 # ------------------------ User Input --------------------------
 
@@ -262,8 +263,11 @@ basis_set="svp"
 basis_set_label="def2-SVP"
 echo "Basis set: $basis_set"
 
+if [ -z "$name" ]; then
   op="${molecule}_${functional}_${basis_set}_${state}_${method}_${job_type_label}.inp"
-
+else
+  op="${name%.*}.inp"
+fi
 # if [ -f "$op" ]; then
 #   echo "$op already exists."
 #   exit 99
