@@ -28,7 +28,7 @@ function initial_input(){
     echo "end"
 }
 
-function scf{
+function scf(){
     echo -e " "
 }
 
