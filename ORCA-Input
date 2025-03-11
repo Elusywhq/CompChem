@@ -14,7 +14,7 @@ functional_labels=( "o3lyp d4" "pbe0 D4" "cam-B3LYP D4" "LIBXC(M062X) D3zero" "w
 state_labels=("xyz_Singlet" "xyz_Singlet" "xyz_Triplet")
 GS_methods_labels=("scf" "xtb" "goat")
 ES_methods_labels=("tddft_S1" "Dscf_S1")
-TS_methods_labels=("scf" "Dscf_T1")
+TS_methods_labels=("tddft_S1" "scf" "Dscf_T1")
 
 # --- Print available options as a table
 print_table() {
