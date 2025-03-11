@@ -6,7 +6,7 @@ functionals=("O3LYP" "pbe0" "camB3LYP" "M062X" "wB97XD4"  )
 states=("s0" "s1" "t1")
 GS_methods=("scf" "xtb" "goat")
 ES_methods=("tddft" "Dscf")
-TS_methods=("scf" "Dscf")
+TS_methods=("tddft" "scf" "Dscf")
 
 # --- Create a tuple list for job type labels, functional labels, state labels, and basis set labels
 job_type_labels=("optfreq" "opt" "freq" "fluo" "isc" "risc" "phosph")
