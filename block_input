@@ -16,6 +16,7 @@ function addkeywords(){
 function initial_input(){
     echo -e "\n%pal"
     echo " nprocs 16"
+    echo " nprocs_group 4"
     echo "end"
     # # echo -e "\n%
     echo -e "\n%maxcore 24000"
