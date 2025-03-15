@@ -129,7 +129,6 @@ while [ $hess -eq 1 ]; do
 
   $HOME/bin/ORCA/ORCA-displacement $input
   cat ${input%.inp}_v006.xyz > $xyz
-  sed -i "s/$xyz/${input%.inp}_v006.xyz/" $input
   echo "Replacing xyz file and restart the calculation..."
 
   # actual execution
