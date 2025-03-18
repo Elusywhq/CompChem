@@ -24,6 +24,24 @@ elif [[ $(hostname) == *"Precision"* ]]; then
 fi
 
 orca_pltvib=$ORCA_ROOT/orca_pltvib
+quiet=0
+
+# ----------------- Quiet mode -----------------
+# Parse options
+while getopts "q" opt; do
+  case $opt in
+    q)
+      quiet=1
+      ;;
+    *)
+      ;;
+  esac
+done
+
+shift $((OPTIND -1))
+# ----------------- Quiet mode -----------------
+
+
 
 hess=${1%.*}.hess
 oldcoord=${1%.*}.xyz
@@ -40,11 +58,17 @@ fi
 freq=`grep --text "vibrational_frequencies" -A 8 $hess | tail -n 1 | awk '{print $2}'`
 
 if [[ "$freq" == -* ]]; then
-  echo "Vibrational mode 6 is an imaginary mode."
-  echo "Frequency 6: $freq"
+  if [ $quiet -eq 1 ]; then
+    echo "the imagination mode found"
+  else
+    echo "Vibrational mode 6 is an imaginary mode."
+    echo "Frequency 6: $freq"
+  fi
 else
-  echo "Frequency 6: $freq"
-  echo "No imaginary mode found. Exiting..."
+  if [ $quiet -eq 0 ]; then
+    echo "Frequency 6: $freq"
+    echo "No imaginary mode found. Exiting..."
+  fi
   exit 1
 fi
 
