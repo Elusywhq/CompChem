@@ -32,8 +32,8 @@ oldcoord=${1%.*}.xyz
 if [ ! -f $hess ]; then
   echo "$hess not found. Exiting..."
   exit 1
-else 
-  echo "$hess found."
+# else 
+  # echo "$hess found."
 fi
 
 # Check if there is any imaginary mode
