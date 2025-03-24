@@ -156,8 +156,8 @@ done
    if [ -f  $tdir/${input%.inp}.xyz          ] ; then  cp $tdir/${input%.inp}.xyz           $CurrDir/  ; fi ;
    if [ -f  $tdir/${input%.inp}.spectrum     ] ; then  cp $tdir/${input%.inp}.spectrum      $CurrDir/  ; fi ;
    if [ -f  $tdir/${input%.inp}.plt          ] ; then  cp $tdir/${input%.inp}.plt           $CurrDir/  ; fi ;
-   if [ -f  $tdir/${input%.inp}.hess         ] ; then  cp $tdir/${input%.inp}.hess          $CurrDir/  ; fi ;
-#   if [ -f  $tdir/${input%.inp}_property.txt ] ; then  cp $tdir/${input%.inp}_property.txt  $CurrDir/  ; fi ;
+   if [ -f  $tdir/${input%.inp}.FS.hess         ] ; then  cp $tdir/${input%.inp}.hess          $CurrDir/  ; fi ;
+  # if [ -f  $tdir/${input%.inp}_property.txt ] ; then  cp $tdir/${input%.inp}_property.txt  $CurrDir/  ; fi ;
    if [ -f  $tdir/${input%.inp}.gbw           ] ; then  cp $tdir/${input%.inp}.gbw            $CurrDir/  ; fi ;   
 #   cp $tdir/*.plt $CurrDir/
 #fi
