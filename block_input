@@ -199,6 +199,7 @@ function xyz_Triplet(){
      echo " PRINTLEVEL 3"
      echo " USEJ TRUE"
      echo " DELE"
+     echo " NPOINTS 327680"
      echo "END" 
  }
 
