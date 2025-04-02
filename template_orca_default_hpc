@@ -2,6 +2,7 @@
 
 #PBS -q colo-chmlu 
 #PBS -l select=1:ncpus=CR:mpiprocs=CR:mem=240GB
+#PBS -l host=colo-chmlu-08
 #PBS -j oe
 #PBS -m abe
 #PBS -p 1023
