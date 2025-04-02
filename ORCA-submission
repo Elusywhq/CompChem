@@ -3,7 +3,7 @@
 # Define default values
 cores="16"
 name="default"
-memory="390"
+memory="120"
 gbw=0
 wt=24
 
