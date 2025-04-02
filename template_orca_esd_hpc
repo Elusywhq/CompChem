@@ -2,6 +2,7 @@
 
 #PBS -q colo-chmlu 
 #PBS -l select=1:ncpus=CR:mpiprocs=CR:mem=120GB
+#PBS -l host=colo-chmlu-08
 #PBS -j oe
 #PBS -m abe
 #PBS -p 1023
@@ -151,12 +152,12 @@ done
    if [ -f  $tdir/${input%.inp}.err          ] ; then  cp $tdir/${input%.inp}.err           $CurrDir/  ; fi ;
    if [ -f  $tdir/${input%.inp}.densities    ] ; then  cp $tdir/${input%.inp}.densities     $CurrDir/  ; fi ;
    if [ -f  $tdir/*.cube                     ] ; then  cp $tdir/*.cube                      $CurrDir/  ; fi ;
-   if [ -f  $tdir/${input%.inp}.trj          ] ; then  cp $tdir/${input%.inp}.trj           $CurrDir/  ; fi ;
+   if [ -f  $tdir/${input%.inp}.corrfunc     ] ; then  cp $tdir/${input%.inp}.corrfunc      $CurrDir/  ; fi ;
    if [ -f  $tdir/${input%.inp}.cis          ] ; then  cp $tdir/${input%.inp}.cis           $CurrDir/  ; fi ;
    if [ -f  $tdir/${input%.inp}.xyz          ] ; then  cp $tdir/${input%.inp}.xyz           $CurrDir/  ; fi ;
    if [ -f  $tdir/${input%.inp}.spectrum     ] ; then  cp $tdir/${input%.inp}.spectrum      $CurrDir/  ; fi ;
    if [ -f  $tdir/${input%.inp}.plt          ] ; then  cp $tdir/${input%.inp}.plt           $CurrDir/  ; fi ;
-   if [ -f  $tdir/${input%.inp}.FS.hess         ] ; then  cp $tdir/${input%.inp}.hess          $CurrDir/  ; fi ;
+   if [ -f  $tdir/${input%.inp}.FS.hess      ] ; then  cp $tdir/${input%.inp}.hess          $CurrDir/  ; fi ;
   # if [ -f  $tdir/${input%.inp}_property.txt ] ; then  cp $tdir/${input%.inp}_property.txt  $CurrDir/  ; fi ;
    if [ -f  $tdir/${input%.inp}.gbw           ] ; then  cp $tdir/${input%.inp}.gbw            $CurrDir/  ; fi ;   
 #   cp $tdir/*.plt $CurrDir/
