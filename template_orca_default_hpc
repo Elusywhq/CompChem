@@ -99,7 +99,7 @@ while [ $finish -eq 0 ]; do
     echo "Iteration hits the limit to $i, quitting... "
     if [ -f  $tdir/${input%.inp}.out  ] ; then  cp $tdir/${input%.inp}.out   $CurrDir/  ; fi ;
      if [ -f  $tdir/${input%.inp}.err  ] ; then  cp $tdir/${input%.inp}.err   $CurrDir/  ; fi ; 
-    exit 99
+    exit 88
   fi 
 done 
 
@@ -157,7 +157,7 @@ while [ $hess -eq 1 ]; do
     echo "Iteration hits the limit to $h, quitting... "
     if [ -f  $tdir/${input%.inp}.out  ] ; then  cp $tdir/${input%.inp}.out   $CurrDir/  ; fi ;
     if [ -f  $tdir/${input%.inp}.err  ] ; then  cp $tdir/${input%.inp}.err   $CurrDir/  ; fi ; 
-    exit 99
+    exit 77
   fi  
 done
 
