@@ -94,7 +94,7 @@ while [ $finish -eq 0 ]; do
   if [ $finish -eq 1 ]; then
     break
   fi  
-   if [ $i -eq 5 ]; then
+   if [ $i -eq 3 ]; then
     echo "Iteration hits the limit to $i, quitting... "
     if [ -f  $tdir/${input%.inp}.out  ] ; then  cp $tdir/${input%.inp}.out   $CurrDir/  ; fi ;
     if [ -f  $tdir/${input%.inp}.err  ] ; then  cp $tdir/${input%.inp}.err   $CurrDir/  ; fi ; 
