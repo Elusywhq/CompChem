@@ -151,6 +151,9 @@ while [ $hess -eq 1 ]; do
     echo "Iteration hits the limit to $h, quitting... "
     if [ -f  $tdir/${input%.inp}.out  ] ; then  cp $tdir/${input%.inp}.out   $CurrDir/  ; fi ;
     if [ -f  $tdir/${input%.inp}.err  ] ; then  cp $tdir/${input%.inp}.err   $CurrDir/  ; fi ; 
+   if [ -f  $tdir/${input%.inp}.hess ] ; then  cp $tdir/${input%.inp}.hess  $CurrDir/  ; fi ; 
+   if [ -f  $tdir/${input%.inp}.gbw  ] ; then  cp $tdir/${input%.inp}.gbw   $CurrDir/  ; fi ;
+   if [ -f  $tdir/${input%.inp}.xyz  ] ; then  cp $tdir/${input%.inp}.xyz   $CurrDir/  ; fi ;
     exit 77
   fi  
 done
