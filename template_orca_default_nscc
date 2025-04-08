@@ -147,7 +147,7 @@ while [ $hess -eq 1 ]; do
     echo "No imaginary mode found. Exiting..."
     break
   fi 
-  if [ $h -eq 5 ]; then
+  if [ $h -eq 1 ]; then
     echo "Iteration hits the limit to $h, quitting... "
     if [ -f  $tdir/${input%.inp}.out  ] ; then  cp $tdir/${input%.inp}.out   $CurrDir/  ; fi ;
     if [ -f  $tdir/${input%.inp}.err  ] ; then  cp $tdir/${input%.inp}.err   $CurrDir/  ; fi ; 
