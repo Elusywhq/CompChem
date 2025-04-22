@@ -87,7 +87,7 @@ fi
 # Generate the displacement
 # Step 1: Extract the lines and remove the last one
 echo "Generating the displacement for vibrational mode 6..."
-awk '/\* Frequency\(6\)/{count++} count >= 17 && count < 18' $mode | head -n -1 > temp_extracted.txt
+awk '/\* Frequency\(6\)/{count++} count >= 10 && count < 11' $mode | head -n -1 > temp_extracted.txt
 
 
 awk '{if (NF > 4) print $1, $2, $3, $4; else print $0}' temp_extracted.txt > temp_extracted_filtered.txt
