@@ -122,8 +122,9 @@ fi
 xyz=`grep "* XYZFILE 0" $input | awk '{print $5}'`
 echo "XYZ file: $xyz"
 
+h=0
 while [ $hess -eq 1 ]; do
-  h=$((h+1))
+
   cp -f $xyz ${input%.inp}.xyz.i$h
   echo "${input%.inp}.xyz.i$h is backed up."
   cp -f ${input%.inp}.out ${input%.inp}.out.i$h
@@ -161,7 +162,8 @@ while [ $hess -eq 1 ]; do
    if [ -f  $tdir/${input%.inp}.gbw  ] ; then  cp $tdir/${input%.inp}.gbw   $CurrDir/  ; fi ;
    if [ -f  $tdir/${input%.inp}.xyz  ] ; then  cp $tdir/${input%.inp}.xyz   $CurrDir/  ; fi ;
     exit 77
-  fi  
+  fi 
+  h=$((h+1))
 done
 
 
