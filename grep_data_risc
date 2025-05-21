@@ -7,12 +7,13 @@ states=("s0" "s1" "t1")
  
 # csv_file="CM5192_calculation_data.csv"
 if [ -z "$1" ]; then
-  output="data.csv"
+  output="soc_risc.csv"
 else
-  output=${1}_risc.csv
+  output=${1}_isc.csv
 fi
 
-echo "Molecule_Name,Functional,Fluorescence_Rate,RISC_Rate,npoints1,npoints2,K_Vector_sum,lamda_sum(cm-1),lamda_max_freq,lamda_maxmode_socme,HR_max_freq,HR_maxmode_socme,XYZ_S1_S0,XYZ_T1_S0,XYZ_T1_S1,ref_molecule" > $output
+echo "Molecule_Name,Functional,RISC_Rate,npoints1,npoints2,K_Vector_sum,lamda_sum(cm-1),lamda_max_freq,lamda_maxmode_socme,HR_max_freq,HR_maxmode_socme,rmsf_s1_t1" > $output
+
 
 
 for molecule in $molecules; do
@@ -55,7 +56,6 @@ for molecule in $molecules; do
 
         
         
-        Fluorescence_rate=$(ORCA-Grepk -q "$FLUO.out")
     
 
 
@@ -115,12 +115,9 @@ for molecule in $molecules; do
         npoints2=$(grep "Number of points:" $RISC_2.out | awk '{print $4}')
 
 
-        XYZ_S1_S0=$(calculate_rmsd $ES.xyz $GS.xyz 2>&1)
-        XYZ_T1_S0=$(calculate_rmsd $TS.xyz $GS.xyz 2>&1)
-        XYZ_T1_S1=$(calculate_rmsd $TS.xyz $ES.xyz 2>&1)
+        XYZ_T1_S1=$(grep "The RMSD is" $RISC_1.out | awk '{print $4}')
       
 
-        Fluorescence_rate=$(printf "%.8e" "$Fluorescence_rate")
         RISC_rate_1=$(printf "%.8e" "$RISC_rate_1")
         RISC_rate_2=$(printf "%.8e" "$RISC_rate_2")
         RISC_rate_3=$(printf "%.8e" "$RISC_rate_3")
@@ -133,7 +130,7 @@ for molecule in $molecules; do
         # Debugging: Print the values of the variables
         # echo "Debug: molecule=$molecule, functional=$functional, SPE_S0=$SPE_S0, SPE_S1=$SPE_S1, SPE_T1=$SPE_T1, Energy_Gap=$Energy_Gap, Fluorescence_rate=$Fluorescence_rate, ISC_rate_1=$ISC_rate_1, ISC_rate_2=$ISC_rate_2, ISC_rate_3=$ISC_rate_3, ISC_average=$ISC_average, RISC_rate_1=$RISC_rate_1, RISC_rate_2=$RISC_rate_2, RISC_rate_3=$RISC_rate_3, RISC_average=$RISC_average, DIndex_S1=$DIndex_S1, XYZ_S1_S0=$XYZ_S1_S0, XYZ_T1_S0=$XYZ_T1_S0, XYZ_T1_S1=$XYZ_T1_S1, ref=$ref"
 # echo "Molecule_Name,Functional,Fluorescence_Rate,ISC_Rate,RISC_Rate,K_Vector_sum,lamda_sum(cm-1),lamda_max_freq,lamda_maxmode_socme(Re,Im),HR_max_freq,HR_maxmode_socme,XYZ_S1_S0,XYZ_T1_S0,XYZ_T1_S1,ref_molecule"
-        echo "\"${molecule}\",\"${functional}\",\"$Fluorescence_rate\",\"$RISC_average\",\"$npoints1\",\"$npoints2\",\"$K_vector\",\"$lamda\",\"$lamda_max_freq\",\"$lamda_maxmode_socme\",\"$HR_max_freq\",\"$HR_maxmode_socme\",\"$XYZ_S1_S0\",\"$XYZ_T1_S0\",\"$XYZ_T1_S1\",\"$ref\"" >> ../$output
+        echo "\"${molecule}\",\"${functional}\",\"$RISC_average\",\"$npoints1\",\"$npoints2\",\"$K_vector\",\"$lamda\",\"$lamda_max_freq\",\"$lamda_maxmode_socme\",\"$HR_max_freq\",\"$HR_maxmode_socme\",\"$XYZ_T1_S1\"" >> ../$output
 
         
 
