@@ -110,6 +110,8 @@ for molecule in $molecules; do
         # echo "HR_maxmode_socme: $HR_maxmode_socme"
         npoints1=$(grep "Number of points:" $ISC_1.out | awk '{print $4}')
         npoints2=$(grep "Number of points:" $ISC_2.out | awk '{print $4}')
+        HR_maxmode_socme1=$(grep -w "$HR_max_mode " ${ISC_1}_socme.data | awk '{print $2 $3}')
+        HR_maxmode_socme2=$(grep -w "$HR_max_mode " ${ISC_2}_socme.data | awk '{print $2 $3}')
 
 
         XYZ_T1_S1=$(grep "The RMSD is" $ISC_1.out | awk '{print $4}')
