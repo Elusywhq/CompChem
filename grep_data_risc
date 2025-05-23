@@ -12,9 +12,14 @@ else
   output=${1}_isc.csv
 fi
 
-echo "Molecule_Name,Functional,RISC_Rate,npoints1,npoints2,K_Vector_sum,lamda_sum(cm-1),lamda_max_freq,lamda_maxmode_socme,HR_max_freq,lamda_max_mode,HR_maxmode_socme,rmsd_s1_t1,ref_socme1,ref_socme2" > $output
+calculate_average() {
+    local list=("$@")
+    printf "%s\n" "${list[@]}" | awk '{sum+=$1} END {if (NR > 0) printf "%.6e\n", sum/NR}'
+}
 
+echo "Molecule,Functional,RISC_Rate,npoints1,npoints2,K_Vector_sum,lamda_sum(cm-1),lamda_max_freq,lamda_maxmode_socme1,lamda_maxmode_socme2,HR_max_freq,HR_max_mode,HR_maxmode_socme1,HR_maxmode_socme2,rmsd_s1_t1,ref_socme1,ref_socme2" > $output
 
+# molecules=("1CZ5" "1CZ6" "1CZ7" "1CZ8" "1CZ9" "1CZA" "1CZD" "1CZE" "1CZF" "1CZG" "1CZH" "1CZI" "1CZJ" "1CZK" "1CZM" "1CZN")
 
 for molecule in $molecules; do
     # echo "molecule: $molecule"
@@ -23,7 +28,7 @@ for molecule in $molecules; do
     fi
     cd $molecule
     echo "Molecule: $molecule"
-    ref="0${molecule:1:2}0"
+    # ref="0${molecule:1:2}0"
     # echo "Reference: $ref"
 
     for functional in "${functionals[@]}"; do
@@ -33,32 +38,24 @@ for molecule in $molecules; do
         FLUO="$molecule"_"$functional"_svp_s1_esd_fluo
         RISC_1="$molecule"_"$functional"_svp_t1_esd_risc_T1
         RISC_2="$molecule"_"$functional"_svp_t1_esd_risc_T2
-        RISC_3="$molecule"_"$functional"_svp_t1_esd_risc_T3
-        files=($GS $ES $TS $FLUO $RISC_1 $RISC_2 $RISC_3)
-
-
-        # check imaginary modes
-        for s in $GS $ES $TS; do
-            if [ ! -f "$s.hess" ]; then
-                echo $s
-                hess=1
-            else
-                freq=`grep --text "vibrational_frequencies" -A 8 $s.hess | tail -n 1 | awk '{print $2}'`
-                if [[ "$freq" == -* ]]; then
-                    echo $s.hess
-                    # echo "Frequency 6: $freq"
-                    hess=1
-                else
-                    hess=0
-                fi
+        files=($RISC_1 $RISC_2 $RISC_3)
+        for file in "${files[@]}"; do
+            if [ ! -f "$file.out" ]; then
+                echo "Error: $file.out not found"
+                continue 2
+                
+            fi
+            rate=$(ORCA-Grepk -q "$file.out")
+            if [ -z "$rate" ]; then
+                echo "Error: $file.out not found or empty"
+                continue 2
+            fi
+            if [ "$rate" == "0" ]; then
+                echo "Error: $file.out has zero rate"
+                continue 2
             fi
         done
-
         
-        
-    
-
-
         RISC_rate_1=$(ORCA-Grepk -q "$RISC_1.out")
         RISC_rate_2=$(ORCA-Grepk -q "$RISC_2.out")
         RISC_rate_3=$(ORCA-Grepk -q "$RISC_3.out")
@@ -71,7 +68,7 @@ for molecule in $molecules; do
         elif [ -z $RISC_rate_1 ] && [ "$RISC_rate_3" != "0.00000000e+00" ]; then
             RISC_rate_1=$RISC_rate_3
         fi
-
+        echo "$functional RISC rates: $RISC_rate_1, $RISC_rate_2, $RISC_rate_3"
         RISC_sum=$(printf "%.10g + %.10g + %.10g\n" "$RISC_rate_1" "$RISC_rate_2" "$RISC_rate_3" | bc -l 2>/dev/null)
 
         if [ "$RISC_sum" != "0.00000000e+00" ]; then
@@ -79,7 +76,7 @@ for molecule in $molecules; do
                 # echo "Negative RISC rate for $molecule with $functional"
                 RISC_average="NaN"
             else
-                RISC_average=$(printf "%.10g / 3\n" "$RISC_sum" | bc -l 2>/dev/null)
+                RISC_average=$(calculate_average $RISC_rate_1 $RISC_rate_2 $RISC_rate_3)
                 # echo "RISC average: $RISC_average"
             fi
         else
@@ -101,22 +98,33 @@ for molecule in $molecules; do
             continue
         fi
 
-        lamda=$(grep "The total reorganization energy is:" $RISC_1.out | awk '{print $6}')
-        K_vector=$(grep "The sum of K" $RISC_1.out | awk '{print $6}')
-        lamda_max_freq=$(sort -k2,2n ${RISC_1}_lamda.data | tail -n 1| awk '{print $3}')
-        lamda_max_mode=$(sort -k2,2n ${RISC_1}_lamda.data | tail -n 1| awk '{print $1}')
-        lamda_maxmode_socme=$(grep -w "$lamda_max_mode " ${RISC_1}_socme.data | awk '{print $2 $3}')
-        # echo "lamda_maxmode_socme: $lamda_maxmode_socme"
+        # Extract total reorganization energy and K vector
+        lamda=$(awk '/The total reorganization energy is:/ {print $6}' "$RISC_1.out")
+        K_vector=$(awk '/The sum of K/ {print $6}' "$RISC_1.out")
 
-        HR_max_freq=$(sort -k2,2n ${RISC_1}_HR.data | tail -n 1| awk '{print $3}')
-        HR_max_mode=$(sort -k2,2n ${RISC_1}_HR.data | tail -n 1| awk '{print $1}')
-        HR_maxmode_socme1=$(grep -w "$HR_max_mode " ${RISC_1}_socme.data | awk '{print $2 $3}')
-        HR_maxmode_socme2=$(grep -w "$HR_max_mode " ${RISC_2}_socme.data | awk '{print $2 $3}')
-        # echo "HR_maxmode_socme: $HR_maxmode_socme"
+        # Get mode with max lambda (by 2nd column) and its frequency
+        lamda_max_freq=$(sort -k2,2n "${RISC_1}_lamda.data" | tail -n 1 | awk '{print $3}')
+        lamda_max_mode=$(sort -k2,2n "${RISC_1}_lamda.data" | tail -n 1 | awk '{print $1}')
+
+        # Get SOCME for the max lambda mode
+        lamda_maxmode_socme1=$(awk -v mode="$lamda_max_mode" '$1 == mode {print $2 $3}' "${RISC_1}_socme.data")
+        lamda_maxmode_socme2=$(awk -v mode="$lamda_max_mode" '$1 == mode {print $2 $3}' "${RISC_2}_socme.data")
+        # echo "lamda_maxmode_socme: $lamda_maxmode_socme1, $lamda_maxmode_socme2"
+
+        # Get max HR mode and frequency
+        HR_max_freq=$(sort -k2,2n "${RISC_1}_HR.data" | tail -n 1 | awk '{print $3}')
+        HR_max_mode=$(sort -k2,2n "${RISC_1}_HR.data" | tail -n 1 | awk '{print $1}')
+
+        # Get SOCME for HR max mode from both RISC files
+        HR_maxmode_socme1=$(awk -v mode="$HR_max_mode" '$1 == mode {print $2 $3}' "${RISC_1}_socme.data")
+        HR_maxmode_socme2=$(awk -v mode="$HR_max_mode" '$1 == mode {print $2 $3}' "${RISC_2}_socme.data")
+
+
+        # echo "HR_maxmode_socme2: $HR_maxmode_socme1, $HR_maxmode_socme2"
         npoints1=$(grep "Number of points:" $RISC_1.out | awk '{print $4}')
         npoints2=$(grep "Number of points:" $RISC_2.out | awk '{print $4}')
-        ref_socme1=$(grep "Reference SOC (Re and Im)" ${RISC_1}_socme.data | awk '{print $6 $7}')
-        ref_socme2=$(grep "Reference SOC (Re and Im)" ${RISC_2}_socme.data | awk '{print $6 $7}')
+        ref_socme1=$(grep "Reference SOC (Re and Im)" ${RISC_1}.out | awk '{print $6 $7}')
+        ref_socme2=$(grep "Reference SOC (Re and Im)" ${RISC_2}.out | awk '{print $6 $7}')
 
 
         XYZ_T1_S1=$(grep "The RMSD is" $RISC_1.out | awk '{print $4}')
@@ -133,8 +141,8 @@ for molecule in $molecules; do
 
         # Debugging: Print the values of the variables
         # echo "Debug: molecule=$molecule, functional=$functional, SPE_S0=$SPE_S0, SPE_S1=$SPE_S1, SPE_T1=$SPE_T1, Energy_Gap=$Energy_Gap, Fluorescence_rate=$Fluorescence_rate, ISC_rate_1=$ISC_rate_1, ISC_rate_2=$ISC_rate_2, ISC_rate_3=$ISC_rate_3, ISC_average=$ISC_average, RISC_rate_1=$RISC_rate_1, RISC_rate_2=$RISC_rate_2, RISC_rate_3=$RISC_rate_3, RISC_average=$RISC_average, DIndex_S1=$DIndex_S1, XYZ_S1_S0=$XYZ_S1_S0, XYZ_T1_S0=$XYZ_T1_S0, XYZ_T1_S1=$XYZ_T1_S1, ref=$ref"
-# echo "Molecule_Name,Functional,Fluorescence_Rate,ISC_Rate,RISC_Rate,K_Vector_sum,lamda_sum(cm-1),lamda_max_freq,lamda_maxmode_socme(Re,Im),HR_max_freq,HR_maxmode_socme,XYZ_S1_S0,XYZ_T1_S0,XYZ_T1_S1,ref_molecule"
-        echo "\"${molecule}\",\"${functional}\",\"$RISC_average\",\"$npoints1\",\"$npoints2\",\"$K_vector\",\"$lamda\",\"$lamda_max_freq\",\"$lamda_max_mode\",\"$lamda_maxmode_socme\",\"$HR_max_freq\",\"$HR_maxmode_socme\",\"$XYZ_T1_S1\",\"$ref_socme1\",\"$ref_socme2\"" >> ../$output
+        #        "Molecule_Name,Functional,RISC_Rate,npoints1,npoints2,K_Vector_sum,lamda_sum(cm-1),lamda_max_freq,lamda_maxmode_socme,HR_max_freq,HR_max_mode,HR_maxmode_socme1,HR_maxmode_socme2,rmsd_s1_t1,ref_socme1,ref_socme2"
+        echo "\"${molecule}\",\"${functional}\",\"$RISC_average\",\"$npoints1\",\"$npoints2\",\"$K_vector\",\"$lamda\",\"$lamda_max_freq\",\"$lamda_maxmode_socme1\",\"$lamda_maxmode_socme2\",\"$HR_max_freq\",\"$HR_max_mode\",\"$HR_maxmode_socme1\",\"$HR_maxmode_socme2\",\"$XYZ_T1_S1\",\"$ref_socme1\",\"$ref_socme2\"" >> ../$output
 
         
 

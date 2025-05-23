@@ -12,8 +12,14 @@ else
   output=${1}_isc.csv
 fi
 
-echo "Molecule_Name,Functional,ISC_Rate,npoints1,npoints2,K_Vector_sum,lamda_sum(cm-1),lamda_max_freq,lamda_maxmode_socme,HR_max_freq,HR_maxmode_socme,rmsf_s1_t1" > $output
+calculate_average() {
+    local list=("$@")
+    printf "%s\n" "${list[@]}" | awk '{sum+=$1} END {if (NR > 0) printf "%.6e\n", sum/NR}'
+}
 
+echo "Molecule,Functional,ISC_Rate,npoints1,npoints2,K_Vector_sum,lamda_sum(cm-1),lamda_max_freq,lamda_maxmode_socme1,lamda_maxmode_socme2,HR_max_freq,HR_max_mode,HR_maxmode_socme1,HR_maxmode_socme2,rmsd_s1_t1,ref_socme1,ref_socme2" > $output
+
+# molecules=("1CZ5" "1CZ6" "1CZ7" "1CZ8" "1CZ9" "1CZA" "1CZD" "1CZE" "1CZF" "1CZG" "1CZH" "1CZI" "1CZJ" "1CZK" "1CZM" "1CZN")
 
 for molecule in $molecules; do
     # echo "molecule: $molecule"
@@ -22,7 +28,7 @@ for molecule in $molecules; do
     fi
     cd $molecule
     echo "Molecule: $molecule"
-    ref="0${molecule:1:2}0"
+    # ref="0${molecule:1:2}0"
     # echo "Reference: $ref"
 
     for functional in "${functionals[@]}"; do
@@ -32,58 +38,53 @@ for molecule in $molecules; do
         FLUO="$molecule"_"$functional"_svp_s1_esd_fluo
         ISC_1="$molecule"_"$functional"_svp_t1_esd_isc_T1
         ISC_2="$molecule"_"$functional"_svp_t1_esd_isc_T2
-        ISC_3="$molecule"_"$functional"_svp_t1_esd_isc_T3
-
-        files=($GS $ES $TS $FLUO $ISC_1 $ISC_2 $ISC_3 )
-
-        # check imaginary modes
-        for s in $GS $ES $TS; do
-            if [ ! -f "$s.hess" ]; then
-                echo $s
-                hess=1
-            else
-                freq=`grep --text "vibrational_frequencies" -A 8 $s.hess | tail -n 1 | awk '{print $2}'`
-                if [[ "$freq" == -* ]]; then
-                    echo $s.hess
-                    # echo "Frequency 6: $freq"
-                    hess=1
-                else
-                    hess=0
-                fi
+        files=($ISC_1 $ISC_2 $ISC_3)
+        for file in "${files[@]}"; do
+            if [ ! -f "$file.out" ]; then
+                echo "Error: $file.out not found"
+                continue 2
+                
+            fi
+            rate=$(ORCA-Grepk -q "$file.out")
+            if [ -z "$rate" ]; then
+                echo "Error: $file.out not found or empty"
+                continue 2
+            fi
+            if [ "$rate" == "0" ]; then
+                echo "Error: $file.out has zero rate"
+                continue 2
             fi
         done
-
         
-        
-
-
         ISC_rate_1=$(ORCA-Grepk -q "$ISC_1.out")
         ISC_rate_2=$(ORCA-Grepk -q "$ISC_2.out")
         ISC_rate_3=$(ORCA-Grepk -q "$ISC_3.out")
 
+        # Make sure 1 and 3 are equal if one of them is zero
 
         if [ -z $ISC_rate_3 ] && [ "$ISC_rate_1" != "0.00000000e+00" ]; then
             ISC_rate_3=$ISC_rate_1
-            # echo "Replaced RISC rate 3 with RISC rate 1"
+            # echo "Replaced ISC rate 3 with ISC rate 1"
         elif [ -z $ISC_rate_1 ] && [ "$ISC_rate_3" != "0.00000000e+00" ]; then
             ISC_rate_1=$ISC_rate_3
         fi
+        echo "$functional ISC rates: $ISC_rate_1, $ISC_rate_2, $ISC_rate_3"
         ISC_sum=$(printf "%.10g + %.10g + %.10g\n" "$ISC_rate_1" "$ISC_rate_2" "$ISC_rate_3" | bc -l 2>/dev/null)
-
 
         if [ "$ISC_sum" != "0.00000000e+00" ]; then
             if (( $(echo "$ISC_sum < 0" | bc -l) )); then
-                # echo "Negative RISC rate for $molecule with $functional"
+                # echo "Negative ISC rate for $molecule with $functional"
                 ISC_average="NaN"
             else
-                ISC_average=$(printf "%.10g / 3\n" "$ISC_sum" | bc -l 2>/dev/null)
-                # echo "RISC average: $ISC_average"
+                ISC_average=$(calculate_average $ISC_rate_1 $ISC_rate_2 $ISC_rate_3)
+                # echo "ISC average: $ISC_average"
             fi
         else
             ISC_average=0.0000000000
         fi
 
         ORCA-GrepVC $ISC_1.out 
+        ORCA-GrepVC $ISC_2.out
 
         if [ ! -f "${ISC_1}.out" ]; then
             # echo "Error: ${ISC_1}.out not found"
@@ -97,21 +98,33 @@ for molecule in $molecules; do
             continue
         fi
 
-        lamda=$(grep "The total reorganization energy is:" $ISC_1.out | awk '{print $6}')
-        K_vector=$(grep "The sum of K" $ISC_1.out | awk '{print $6}')
-        lamda_max_freq=$(sort -k2,2n ${ISC_1}_lamda.data | tail -n 1| awk '{print $3}')
-        lamda_max_mode=$(sort -k2,2n ${ISC_1}_lamda.data | tail -n 1| awk '{print $1}')
-        lamda_maxmode_socme=$(grep -w "$lamda_max_mode " ${ISC_1}_socme.data | awk '{print $2 $3}')
-        # echo "lamda_maxmode_socme: $lamda_maxmode_socme"
+        # Extract total reorganization energy and K vector
+        lamda=$(awk '/The total reorganization energy is:/ {print $6}' "$ISC_1.out")
+        K_vector=$(awk '/The sum of K/ {print $6}' "$ISC_1.out")
 
-        HR_max_freq=$(sort -k2,2n ${ISC_1}_HR.data | tail -n 1| awk '{print $3}')
-        HR_max_mode=$(sort -k2,2n ${ISC_1}_HR.data | tail -n 1| awk '{print $1}')
-        HR_maxmode_socme=$(grep -w "$HR_max_mode " ${ISC_1}_socme.data | awk '{print $2 $3}')
-        # echo "HR_maxmode_socme: $HR_maxmode_socme"
+        # Get mode with max lambda (by 2nd column) and its frequency
+        lamda_max_freq=$(sort -k2,2n "${ISC_1}_lamda.data" | tail -n 1 | awk '{print $3}')
+        lamda_max_mode=$(sort -k2,2n "${ISC_1}_lamda.data" | tail -n 1 | awk '{print $1}')
+
+        # Get SOCME for the max lambda mode
+        lamda_maxmode_socme1=$(awk -v mode="$lamda_max_mode" '$1 == mode {print $2 $3}' "${ISC_1}_socme.data")
+        lamda_maxmode_socme2=$(awk -v mode="$lamda_max_mode" '$1 == mode {print $2 $3}' "${ISC_2}_socme.data")
+        # echo "lamda_maxmode_socme: $lamda_maxmode_socme1, $lamda_maxmode_socme2"
+
+        # Get max HR mode and frequency
+        HR_max_freq=$(sort -k2,2n "${ISC_1}_HR.data" | tail -n 1 | awk '{print $3}')
+        HR_max_mode=$(sort -k2,2n "${ISC_1}_HR.data" | tail -n 1 | awk '{print $1}')
+
+        # Get SOCME for HR max mode from both ISC files
+        HR_maxmode_socme1=$(awk -v mode="$HR_max_mode" '$1 == mode {print $2 $3}' "${ISC_1}_socme.data")
+        HR_maxmode_socme2=$(awk -v mode="$HR_max_mode" '$1 == mode {print $2 $3}' "${ISC_2}_socme.data")
+
+
+        # echo "HR_maxmode_socme2: $HR_maxmode_socme1, $HR_maxmode_socme2"
         npoints1=$(grep "Number of points:" $ISC_1.out | awk '{print $4}')
         npoints2=$(grep "Number of points:" $ISC_2.out | awk '{print $4}')
-        HR_maxmode_socme1=$(grep -w "$HR_max_mode " ${ISC_1}_socme.data | awk '{print $2 $3}')
-        HR_maxmode_socme2=$(grep -w "$HR_max_mode " ${ISC_2}_socme.data | awk '{print $2 $3}')
+        ref_socme1=$(grep "Reference SOC (Re and Im)" ${ISC_1}.out | awk '{print $6 $7}')
+        ref_socme2=$(grep "Reference SOC (Re and Im)" ${ISC_2}.out | awk '{print $6 $7}')
 
 
         XYZ_T1_S1=$(grep "The RMSD is" $ISC_1.out | awk '{print $4}')
@@ -126,7 +139,10 @@ for molecule in $molecules; do
         XYZ_T1_S0=$(printf "%.10f" "$XYZ_T1_S0")
     
 
-        echo "\"${molecule}\",\"${functional}\",\"$ISC_average\",\"$npoints1\",\"$npoints2\",\"$K_vector\",\"$lamda\",\"$lamda_max_freq\",\"$lamda_maxmode_socme\",\"$HR_max_freq\",\"$HR_maxmode_socme\",\"$XYZ_T1_S1\"" >> ../$output
+        # Debugging: Print the values of the variables
+        # echo "Debug: molecule=$molecule, functional=$functional, SPE_S0=$SPE_S0, SPE_S1=$SPE_S1, SPE_T1=$SPE_T1, Energy_Gap=$Energy_Gap, Fluorescence_rate=$Fluorescence_rate, ISC_rate_1=$ISC_rate_1, ISC_rate_2=$ISC_rate_2, ISC_rate_3=$ISC_rate_3, ISC_average=$ISC_average, ISC_rate_1=$ISC_rate_1, ISC_rate_2=$ISC_rate_2, ISC_rate_3=$ISC_rate_3, ISC_average=$ISC_average, DIndex_S1=$DIndex_S1, XYZ_S1_S0=$XYZ_S1_S0, XYZ_T1_S0=$XYZ_T1_S0, XYZ_T1_S1=$XYZ_T1_S1, ref=$ref"
+        #        "Molecule_Name,Functional,ISC_Rate,npoints1,npoints2,K_Vector_sum,lamda_sum(cm-1),lamda_max_freq,lamda_maxmode_socme,HR_max_freq,HR_max_mode,HR_maxmode_socme1,HR_maxmode_socme2,rmsd_s1_t1,ref_socme1,ref_socme2"
+        echo "\"${molecule}\",\"${functional}\",\"$ISC_average\",\"$npoints1\",\"$npoints2\",\"$K_vector\",\"$lamda\",\"$lamda_max_freq\",\"$lamda_maxmode_socme1\",\"$lamda_maxmode_socme2\",\"$HR_max_freq\",\"$HR_max_mode\",\"$HR_maxmode_socme1\",\"$HR_maxmode_socme2\",\"$XYZ_T1_S1\",\"$ref_socme1\",\"$ref_socme2\"" >> ../$output
 
         
 
@@ -135,6 +151,10 @@ for molecule in $molecules; do
     cd ..
 done
 
-
+# {
+#     for ((i=0; i<${#MoleculeNames[@]}; i++)); do
+#         echo "${MoleculeNames[i]},${Functionals[i]},${spe_s0[i]},${spe_s1[i]},${spe_t1[i]},${energy_gap[i]},${fluorescence_rate[i]},${isc_rate_1[i]},${isc_rate_2[i]},${isc_rate_3[i]},${isc_rate_avg[i]},${isc_rate_1[i]},${isc_rate_2[i]},${isc_rate_3[i]},${isc_rate_avg[i]},${CT_S1[i]},${xyz_S1_S0[i]},${xyz_T1_S0[i]},${xyz_T1_S1[i]},${REF[i]}"
+#     done
+# } >> $output
 
 # echo "Data has been processed and saved to $output"
