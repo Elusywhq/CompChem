@@ -12,7 +12,7 @@ else
   output=${1}_rate.csv
 fi
 
-echo "Molecule_Name,Functional,S0,S1_Dscf,S1_td,S2_td,T1,k_F,ISC1,ISC2,ISC3,k_isc,RISC1,RISC2,RISC3,k_risc,emission,ref_molecule" > $output
+echo "Molecule,Functional,S0,S1_Dscf,S1_td,S2_td,T1,k_F,ISC1,ISC2,ISC3,k_isc,RISC1,RISC2,RISC3,k_risc,emission,ref_molecule" > $output
 
 Initial_State() {
   local list=("$1")
