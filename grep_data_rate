@@ -71,10 +71,10 @@ for molecule in ${molecules[@]}; do
         RISC_2="$molecule"_"$functional"_svp_t1_esd_risc_T2
         RISC_3="$molecule"_"$functional"_svp_t1_esd_risc_T3
         files=($GS $ES $TS $FLUO $ISC_1 $ISC_2 $ISC_3 $RISC_1 $RISC_2 $RISC_3)
-        if [ ! -f "$TS.out" ]; then
-            T1=$(Final_State $ISC_1)
-            TS="$molecule"_"$functional"_svp_"$T1"_optfreq
-        fi
+        # if [ ! -f "$TS.out" ]; then
+        T1=$(Final_State $ISC_1)
+        TS="$molecule"_"$functional"_svp_"$T1"_optfreq
+        # fi
         
         # for file in "${files[@]}"; do
         #     echo "file: $file"
