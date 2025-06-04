@@ -14,6 +14,35 @@ fi
 
 echo "Molecule_Name,Functional,S0,S1_Dscf,S1_td,S2_td,T1,k_F,ISC1,ISC2,ISC3,k_isc,RISC1,RISC2,RISC3,k_risc,emission,ref_molecule" > $output
 
+Initial_State() {
+  local list=("$1")
+  local file=${list%.*}.out
+  # echo $file
+  # 1. Check that the job is finished if not finished, return 0
+  local finish=0
+  local finish=$(grep "****ORCA ESD FINISHED WITHOUT ERROR****" $file | wc -l)
+  # if [ $finish -eq 0 ]; then
+  #   echo "99"
+  #   return 
+  # fi
+  # grep "ISCISHESS" $file | awk '{print $4}' 
+  grep "ISCISHESS" "$file" | awk '{split($4, a, "_"); print a[4] "_" a[5]}'
+}
+
+Final_State() {
+  local list=("$1")
+  local file=${list%.*}.out
+  # echo $file
+  # 1. Check that the job is finished if not finished, return 0
+  local finish=0
+  local finish=$(grep "****ORCA ESD FINISHED WITHOUT ERROR****" $file | wc -l)
+  # if [ $finish -eq 0 ]; then
+  #   echo "99"
+  #   return 
+  # fi
+  # grep "ISCISHESS" $file | awk '{print $4}' 
+  grep "ISCFSHESS" "$file" | awk '{split($4, a, "_"); print a[4] "_" a[5]}'
+}
 
 for molecule in ${molecules[@]}; do
     # echo "molecule: $molecule"
@@ -42,6 +71,11 @@ for molecule in ${molecules[@]}; do
         RISC_2="$molecule"_"$functional"_svp_t1_esd_risc_T2
         RISC_3="$molecule"_"$functional"_svp_t1_esd_risc_T3
         files=($GS $ES $TS $FLUO $ISC_1 $ISC_2 $ISC_3 $RISC_1 $RISC_2 $RISC_3)
+        if [ ! -f "$TS.out" ]; then
+            T1=$(Final_State $ISC_1)
+            TS="$molecule"_"$functional"_svp_"$T1"_optfreq
+        fi
+        
         # for file in "${files[@]}"; do
         #     echo "file: $file"
         # done
