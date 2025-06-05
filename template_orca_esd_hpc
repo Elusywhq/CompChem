@@ -30,6 +30,16 @@ cd $CurrDir
 
 export OMP_NUM_THREADS=1
 
+SCRATCH=/scratch/Elusy/orcacalc
+
+
+if [ ! -d $SCRATCH ]; then
+  mkdir -p $SCRATCH
+fi
+
+tdir=$SCRATCH/${input%.inp}
+
+
 # scratch folder. Make it "input- dependent"
 tdir=/hpctmp/$USER/${input%.inp}
 
