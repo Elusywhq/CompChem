@@ -9,6 +9,12 @@ elif [[ $(hostname) == *"asp2a"* ]]; then
 elif [[ $(hostname) == *"Precision"* ]]; then
   Host="bohr"
   scratch=/home/scratch/hanqi/orca/
+elif [[ $(hostname) == *"colo-chmlu"* ]]; then
+  Host="chmlu"
+  scratch=/scratch/Elusy/orcacalc/
+else
+  echo "Unknown host. Please set the scratch directory manually."
+  exit 1
 fi
 
 for file in "$@"; do
