@@ -97,7 +97,7 @@ function xyz_Triplet(){
 
  function Dscf_S1(){
     #  # echo -e "\n%
-     addkeywords "UHF Deltascf"
+     addkeywords "UHF Deltascf NODIIS SOSCF"
      echo -e "\n%SCF"
      echo " ALPHACONF 0,1"
      echo " PMOM TRUE"
@@ -105,7 +105,7 @@ function xyz_Triplet(){
  }
  
  function Dscf_T1(){
-    addkeywords "UHF Deltascf"
+    addkeywords "UHF Deltascf NODIIS SOSCF"
     # echo -e "\n%
     echo -e "\n%SCF"
     echo " ALPHACONF 1,1" 
