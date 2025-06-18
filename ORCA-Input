@@ -309,6 +309,10 @@ fi
   if [  "$method" == "esd" ]; then
     coord=" "
   fi
+
+  if [ "$method" == "Dscf" ]; then
+    sed -i "s/S0NAME/${xyz%.xyz}/" "$op"
+  fi
  
 
   if [ ! -z "$opt_method_label" ]; then

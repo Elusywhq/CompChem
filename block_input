@@ -97,15 +97,18 @@ function xyz_Triplet(){
 
  function Dscf_S1(){
     #  # echo -e "\n%
-     addkeywords "UHF Deltascf NODIIS SOSCF"
-     echo -e "\n%SCF"
-     echo " ALPHACONF 0,1"
-     echo " PMOM TRUE"
-     echo "END"
+    addkeywords "UHF Deltascf NODIIS SOSCF NoTRAH MORead SCFCheckGrad"
+    # echo -e "\n%
+    echo -e "%moinp \"S0NAME.gbw\""
+    echo -e "\n%SCF"
+    echo " ALPHACONF 1,1" 
+    echo " DoMOM false"
+    echo " SOSCFMaxStep 0.1"
+    echo "END"
  }
  
  function Dscf_T1(){
-    addkeywords "UHF Deltascf NODIIS SOSCF"
+    addkeywords "UHF Deltascf NODIIS SOSCF NoTRAH MORead SCFCheckGrad"
     # echo -e "\n%
     echo -e "\n%SCF"
     echo " ALPHACONF 1,1" 
