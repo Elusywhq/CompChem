@@ -347,9 +347,10 @@ fi
   fi
 
   if [ "$method" == "Dscf" ]; then
-    sed -i "s/S0NAME/${xyz%.xyz}/" "$op"
+    sed -i "s/S0NAME/${coord%.xyz}/" "$op"
+    echo ${coord%.xyz}
   fi
-  
+
   if [ "$job_type" == "Fluorescence" ]; then
     sed -i "s/groundstate/$GS/g" "$op"
     sed -i "s/singletstate/$ES/g" "$op"
