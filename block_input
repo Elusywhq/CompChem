@@ -101,7 +101,7 @@ function xyz_Triplet(){
     # echo -e "\n%
     echo -e "%moinp \"S0NAME.gbw\""
     echo -e "\n%SCF"
-    echo " ALPHACONF 1,1" 
+    echo " ALPHACONF 0,1" 
     echo " DoMOM false"
     echo " SOSCFMaxStep 0.1"
     echo "END"
