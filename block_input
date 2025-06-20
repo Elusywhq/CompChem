@@ -254,6 +254,19 @@ function xyz_Triplet(){
      echo "END" 
  }
 # echo "! ${keyword[@]}" >> test.xyz
+soc(){
+    addkeywords "SOMF(4X)"
+    echo -e "\n%tddft"
+    echo " nroots 5"
+    echo " iroot 1"
+    echo " DOSOC TRUE"
+    echo " triplets true"
+    echo " TPrint 0.0001"
+    echo " SROOT 1"
+    echo " TROOT 1"
+    echo " printlevel 6"
+    echo "end"
+}
 
 function insert_keyword() {
     local line_to_insert="! ${keyword[@]}"

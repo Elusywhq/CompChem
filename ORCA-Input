@@ -1,20 +1,22 @@
 #!/bin/bash
 
 # --- Create a tuple list for job types, functionals, states, and basis sets
-job_types=("Optfreq" "Optimisation" "Frequency" "Fluorescence" "Intersystem Crossing" "Reverse Intersystem Crossing" "Phosphorescence" )
+job_types=("Optfreq" "Optimisation" "Frequency" "Fluorescence" "Intersystem Crossing" "Reverse Intersystem Crossing" "Phosphorescence" "Spin-Orbit Coupling")
 functionals=("O3LYP" "pbe0" "camB3LYP" "M062X" "wB97XD4"  )
 states=("s0" "s1" "t1")
 GS_methods=("scf" "xtb" "goat")
 ES_methods=("tddft" "Dscf")
 TS_methods=("tddft" "scf" "Dscf")
+SOC_methods=("SOMF(4X)" "RI-SOMF" )
 
 # --- Create a tuple list for job type labels, functional labels, state labels, and basis set labels
-job_type_labels=("optfreq" "opt" "freq" "fluo" "isc" "risc" "phosph")
+job_type_labels=("optfreq" "opt" "freq" "fluo" "isc" "risc" "phosph" "soc")
 functional_labels=( "o3lyp d4" "pbe0 D4" "cam-B3LYP D4" "LIBXC(M062X) D3zero" "wB97X-D4" )
 state_labels=("xyz_Singlet" "xyz_Singlet" "xyz_Triplet")
 GS_methods_labels=("scf" "xtb" "goat")
 ES_methods_labels=("tddft_S1" "Dscf_S1")
 TS_methods_labels=("tddft_S1" "scf" "Dscf_T1")
+SOC
 
 # --- Print available options as a table
 print_table() {
@@ -215,8 +217,11 @@ name=$9
   fi
 
   # --- T1 method
-
-
+# SOC settings
+if [ "$job_type" == "Spin-Orbit Coupling" ]; then
+  method="soc"
+fi
+ 
 
  # --- ESD checking
 
