@@ -254,8 +254,8 @@ function xyz_Triplet(){
      echo "END" 
  }
 # echo "! ${keyword[@]}" >> test.xyz
-soc(){
-    addkeywords "SOMF(4X)"
+function soc(){
+    # addkeywords "SOMF(4X)"
     echo -e "\n%tddft"
     echo " nroots 5"
     echo " iroot 1"

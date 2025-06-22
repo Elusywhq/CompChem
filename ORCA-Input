@@ -7,7 +7,7 @@ states=("s0" "s1" "t1")
 GS_methods=("scf" "xtb" "goat")
 ES_methods=("tddft" "Dscf")
 TS_methods=("tddft" "scf" "Dscf")
-SOC_methods=("SOMF(4X)" "RI-SOMF" )
+SOC_methods=("SOMF4X" "ZEFF")
 
 # --- Create a tuple list for job type labels, functional labels, state labels, and basis set labels
 job_type_labels=("optfreq" "opt" "freq" "fluo" "isc" "risc" "phosph" "soc")
@@ -16,7 +16,8 @@ state_labels=("xyz_Singlet" "xyz_Singlet" "xyz_Triplet")
 GS_methods_labels=("scf" "xtb" "goat")
 ES_methods_labels=("tddft_S1" "Dscf_S1")
 TS_methods_labels=("tddft_S1" "scf" "Dscf_T1")
-SOC
+SOC_methods_labels=("SOMF(4X)" "ZEFF-SOC")
+
 
 # --- Print available options as a table
 print_table() {
@@ -219,7 +220,15 @@ name=$9
   # --- T1 method
 # SOC settings
 if [ "$job_type" == "Spin-Orbit Coupling" ]; then
-  method="soc"
+  if [ -z "$met" ]; then
+     met=1
+  fi
+  soc_method_number=$met
+  soc_method_index=$(($soc_method_number-1))
+  soc_method=${SOC_methods[$soc_method_index]}
+  soc_method_label=${SOC_methods_labels[$soc_method_index]}
+  method="$soc_method"
+  echo "Spin-Orbit Coupling method: $soc_method"
 fi
  
 
@@ -312,6 +321,11 @@ fi
       $job_type_label >> "$op"
   fi
 
+  if [ "$job_type" == "Spin-Orbit Coupling" ]; then
+    addkeywords "$soc_method_label"
+    # $soc_method_label >> "$op"
+  fi
+
   if [  "$method" == "esd" ]; then
     coord=" "
   fi
@@ -336,7 +350,7 @@ fi
   insert_keyword "$op"
 
 
-   $state_label $coord >> "$op"
+  $state_label $coord >> "$op"
 
 
   
