@@ -7,7 +7,7 @@ states=("s0" "s1" "t1")
 GS_methods=("scf" "xtb" "goat")
 ES_methods=("tddft" "Dscf")
 TS_methods=("tddft" "scf" "Dscf")
-SOC_methods=("SOMF4X" "ZEFF")
+SOC_methods=("SOMF4X" "ZEFF" "RISOMF1X")
 
 # --- Create a tuple list for job type labels, functional labels, state labels, and basis set labels
 job_type_labels=("optfreq" "opt" "freq" "fluo" "isc" "risc" "phosph" "soc")
@@ -16,7 +16,7 @@ state_labels=("xyz_Singlet" "xyz_Singlet" "xyz_Triplet")
 GS_methods_labels=("scf" "xtb" "goat")
 ES_methods_labels=("tddft_S1" "Dscf_S1")
 TS_methods_labels=("tddft_S1" "scf" "Dscf_T1")
-SOC_methods_labels=("SOMF(4X)" "ZEFF-SOC")
+SOC_methods_labels=("SOMF(4X)" "ZEFF-SOC" "RI-SOMF(1X)")
 
 
 # --- Print available options as a table
