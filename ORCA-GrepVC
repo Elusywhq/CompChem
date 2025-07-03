@@ -3,6 +3,7 @@
 
 for file in "$@"; do
   input=${file%.*}
+  
   file_K=${input}_Kvector.data
   file_HR=${input}_HR.data
   file_lamda=${input}_lamda.data
@@ -11,7 +12,7 @@ for file in "$@"; do
   if [ ! -f $input.out ]; then
       echo "Error: $input.out not found"
       continue
-  fi
+  fi  
 
   if ! grep -q "will need at least" $input.out; then
       echo "Error: 'number of modes' not found in $input.out"
@@ -33,10 +34,13 @@ for file in "$@"; do
       continue
   fi
 
-  nmode=$(grep "will need at least" $input.out | awk '{print $5}')
-  grep -A $((nmode + 5)) "The Huang-Rhys factor per mode is:" $input.out | tail -n +6  > $file_HR
-  grep -A $((nmode + 5)) "The K vector (a.u.) is:" $input.out | tail -n +6  > $file_K
-  grep -A $((nmode + 5)) "The reorganization energy per mode is:" $input.out | tail -n +6  > $file_lamda
-  grep "<<Displacing mode " $input.out | awk '{print $3, $7, $8}' > $file_socme
-  paste $file_lamda <(awk '{print $3}' $file_HR) > temp && mv -f temp $file_lamda 
+  if [ $input.out -nt $file_K ]; then
+    nmode=$(grep "will need at least" $input.out | awk '{print $5}')
+    grep -A $((nmode + 5)) "The Huang-Rhys factor per mode is:" $input.out | tail -n +6  > $file_HR
+    grep -A $((nmode + 5)) "The K vector (a.u.) is:" $input.out | tail -n +6  > $file_K
+    grep -A $((nmode + 5)) "The reorganization energy per mode is:" $input.out | tail -n +6  > $file_lamda
+    grep "<<Displacing mode " $input.out | awk '{print $3, $7, $8}' > $file_socme
+    paste $file_lamda <(awk '{print $3}' $file_HR) > temp && mv -f temp $file_lamda 
+  fi
+  
 done
