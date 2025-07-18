@@ -17,7 +17,7 @@ EBENV_AVX2=1
 #---------------------------------------------------------------------------
 #   normally you should not need to change anything below this line
 export ORCA_ROOT=/hpctmp/e0732532/orca_6_1_0
-export PATH=$ORCA_ROOT/bin:$PATH
+export PATH=$ORCA_ROOT/:$PATH
 export LD_LIBRARY_PATH=$ORCA_ROOT/lib:$LD_LIBRARY_PATH
 
 export MPI_ROOT=/app1/ebapps/arches/flat/software/OpenMPI/4.1.6-GCC-13.2.0
@@ -115,7 +115,7 @@ if [ -f $CurrDir/$orbital ]; then
 fi
 
 # actual execution of ORCA
-$ORCA_ROOT/bin/orca  $input > ${input%.inp}.out 2> ${input%.inp}.err
+$ORCA_ROOT/orca  $input > ${input%.inp}.out 2> ${input%.inp}.err
 
 # Check Output result::
 finish=0
@@ -136,7 +136,7 @@ while [ $finish -eq 0 ]; do
 # Back up for previous run
   cp $tdir/${input%.inp}.out $tdir/${input%.inp}.o$i
 # Redo the calculation
-  $ORCA_ROOT/bin/orca  $input > ${input%.inp}.out 2> ${input%.inp}.err 
+  $ORCA_ROOT/orca  $input > ${input%.inp}.out 2> ${input%.inp}.err 
 # Check finish status again
   finish=$(grep -c "****ORCA ESD FINISHED WITHOUT ERROR****" $tdir/${input%.inp}.out)
   if [ $finish -eq 1 ]; then
