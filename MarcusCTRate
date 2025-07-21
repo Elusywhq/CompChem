@@ -59,7 +59,7 @@ def main():
     """
     Main function to parse arguments from sys.argv and calculate the charge transfer rate.
     """
-    if len(sys.argv) != 4:
+    if len(sys.argv) != 5:
         print("Usage: MarcusCTRate.py <Energy_S1> <Energy_Dscf_s1_to_t1> <Energy_T1> <lambda_cm>")
         sys.exit(1)
 
