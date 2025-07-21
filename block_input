@@ -108,12 +108,12 @@ function xyz_Triplet(){
  }
  
  function Dscf_T1(){
-    addkeywords "UHF Deltascf NODIIS SOSCF NoTRAH MORead SCFCheckGrad"
+    addkeywords "UHF Deltascf NODIIS SOSCF NoTRAH SCFCheckGrad"
     # echo -e "\n%
     echo -e "\n%SCF"
     echo " ALPHACONF 1,1" 
-    echo " BETACONF  0,0"
-    echo " PMOM FALSE"
+    echo " SOSCFMaxStep 0.1"
+    echo " PMOM true"
     echo "END"
  }
 
