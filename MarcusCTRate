@@ -1,0 +1,78 @@
+#!/usr/bin/env python3
+
+import sys
+import numpy as np
+import pandas as pd
+
+
+
+def convert_hartree_to_ev(energy_in_hartree):
+    """
+    Convert energy from Hartree to electron volts (eV).
+    
+    Parameters:
+        energy_in_hartree (float): Energy in Hartree.
+        
+    Returns:
+        float: Energy in eV.
+
+    """
+    # Conversion factor from Hartree to eV
+    HARTREE_TO_EV = 27.2114
+    return energy_in_hartree * HARTREE_TO_EV
+
+def convert_icm_to_ev(energy_in_icm):
+    """
+    Convert energy from inverse centimeters (cm^-1) to electron volts (eV).
+    
+    Parameters:
+        energy_in_icm (float): Energy in cm^-1.
+        
+    Returns:
+        float: Energy in eV.
+    """
+    # Conversion factor: 1 cm^-1 = 1.239841984e-4 eV
+    ICM_TO_EV = 1.239841984e-4
+    return energy_in_icm * ICM_TO_EV
+
+
+# Energy_S1 = -1288.69172979163227  # Example value for S1 energy in Hartree
+# Energy_Dscf_s1_to_t1 = -1288.69802253436887 # Example value for Dscf S1 to T1 energy in Hartree
+# diff = Energy_S1 - Energy_Dscf_s1_to_t1
+# print(f"Difference between S1 and Dscf S1 to T1 energies: {diff:.6f} Hartree")
+# Energy_T1 = -2094.45887257580671  # Example value for T1 energy in Hartree
+# lambda_cm = 7994.59  # Example value for reorganization energy in cm^-1
+# Define parameters
+def calculate_charge_transfer_rate(Energy_S1, Energy_Dscf_s1_to_t1, Energy_T1, lambda_cm):
+    H_ab = 1/2 * convert_hartree_to_ev(Energy_S1 - Energy_Dscf_s1_to_t1)  # Electronic coupling (eV)
+    lambda_ = convert_icm_to_ev(lambda_cm)  # Reorganization energy (eV)
+    Delta_G = convert_hartree_to_ev(Energy_S1 - Energy_T1)  # Free energy change (eV)
+    k_B = 8.617333262145e-5  # Boltzmann constant (eV/K)
+    T = 298.15  # Temperature (K)
+    h_bar = 6.582119569e-16  # Reduced Planck's constant (eV·s)
+
+    # Calculate charge transfer rate using Marcus theory
+    k_CT = (2 * np.pi / h_bar) * (H_ab**2) * np.exp(-((lambda_ + Delta_G)**2) / (4 * lambda_ * k_B * T)) / np.sqrt(4 * np.pi * lambda_ * k_B * T)
+    return k_CT
+
+def main():
+    """
+    Main function to parse arguments from sys.argv and calculate the charge transfer rate.
+    """
+    if len(sys.argv) != 4:
+        print("Usage: MarcusCTRate.py <Energy_S1> <Energy_Dscf_s1_to_t1> <Energy_T1> <lambda_cm>")
+        sys.exit(1)
+
+    # Parse command-line arguments
+    Energy_S1 = float(sys.argv[1])
+    Energy_Dscf_s1_to_t1 = float(sys.argv[2])
+    Energy_T1 = float(sys.argv[3])
+    lambda_cm = float(sys.argv[4])
+
+    # Calculate charge transfer rate
+    k_CT = calculate_charge_transfer_rate(Energy_S1, Energy_Dscf_s1_to_t1, Energy_T1, lambda_cm)
+    print(f"Charge transfer rate (k_CT): {k_CT:.2e} s⁻¹")
+
+if __name__ == "__main__":
+    main()
+
