@@ -17,7 +17,7 @@ calculate_average() {
     printf "%s\n" "${list[@]}" | awk '{sum+=$1} END {if (NR > 0) printf "%.6e\n", sum/NR}'
 }
 
-echo "Molecule,Functional,RISC_Rate,npoints1,npoints2,K_Vector_sum,lamda_sum(cm-1),lamda_max_freq,lamda_maxmode_socme1,lamda_maxmode_socme2,HR_max_freq,HR_max_mode,HR_max_factor,HR_maxmode_socme1,HR_maxmode_socme2,rmsd_s1_t1,ref_socme1,ref_socme2" > $output
+echo "Molecule,Functional,RISC_Rate,npoints1,npoints2,K_Vector_sum,lamda_sum(cm-1),lamda_max_freq,lamda_maxmode_socme1,lamda_maxmode_socme2,HR_max_freq,HR_max_mode,HR_max_factor,HR_maxmode_socme1,HR_maxmode_socme2,rmsd_s1_t1,ref_socme1,ref_socme2,MarcusRate" > $output
 
 # molecules=("1CZ5" "1CZ6" "1CZ7" "1CZ8" "1CZ9" "1CZA" "1CZD" "1CZE" "1CZF" "1CZG" "1CZH" "1CZI" "1CZJ" "1CZK" "1CZM" "1CZN")
 
