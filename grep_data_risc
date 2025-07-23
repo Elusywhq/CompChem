@@ -142,7 +142,7 @@ for molecule in $molecules; do
         XYZ_S1_S0=$(printf "%.10f" "$XYZ_S1_S0")
         XYZ_T1_S1=$(printf "%.10f" "$XYZ_T1_S1")
         XYZ_T1_S0=$(printf "%.10f" "$XYZ_T1_S0")
-        if [ -f $Hab.out ]; then 
+        if [ ! -z "$E_Hab" ]; then
             echo "Running:: MarcusCTRate $E_ES $E_Hab $E_TS $lamda"
             MarcusCTRate $E_ES $E_Hab $E_TS $lamda
             MarcusRate=$(MarcusCTRate $E_ES $E_Hab $E_TS $lamda | awk '{print $5}') 
