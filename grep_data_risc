@@ -142,10 +142,13 @@ for molecule in $molecules; do
         XYZ_S1_S0=$(printf "%.10f" "$XYZ_S1_S0")
         XYZ_T1_S1=$(printf "%.10f" "$XYZ_T1_S1")
         XYZ_T1_S0=$(printf "%.10f" "$XYZ_T1_S0")
-        echo "Running:: MarcusCTRate $E_ES $E_Hab $E_TS $lamda"
-        MarcusCTRate $E_ES $E_Hab $E_TS $lamda
-        MarcusRate=$(MarcusCTRate $E_ES $E_Hab $E_TS $lamda | awk '{print $5}') 
-
+        if [ -f $Hab.out ]; then 
+            echo "Running:: MarcusCTRate $E_ES $E_Hab $E_TS $lamda"
+            MarcusCTRate $E_ES $E_Hab $E_TS $lamda
+            MarcusRate=$(MarcusCTRate $E_ES $E_Hab $E_TS $lamda | awk '{print $5}') 
+        else
+            MarcusRate="NaN"
+        fi
         # Debugging: Print the values of the variables
         # echo "Debug: molecule=$molecule, functional=$functional, SPE_S0=$SPE_S0, SPE_S1=$SPE_S1, SPE_T1=$SPE_T1, Energy_Gap=$Energy_Gap, Fluorescence_rate=$Fluorescence_rate, RISC_rate_1=$RISC_rate_1, RISC_rate_2=$RISC_rate_2, RISC_rate_3=$RISC_rate_3, RISC_average=$RISC_average, RISC_rate_1=$RISC_rate_1, RISC_rate_2=$RISC_rate_2, RISC_rate_3=$RISC_rate_3, RISC_average=$RISC_average, DIndex_S1=$DIndex_S1, XYZ_S1_S0=$XYZ_S1_S0, XYZ_T1_S0=$XYZ_T1_S0, XYZ_T1_S1=$XYZ_T1_S1, ref=$ref"
         #        "Molecule_Name,Functional,RISC_Rate,npoints1,npoints2,K_Vector_sum,lamda_sum(cm-1),lamda_max_freq,lamda_maxmode_socme,HR_max_freq,HR_max_mode,HR_maxmode_socme1,HR_maxmode_socme2,rmsd_s1_t1,ref_socme1,ref_socme2"
