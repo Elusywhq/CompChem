@@ -38,7 +38,7 @@ for molecule in $molecules; do
         FLUO="$molecule"_"$functional"_svp_s1_esd_fluo
         RISC_1="$molecule"_"$functional"_svp_t1_esd_risc_T1
         RISC_2="$molecule"_"$functional"_svp_t1_esd_risc_T2
-        Hab="$molecule"_"$functional"_svps1_Hab_scf
+        Hab="$molecule"_"$functional"_svp_s1_Hab_scf
         files=($RISC_1 $RISC_2)
         for file in "${files[@]}"; do
             if [ ! -f "$file.out" ]; then
