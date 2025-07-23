@@ -56,13 +56,14 @@ for molecule in $molecules; do
                 continue 2
             fi
         done
+        ts=$(grep "ISCISHESS" "$RISC_1.out" | awk -F'"' '{ sub(/\.hess$/, "", $2); print $2 }')
         
         RISC_rate_1=$(ORCA-Grepk -q "$RISC_1.out")
         RISC_rate_2=$(ORCA-Grepk -q "$RISC_2.out")
         RISC_rate_3=$(ORCA-Grepk -q "$RISC_3.out")
         E_ES=$(ORCA-GrepSPE -q "$ES.out")
         E_Hab=$(ORCA-GrepSPE -q "$Hab.out")
-        E_TS=$(ORCA-GrepSPE -q "$TS.out")
+        E_TS=$(ORCA-GrepSPE -q "$ts.out")
 
         # Make sure 1 and 3 are equal if one of them is zero
 
