@@ -42,17 +42,17 @@ for molecule in $molecules; do
         files=($RISC_1 $RISC_2)
         for file in "${files[@]}"; do
             if [ ! -f "$file.out" ]; then
-                echo "Error: $file.out not found"
+                echo "Error: $file.out not found" >&2
                 continue 2
                 
             fi
             rate=$(ORCA-Grepk -q "$file.out")
             if [ -z "$rate" ]; then
-                echo "Error: $file.out not found or empty"
+                echo "Error: $file.out not found or empty" >&2
                 continue 2
             fi
             if [ "$rate" == "0" ]; then
-                echo "Error: $file.out has zero rate"
+                echo "Error: $file.out has zero rate" >&2
                 continue 2
             fi
         done
@@ -64,6 +64,7 @@ for molecule in $molecules; do
         E_ES=$(ORCA-GrepSPE -q "$ES.out")
         E_Hab=$(ORCA-GrepSPE -q "$Hab.out")
         E_TS=$(ORCA-GrepSPE -q "$ts.out")
+        
 
         # Make sure 1 and 3 are equal if one of them is zero
 
@@ -88,11 +89,17 @@ for molecule in $molecules; do
             RISC_average=0.0000000000
         fi
 
-        ORCA-GrepVC $RISC_1.out 
-        ORCA-GrepVC $RISC_2.out
+        if [ $RISC_1.out -nt ${RISC_1}_lamda.data ]; then
+            ORCA-GrepVC $RISC_1.out 
+        fi
+        if [ $RISC_2.out -nt ${RISC_2}_lamda.data ]; then
+            ORCA-GrepVC $RISC_2.out
+        fi
+        # ORCA-GrepVC $RISC_1.out 
+        # ORCA-GrepVC $RISC_2.out
 
         if [ ! -f "${RISC_1}.out" ]; then
-            # echo "Error: ${RISC_1}.out not found"
+            # echo "Error: ${RISC_1}.out not found" >&2
             lamda_max_freq=0
             lamda_maxmode_socme="0"
             HR_max_freq=0
@@ -143,12 +150,21 @@ for molecule in $molecules; do
         XYZ_S1_S0=$(printf "%.10f" "$XYZ_S1_S0")
         XYZ_T1_S1=$(printf "%.10f" "$XYZ_T1_S1")
         XYZ_T1_S0=$(printf "%.10f" "$XYZ_T1_S0")
-        if [ ! -z "$E_Hab" ]; then
-            echo "Running:: MarcusCTRate $E_ES $E_Hab $E_TS $lamda"
-            MarcusCTRate $E_ES $E_Hab $E_TS $lamda
-            MarcusRate=$(MarcusCTRate $E_ES $E_Hab $E_TS $lamda | awk '{print $5}') 
+
+        Hab_from=$(ORCA-chkOrbital -q "$Hab.out" | awk '{print $1}')
+        Hab_to=$(ORCA-chkOrbital -q "$Hab.out" | awk '{print $1}')
+        Hab_excit=$(( $Hab_to - $Hab_from ))
+        if [ $Hab_excit -eq 1 ]; then
+            if [ ! -z "$E_Hab" ]; then
+                echo "Running:: MarcusCTRate $E_ES $E_Hab $E_TS $lamda"
+                MarcusCTRate $E_ES $E_Hab $E_TS $lamda
+                MarcusRate=$(MarcusCTRate $E_ES $E_Hab $E_TS $lamda | awk '{print $5}') 
+            else
+                MarcusRate="NaN"
+            fi
         else
             MarcusRate="NaN"
+            echo "Error: $Hab excitation is from $Hab_from to $Hab_to" >&2
         fi
         # Debugging: Print the values of the variables
         # echo "Debug: molecule=$molecule, functional=$functional, SPE_S0=$SPE_S0, SPE_S1=$SPE_S1, SPE_T1=$SPE_T1, Energy_Gap=$Energy_Gap, Fluorescence_rate=$Fluorescence_rate, RISC_rate_1=$RISC_rate_1, RISC_rate_2=$RISC_rate_2, RISC_rate_3=$RISC_rate_3, RISC_average=$RISC_average, RISC_rate_1=$RISC_rate_1, RISC_rate_2=$RISC_rate_2, RISC_rate_3=$RISC_rate_3, RISC_average=$RISC_average, DIndex_S1=$DIndex_S1, XYZ_S1_S0=$XYZ_S1_S0, XYZ_T1_S0=$XYZ_T1_S0, XYZ_T1_S1=$XYZ_T1_S1, ref=$ref"
