@@ -323,6 +323,7 @@ fi
 
   if [ "$job_type" == "Spin-Orbit Coupling" ]; then
     addkeywords "$soc_method_label"
+    addkeywords "KeepTransDensity"
     # $soc_method_label >> "$op"
   fi
 
