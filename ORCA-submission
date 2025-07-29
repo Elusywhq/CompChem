@@ -36,7 +36,7 @@ usage() {
   echo "  -n <name>      Specify a name of the submit script (must be a string)."
   echo "  -m  <memory>   Specify memory, default at 128 (must be an integer)."
 #  echo "  -loc           Calculation is going to run in local directory."
-#  echo "  -w             Specify another gbw file."
+ echo "  -w             Specify another gbw file."
   echo "  -t             Specify walltime, default at 24."
   echo "  -esd           Turning on the ESD checking mode (Please check walltime)"
   exit 1

@@ -73,6 +73,40 @@ def main():
     k_CT = calculate_charge_transfer_rate(Energy_S1, Energy_Dscf_s1_to_t1, Energy_T1, lambda_cm)
     print(f"Charge transfer rate (k_CT): {k_CT:.2e} s⁻¹")
 
-if __name__ == "__main__":
-    main()
 
+def print_parameters(Energy_S1, Energy_Dscf_s1_to_t1, Energy_T1, lambda_cm):
+    H_ab = 1/2 * convert_hartree_to_ev(Energy_S1 - Energy_Dscf_s1_to_t1)
+    lambda_ = convert_icm_to_ev(lambda_cm)
+    Delta_G = convert_hartree_to_ev(Energy_S1 - Energy_T1)
+    k_B = 8.617333262145e-5  # Boltzmann constant (eV/K)
+    T = 298.15  # Temperature (K)
+    h_bar = 6.582119569e-16  # Reduced Planck's constant (eV·s)
+    numerator = 2 * np.pi / h_bar * (H_ab**2)
+    exponent = -((lambda_ + Delta_G)**2) / (4 * lambda_ * k_B * T)
+    denominator = np.sqrt(4 * np.pi * lambda_ * k_B * T)
+    # print(f"Boltzmann constant (k_B): {k_B:.6e} eV/K")
+    # print(f"Temperature (T): {T:.2f} K")
+    # print(f"Reduced Planck's constant (h_bar): {h_bar:.6e} eV·s")
+    print(f"Numerator (2π/h_bar * H_ab^2): {numerator:.6e}")
+    print(f"Exponent (-(lambda + Delta_G)^2 / (4 * lambda * k_B * T)): {exponent:.6f}")
+    print(f"Denominator (sqrt(4π * lambda * k_B * T)): {denominator:.6e}")
+    print(f"exp(Exponent): {np.exp(exponent):.6e}")
+    k_CT = calculate_charge_transfer_rate(Energy_S1, Energy_Dscf_s1_to_t1, Energy_T1, lambda_cm)
+    print(f"Delta_G: {Delta_G:.4f}")
+    print(f"H_ab: {H_ab:.4f}")
+    print(f"lambda_: {lambda_:.4f}")
+    print(f"k_CT: {k_CT:.4f}")
+
+if __name__ == "__main__":
+    if "-chk" in sys.argv:
+        args = [arg for arg in sys.argv[1:] if arg != "-chk"]
+        if len(args) != 4:
+            print("Usage: MarcusCTRate.py [-chk] <Energy_S1> <Energy_Dscf_s1_to_t1> <Energy_T1> <lambda_cm>")
+            sys.exit(1)
+        Energy_S1 = float(args[0])
+        Energy_Dscf_s1_to_t1 = float(args[1])
+        Energy_T1 = float(args[2])
+        lambda_cm = float(args[3])
+        print_parameters(Energy_S1, Energy_Dscf_s1_to_t1, Energy_T1, lambda_cm)
+    else:
+        main()
