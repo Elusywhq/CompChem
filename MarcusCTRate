@@ -110,6 +110,8 @@ def parse_arguments():
     # Calculate Delta_G if not specified
     if Delta_G is None:
         Delta_G = convert_hartree_to_ev(Energy_to - Energy_from)
+    else:
+        Delta_G = convert_icm_to_ev(Delta_G)
 
     if H_ab is None:
         if Energy_vHab is None:
