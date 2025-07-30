@@ -106,6 +106,7 @@ function xyz_Triplet(){
     echo " DoMOM false"
     echo " SOSCFConvFactor 500 "
     echo " SOSCFMaxStep 0.1"
+    echo " PMOM true"
     echo "END"
  }
  
