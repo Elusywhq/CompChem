@@ -45,7 +45,7 @@ def convert_icm_to_ev(energy_in_icm):
 # Define parameters
 def calculate_charge_transfer_rate(Energy_S1, Energy_Dscf_s1_to_t1, Energy_T1, lambda_cm):
     H_ab = 1/2 * convert_hartree_to_ev(Energy_S1 - Energy_Dscf_s1_to_t1)  # Electronic coupling (eV)
-    lambda_ = convert_icm_to_ev(lambda_cm)  # Reorganization energy (eV)
+    lambda_ = convert_hartree_to_ev(lambda_cm)  # Reorganization energy (eV)
     Delta_G = convert_hartree_to_ev(Energy_S1 - Energy_T1)  # Free energy change (eV)
     k_B = 8.617333262145e-5  # Boltzmann constant (eV/K)
     T = 298.15  # Temperature (K)
@@ -68,7 +68,9 @@ def main():
     Energy_Dscf_s1_to_t1 = float(sys.argv[2])
     Energy_T1 = float(sys.argv[3])
     lambda_cm = float(sys.argv[4])
-
+    if lambda_cm < 0:
+        print("Error: lambda_cm (reorganization energy) must be non-negative.")
+        sys.exit(1)
     # Calculate charge transfer rate
     k_CT = calculate_charge_transfer_rate(Energy_S1, Energy_Dscf_s1_to_t1, Energy_T1, lambda_cm)
     print(f"Charge transfer rate (k_CT): {k_CT:.2e} s⁻¹")
@@ -76,7 +78,7 @@ def main():
 
 def print_parameters(Energy_S1, Energy_Dscf_s1_to_t1, Energy_T1, lambda_cm):
     H_ab = 1/2 * convert_hartree_to_ev(Energy_S1 - Energy_Dscf_s1_to_t1)
-    lambda_ = convert_icm_to_ev(lambda_cm)
+    lambda_ = convert_hartree_to_ev(lambda_cm)
     Delta_G = convert_hartree_to_ev(Energy_S1 - Energy_T1)
     k_B = 8.617333262145e-5  # Boltzmann constant (eV/K)
     T = 298.15  # Temperature (K)

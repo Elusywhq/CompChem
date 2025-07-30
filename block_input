@@ -99,7 +99,7 @@ function xyz_Triplet(){
     #  # echo -e "\n%
     addkeywords "UHF Deltascf FRSOSCF SCFLBFGS MORead SCFCheckGrad"
     # echo -e "\n%
-    echo -e "%moinp \"S0NAME.gbw\""
+    echo -e "\n%moinp \"S0NAME.gbw\""
     echo -e "\n%SCF"
     echo " ALPHACONF 0,1"
     # echo " PMOM true"
@@ -110,8 +110,9 @@ function xyz_Triplet(){
  }
  
  function Dscf_T1(){
-    addkeywords "UHF Deltascf NODIIS SOSCF NoTRAH SCFCheckGrad"
+    addkeywords "UHF Deltascf FRSOSCF SCFLBFGS MORead SCFCheckGrad"
     # echo -e "\n%
+    echo -e "\n%moinp \"S0NAME.gbw\""
     echo -e "\n%SCF"
     echo " ALPHACONF 1,1" 
     echo " SOSCFMaxStep 0.1"
