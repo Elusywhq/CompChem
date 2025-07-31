@@ -71,38 +71,38 @@ fi
 $ORCA_ROOT/orca  $input > ${input%.inp}.out 2> ${input%.inp}.err
 
 # Check Output result::
-finish=0
-if [ -f $tdir/${input%.inp}.out ]; then
-  finish=$(grep "****ORCA TERMINATED NORMALLY****" $tdir/${input%.inp}.out | wc -l)
-  echo "ORCA calculation is finished successfully."
- else 
-  echo "$tdir/${input%.inp}.out is missing, exit..."
-  exit 99
-fi
+# finish=0
+# if [ -f $tdir/${input%.inp}.out ]; then
+#   finish=$(grep "****ORCA TERMINATED NORMALLY****" $tdir/${input%.inp}.out | wc -l)
+#   echo "ORCA calculation is finished successfully."
+#  else 
+#   echo "$tdir/${input%.inp}.out is missing, exit..."
+#   exit 99
+# fi
 
-i=0
-while [ $finish -eq 0 ]; do
-  i=$((i+1))
-  echo "Checking round $i"
-  echo "ORCA calculation returned with error, restart the calculation..."
-# Back up for previous run
-  cp $tdir/${input%.inp}.out $tdir/${input%.inp}.o$i
-  rm $tdir/${input%.inp}.gbw
-# Redo the calculation
-  $ORCA_ROOT/orca  $input > ${input%.inp}.out 2> ${input%.inp}.err 
-# Check finish status again
-  finish=$(grep -c "****ORCA TERMINATED NORMALLY****" $tdir/${input%.inp}.out)
-  if [ $finish -eq 1 ]; then
-    echo "ORCA calculation is finished successfully."
-    break
-  fi  
-   if [ $i -eq 1 ]; then
-    echo "Iteration hits the limit to $i, quitting... "
-    if [ -f  $tdir/${input%.inp}.out  ] ; then  cp $tdir/${input%.inp}.out   $CurrDir/  ; fi ;
-     if [ -f  $tdir/${input%.inp}.err  ] ; then  cp $tdir/${input%.inp}.err   $CurrDir/  ; fi ; 
-    exit 88
-  fi 
-done 
+# i=0
+# while [ $finish -eq 0 ]; do
+#   i=$((i+1))
+#   echo "Checking round $i"
+#   echo "ORCA calculation returned with error, restart the calculation..."
+# # Back up for previous run
+#   cp $tdir/${input%.inp}.out $tdir/${input%.inp}.o$i
+#   rm $tdir/${input%.inp}.gbw
+# # Redo the calculation
+#   $ORCA_ROOT/orca  $input > ${input%.inp}.out 2> ${input%.inp}.err 
+# # Check finish status again
+#   finish=$(grep -c "****ORCA TERMINATED NORMALLY****" $tdir/${input%.inp}.out)
+#   if [ $finish -eq 1 ]; then
+#     echo "ORCA calculation is finished successfully."
+#     break
+#   fi  
+#    if [ $i -eq 1 ]; then
+#     echo "Iteration hits the limit to $i, quitting... "
+#     if [ -f  $tdir/${input%.inp}.out  ] ; then  cp $tdir/${input%.inp}.out   $CurrDir/  ; fi ;
+#      if [ -f  $tdir/${input%.inp}.err  ] ; then  cp $tdir/${input%.inp}.err   $CurrDir/  ; fi ; 
+#     exit 88
+#   fi 
+# done 
 
 
 hess=0
