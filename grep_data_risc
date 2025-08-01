@@ -154,9 +154,9 @@ for molecule in $molecules; do
         XYZ_T1_S1=$(printf "%.10f" "$XYZ_T1_S1")
         XYZ_T1_S0=$(printf "%.10f" "$XYZ_T1_S0")
 
-        Hab_from=$(ORCA-chkOrbital -q "$Hab.out" | awk '{print $1}')
-        Hab_to=$(ORCA-chkOrbital -q "$Hab.out" | awk '{print $1}')
-        Hab_excit=$(( $Hab_to - $Hab_from ))
+        # Hab_from=$(ORCA-chkOrbital -q "$Hab.out" | awk '{print $1}')
+        # Hab_to=$(ORCA-chkOrbital -q "$Hab.out" | awk '{print $1}')
+        # Hab_excit=$(( $Hab_to - $Hab_from ))
         # if [ $Hab_excit -eq 1 ]; then
         Gibbs_TS=$(grep "Final Gibbs free energy " "$ts.out" | awk '{print $6}')
         Gibbs_ES=$(grep "Final Gibbs free energy " "$ES.out" | awk '{print $6}')
