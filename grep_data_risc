@@ -34,7 +34,7 @@ for molecule in $molecules; do
     for functional in "${functionals[@]}"; do
         GS="$molecule"_"$functional"_svp_s0_scf_optfreq
         ES=${molecule}_${functional}_svp_s1_Dscf_optfreq
-        TS="$molecule"_"$functional"_svp_t1_Dscf_optfreq
+        TS="$molecule"_"$functional"_svp_t1_scf_optfreq
         FLUO="$molecule"_"$functional"_svp_s1_esd_fluo
         RISC_1="$molecule"_"$functional"_svp_t1_esd_risc_T1
         RISC_2="$molecule"_"$functional"_svp_t1_esd_risc_T2
@@ -63,6 +63,9 @@ for molecule in $molecules; do
         RISC_rate_3=$(ORCA-Grepk -q "$RISC_3.out")
         E_ES=$(ORCA-GrepSPE -q "$ES.out")
         E_Hab=$(ORCA-GrepSPE -q "$Hab.out")
+        if [ -z $ts ]; then
+            ts=$TS
+        fi
         E_TS=$(ORCA-GrepSPE -q "$ts.out")
         
 
@@ -155,10 +158,21 @@ for molecule in $molecules; do
         Hab_to=$(ORCA-chkOrbital -q "$Hab.out" | awk '{print $1}')
         Hab_excit=$(( $Hab_to - $Hab_from ))
         # if [ $Hab_excit -eq 1 ]; then
+        Gibbs_TS=$(grep "Final Gibbs free energy " "$ts.out" | awk '{print $6}')
+        Gibbs_ES=$(grep "Final Gibbs free energy " "$ES.out" | awk '{print $6}')
+        delta_G=$(echo "$Gibbs_TS - $Gibbs_ES" | bc -l 2> /dev/null)
+        lam=${molecule}_${func}_svp_t1_lam
+        if [ -f "$lam.out" ]; then
+            E_lam=$(ORCA-GrepSPE -q "$lam.out" )
+        else
+            E_lam=0
+        fi
             if [ ! -z "$E_Hab" ]; then
-                echo "Running:: MarcusCTRate $E_ES $E_Hab $E_TS $lamda"
-                MarcusCTRate $E_ES $E_Hab $E_TS $lamda
-                MarcusRate=$(MarcusCTRate $E_ES $E_Hab $E_TS $lamda | awk '{print $5}') 
+                if [ $E_lam -eq 0 ]; then
+                    MarcusRate=$(MarcusCTRate -to $E_ES -vHab $E_Hab -to $E_TS -lam $lamda -dG $delta_G | awk '{print $5}') 
+                else
+                    MarcusRate=$(MarcusCTRate -to $E_ES -vHab $E_Hab -to $E_TS -lam $lamda -vLam $E_lam -dG $delta_G | awk '{print $5}') 
+                fi
             else
                 MarcusRate="NaN"
             fi
