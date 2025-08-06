@@ -45,7 +45,7 @@ Final_State() {
   grep "ISCFSHESS" "$file" | awk '{split($4, a, "_"); print a[4] "_" a[5]}'
 }
 
-molecules=('1CZ3' '1CZ4' '1DA3' '1DB2' '1DB5' '1OB4' '1TD3' '1TD4' '1TD5')
+molecules=('0CZ0' '0DA0' '0DB0' '0TD0' '1CZ3' '1CZ4' '1DA3' '1DB2' '1DB5' '1OB4' '1TD3' '1TD4' '1TD5')
 
 for molecule in ${molecules[@]}; do
     # echo "molecule: $molecule"
