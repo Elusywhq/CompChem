@@ -2,9 +2,10 @@
 
 molecules=$(ls -d */ | sed 's:/*$::')
 # molecules=("1OB1" "1OB2" "1OB3" "1OB4")
-functionals=("O3LYP" "pbe0" "camB3LYP" "M062X" ) #"wB97XD4")
+# functionals=("O3LYP" "pbe0" "camB3LYP" "M062X" ) #"wB97XD4")
+functionals=("O3LYP")
 states=("s0" "s1" "t1")
-echo "Molecules: ${molecules[@]}"
+# echo "Molecules: ${molecules[@]}"
 # csv_file="CM5192_calculation_data.csv"
 if [ -z "$1" ]; then
   output="data.csv"
@@ -12,7 +13,7 @@ else
   output=${1}_rate.csv
 fi
 
-echo "Molecule,Functional,S0,S1_Dscf,S1_td,S2_td,T1,ST,k_F,ISC1,ISC2,ISC3,k_isc,RISC1,RISC2,RISC3,k_risc,emission,ref_molecule" > $output
+echo "Molecule,Functional,S0,S1_Dscf,S1_td,S2_td,T1,ST,k_F,ISC1,ISC2,ISC3,k_isc,RISC1,RISC2,RISC3,k_risc,k_ct,emission,ref_molecule" > $output
 
 Initial_State() {
   local list=("$1")
@@ -44,6 +45,8 @@ Final_State() {
   grep "ISCFSHESS" "$file" | awk '{split($4, a, "_"); print a[4] "_" a[5]}'
 }
 
+molecules=('1CZ3' '1CZ4' '1DA3' '1DB2' '1DB5' '1OB4' '1TD3' '1TD4' '1TD5')
+
 for molecule in ${molecules[@]}; do
     # echo "molecule: $molecule"
     if [[ ! "$molecule" =~ ^[0-9] ]]; then
@@ -63,6 +66,8 @@ for molecule in ${molecules[@]}; do
         ES_td=${molecule}_${functional}_svp_s1_tddft_optfreq
         ES_2=${molecule}_${functional}_svp_s2_tddft_optfreq
         TS="$molecule"_"$functional"_svp_t1_Dscf_optfreq
+        Hab="$molecule"_"$functional"_svp_s1_Hab_scf
+        lam="$molecule"_"$functional"_svp_t1_lam
         FLUO="$molecule"_"$functional"_svp_s1_esd_fluo
         ISC_1="$molecule"_"$functional"_svp_t1_esd_isc_T1
         ISC_2="$molecule"_"$functional"_svp_t1_esd_isc_T2
@@ -75,6 +80,9 @@ for molecule in ${molecules[@]}; do
         T1=$(Final_State $ISC_1)
         TS="$molecule"_"$functional"_svp_"$T1"_optfreq
         # fi
+        if [ ! -f "$ISC_1.out" ]; then
+           TS="$molecule"_"$functional"_svp_t1_scf_optfreq
+        fi
         
         # for file in "${files[@]}"; do
         #     echo "file: $file"
@@ -125,7 +133,11 @@ for molecule in ${molecules[@]}; do
         SPE_S1_td=$(ORCA-GrepSPE -q "$ES_td.out")
         SPE_S2=$(ORCA-GrepSPE -q "$ES_2.out")
         SPE_T1=$(ORCA-GrepSPE -q "$TS.out")
-        
+
+        E_Hab_O3=$(ORCA-GrepSPE -q "$Hab.out" )
+        # E_ES=$(ORCA-GrepSPE -q "$ES.out" )
+        E_lam_O3=$(ORCA-GrepSPE -q "$lam.out" )
+        # E_TS=$(ORCA-GrepSPE -q "$TS.out" )
         if [ "$SPE_S1" != "0" ] && [ "$SPE_T1" != "0" ]; then
             Energy_Gap=$(echo "($SPE_S1 - $SPE_T1) * 27.2114079527" | bc -l 2>/dev/null)
         else
@@ -261,7 +273,20 @@ for molecule in ${molecules[@]}; do
         XYZ_S1_S0=$(printf "%.10f" "$XYZ_S1_S0")
         XYZ_T1_S1=$(printf "%.10f" "$XYZ_T1_S1")
         XYZ_T1_S0=$(printf "%.10f" "$XYZ_T1_S0")
-        
+
+
+        Gibbs_TS=$(grep "Final Gibbs free energy " "$TS.out" | awk '{print $6}')
+        Gibbs_ES=$(grep "Final Gibbs free energy " "$ES.out" | awk '{print $6}')
+        delta_G=$(echo "$Gibbs_TS - $Gibbs_ES" | bc -l 2> /dev/null)
+
+        if 
+        MarcusRate=$(MarcusCTRate -from $SPE_T1 -to $SPE_S1 -vHab $E_Hab_O3 -vlam $E_lam_O3 -dG $delta_G | awk '{print $5}' 2> /dev/null)
+        if [ -z "$MarcusRate" ]; then
+            MarcusRate="NaN"
+        elif [ "$MarcusRate" == "0.00e+00" ]; then
+            MarcusRate=""            
+            # MarcusRate=$(printf "%.8e" "$MarcusRate")
+        fi
 
         # $DIndex_S1=$(printf "%.3e" "$$DIndex_S1")
         # CT_T1=$(printf "%.3e" "$CT_T1")
@@ -329,7 +354,7 @@ for molecule in ${molecules[@]}; do
         # Debugging: Print the values of the variables
         # echo "Debug: molecule=$molecule, functional=$functional, SPE_S0=$SPE_S0, SPE_S1=$SPE_S1, SPE_T1=$SPE_T1, Energy_Gap=$Energy_Gap, Fluorescence_rate=$Fluorescence_rate, ISC_rate_1=$ISC_rate_1, ISC_rate_2=$ISC_rate_2, ISC_rate_3=$ISC_rate_3, ISC_average=$ISC_average, RISC_rate_1=$RISC_rate_1, RISC_rate_2=$RISC_rate_2, RISC_rate_3=$RISC_rate_3, RISC_average=$RISC_average, DIndex_S1=$DIndex_S1, XYZ_S1_S0=$XYZ_S1_S0, XYZ_T1_S0=$XYZ_T1_S0, XYZ_T1_S1=$XYZ_T1_S1, ref=$ref"
 
-        echo "${molecule},${functional},\"${SPE_S0}\",\"${SPE_S1}\",\"${SPE_S1_td}\",\"${SPE_S2}\",\"${SPE_T1}\",\"${ST}\",\"${Fluorescence_rate}\",\"${ISC_rate_1}\",\"${ISC_rate_2}\",\"${ISC_rate_3}\",\"${ISC_average}\",\"${RISC_rate_1}\",\"${RISC_rate_2}\",\"${RISC_rate_3}\",\"${RISC_average}\",\"${emission_wave}\",\"${ref}\"" >> ../$output
+        echo "${molecule},${functional},\"${SPE_S0}\",\"${SPE_S1}\",\"${SPE_S1_td}\",\"${SPE_S2}\",\"${SPE_T1}\",\"${ST}\",\"${Fluorescence_rate}\",\"${ISC_rate_1}\",\"${ISC_rate_2}\",\"${ISC_rate_3}\",\"${ISC_average}\",\"${RISC_rate_1}\",\"${RISC_rate_2}\",\"${RISC_rate_3}\",\"${RISC_average}\",\"${MarcusRate}\",\"${emission_wave}\",\"${ref}\"" >> ../$output
         
 
 
