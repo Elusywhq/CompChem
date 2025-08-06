@@ -279,7 +279,7 @@ for molecule in ${molecules[@]}; do
         Gibbs_ES=$(grep "Final Gibbs free energy " "$ES.out" | awk '{print $6}')
         delta_G=$(echo "$Gibbs_TS - $Gibbs_ES" | bc -l 2> /dev/null)
 
-        if 
+        
         MarcusRate=$(MarcusCTRate -from $SPE_T1 -to $SPE_S1 -vHab $E_Hab_O3 -vlam $E_lam_O3 -dG $delta_G | awk '{print $5}' 2> /dev/null)
         if [ -z "$MarcusRate" ]; then
             MarcusRate="NaN"
