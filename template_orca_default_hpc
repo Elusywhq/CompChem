@@ -44,14 +44,16 @@ cd $tdir
 echo "ORCA calculation is being executed in: "$tdir
 echo `pwd`
 
-cp $CurrDir/$input      $tdir/$input
+cp -v $CurrDir/$input      $tdir/$input
 
 if grep -q "* XYZFILE" $CurrDir/$input; then
   XYZFILE=`grep "* XYZFILE" $CurrDir/$input | awk '{print $5}'` 
-  cp $CurrDir/$XYZFILE $tdir/
+  cp -v $CurrDir/$XYZFILE $tdir/
+else
+  XYZFILE=${input%.inp}.xyz
 fi
 
-
+echo "XYZ file: $XYZFILE"
 # if it is a restart calcualtion, then check if the $orbital is
 # exactly the same as ${input%.inp}.gbw. They must differ
 if [ -f $CurrDir/$orbital ]; then
@@ -71,71 +73,67 @@ fi
 $ORCA_ROOT/orca  $input > ${input%.inp}.out 2> ${input%.inp}.err
 
 # Check Output result::
-# finish=0
-# if [ -f $tdir/${input%.inp}.out ]; then
-#   finish=$(grep "****ORCA TERMINATED NORMALLY****" $tdir/${input%.inp}.out | wc -l)
-#   echo "ORCA calculation is finished successfully."
-#  else 
-#   echo "$tdir/${input%.inp}.out is missing, exit..."
-#   exit 99
-# fi
-
-# i=0
-# while [ $finish -eq 0 ]; do
-#   i=$((i+1))
-#   echo "Checking round $i"
-#   echo "ORCA calculation returned with error, restart the calculation..."
-# # Back up for previous run
-#   cp $tdir/${input%.inp}.out $tdir/${input%.inp}.o$i
-#   rm $tdir/${input%.inp}.gbw
-# # Redo the calculation
-#   $ORCA_ROOT/orca  $input > ${input%.inp}.out 2> ${input%.inp}.err 
-# # Check finish status again
-#   finish=$(grep -c "****ORCA TERMINATED NORMALLY****" $tdir/${input%.inp}.out)
-#   if [ $finish -eq 1 ]; then
-#     echo "ORCA calculation is finished successfully."
-#     break
-#   fi  
-#    if [ $i -eq 1 ]; then
-#     echo "Iteration hits the limit to $i, quitting... "
-#     if [ -f  $tdir/${input%.inp}.out  ] ; then  cp $tdir/${input%.inp}.out   $CurrDir/  ; fi ;
-#      if [ -f  $tdir/${input%.inp}.err  ] ; then  cp $tdir/${input%.inp}.err   $CurrDir/  ; fi ; 
-#     exit 88
-#   fi 
-# done 
-
-
-hess=0
-echo "Checking imaginary mode... "
-
-freq=`grep "vibrational_frequencies" -A 8 ${input%.inp}.hess | tail -n 1 | awk '{print $2}'`
-if [[ "$freq" == -* ]]; then
-  echo "Vibrational mode 6 is an imaginary mode."
-  echo "Frequency 6: $freq"
-  hess=1
-else
-  echo "Frequency 6: $freq"
-  echo "No imaginary mode found. Exiting..."
-  hess=0
+finish=0
+if [ -f $tdir/${input%.inp}.out ]; then
+  finish=$(grep "****ORCA TERMINATED NORMALLY****" $tdir/${input%.inp}.out | wc -l)
+  echo "ORCA calculation is finished successfully."
+ else 
+  echo "$tdir/${input%.inp}.out is missing, exit..."
+  exit 99
 fi
 
+i=0
+while [ $finish -eq 0 ]; do
+  i=$((i+1))
+  echo "Checking round $i"
+  echo "ORCA calculation returned with error, restart the calculation..."
+# Back up for previous run
+  cp $tdir/${input%.inp}.out $tdir/${input%.inp}.o$i
+  cp $tdir/${input%.inp}.gbw $tdir/$orbital
+# Redo the calculation
+  $ORCA_ROOT/orca  $input > ${input%.inp}.out 2> ${input%.inp}.err 
+# Check finish status again
+  finish=$(grep -c "****ORCA TERMINATED NORMALLY****" $tdir/${input%.inp}.out)
+  if [ $finish -eq 1 ]; then
+    echo "ORCA calculation is finished successfully."
+    break
+  fi  
+   if [ $i -eq 3 ]; then
+    echo "Iteration hits the limit to $i, quitting... "
+    if [ -f  $tdir/${input%.inp}.out  ] ; then  cp $tdir/${input%.inp}.out   $CurrDir/  ; fi ;
+     if [ -f  $tdir/${input%.inp}.err  ] ; then  cp $tdir/${input%.inp}.err   $CurrDir/  ; fi ; 
+    exit 88
+  fi 
+done 
 
-xyz=`grep "* XYZFILE 0" $input | awk '{print $5}'`
-echo "XYZ file: $xyz"
+if [ $(grep "freq" $tdir/${input%.inp}.inp | wc -l) -eq 1 ]; then
+  hess=0
+  echo "Checking imaginary mode... "
+  freq=`grep "vibrational_frequencies" -A 8 ${input%.inp}.hess | tail -n 1 | awk '{print $2}'`
+  if [[ "$freq" == -* ]]; then
+    echo "Vibrational mode 6 is an imaginary mode."
+    echo "Frequency 6: $freq"
+    hess=1
+  else
+    echo "Frequency 6: $freq"
+    echo "No imaginary mode found. Exiting..."
+    hess=0
+  fi
+fi
 
 h=0
 while [ $hess -eq 1 ]; do
 
-  cp -f $xyz ${input%.inp}.xyz.i$h
+  cp -f $XYZFILE ${input%.inp}.xyz.i$h
   echo "${input%.inp}.xyz.i$h is backed up."
   cp -f ${input%.inp}.out ${input%.inp}.out.i$h
   echo "${input%.inp}.out.i$h is backed up."
 
   $HOME/bin/ORCA/ORCA-displacement $input
 
-  cat ${input%.inp}_v006.xyz > $xyz
+  cat ${input%.inp}_v006.xyz > $XYZFILE
 
-  sed -i "s/$xyz/${input%.inp}_v006.xyz/" $input
+  sed -i "s/$XYZFILE/${input%.inp}_v006.xyz/" $input
   echo "Replacing xyz file and restart the calculation..."
 
   # actual execution
