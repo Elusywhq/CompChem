@@ -96,7 +96,9 @@ Energy1=`grep "Electronic energy " $CurrDir/$init.out | awk '{print $4}'`
 Energy2=`grep "Electronic energy " $CurrDir/$final.out | awk '{print $4}'`
 DEnergyT1=$(echo "($Energy1 - $Energy2) * 219474.6" | bc)
 DiffEnergyT1=$(echo "($DEnergyT1 + 0.5) / 1" | bc) 
-sed -i "s/DELE/DELE $DiffEnergyT1/g" $tdir/$input
+if [ -z $(grep "DELE" $tdir/$input | awk '{print $2}') ]; then
+  sed -i "s/DELE/DELE $DiffEnergyT1/g" $tdir/$input
+fi
 echo "DELE $DiffEnergyT1" 
 
 
