@@ -77,7 +77,7 @@ while [ "$#" -gt 0 ]; do
       ;;
     -w)
       if [ -n "$2" ] ; then
-        wf="$2"
+        wf="${2%.gbw}"
 	gbw=1
         shift
       else
@@ -134,7 +134,7 @@ if [ "$scr" = false ]; then
 fi
 
 if [ $gbw -eq 1 ]; then
-  sed -i "s/WF/$wf.gbw/g" ./$name.sh
+  sed -i "s/WF/${wf}.gbw/g" ./$name.sh
 else 
   sed -i "s/WF/$name.gbw/g" ./$name.sh 
 fi 
