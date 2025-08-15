@@ -89,6 +89,7 @@ while [ $finish -eq 0 ]; do
   echo "ORCA calculation returned with error, restart the calculation..."
 # Back up for previous run
   cp $tdir/${input%.inp}.out $tdir/${input%.inp}.o$i
+  cp $tdir/${input%.inp}.gbw $tdir/${input%.inp}.g$i
   cp $tdir/${input%.inp}.gbw $tdir/$orbital
 # Redo the calculation
   $ORCA_ROOT/orca  $input > ${input%.inp}.out 2> ${input%.inp}.err 
