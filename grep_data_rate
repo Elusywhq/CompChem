@@ -5,6 +5,7 @@ molecules=$(ls -d */ | sed 's:/*$::')
 functionals=("O3LYP" "pbe0" "camB3LYP" "M062X" ) #"wB97XD4")
 # functionals=("O3LYP")
 states=("s0" "s1" "t1")
+candidates=('0CZ0' '0DA0' '0DB0' '0TD0' '1CZ3' '1CZ4' '1DA3' '1DB2' '1DB5' '1OB4' '1TD3' '1TD4' '1TD5')
 # echo "Molecules: ${molecules[@]}"
 # csv_file="CM5192_calculation_data.csv"
 if [ -z "$1" ]; then
@@ -12,6 +13,16 @@ if [ -z "$1" ]; then
 else
   output=${1}_rate.csv
 fi
+
+# Process command line arguments
+while getopts "c" opt; do
+    case $opt in
+        c)
+            molecules=("${candidates[@]}")
+            output="candidate_rate.csv"
+            ;;
+    esac
+done
 
 echo "Molecule,Functional,S0,S1_Dscf,S1_td,T1,ST_eV,ST_Add,k_F,ISC1,ISC2,ISC3,k_isc,RISC1,RISC2,RISC3,k_risc,k_ct,rmsd_s1_t1,emission,ref_molecule" > $output
 
@@ -46,7 +57,7 @@ Final_State() {
 }
 
 # molecules=('0CZ0' '0DA0' '0DB0' '0TD0' '1CZ3' '1CZ4' '1DA3' '1DB2' '1DB5' '1OB4' '1TD3' '1TD4' '1TD5')
-candidates=('0CZ0' '0DA0' '0DB0' '0TD0' '1CZ3' '1CZ4' '1DA3' '1DB2' '1DB5' '1OB4' '1TD3' '1TD4' '1TD5')
+
 for molecule in ${molecules[@]}; do
     # echo "molecule: $molecule"
     if [[ ! "$molecule" =~ ^[0-9] ]]; then
