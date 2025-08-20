@@ -281,7 +281,7 @@ for molecule in ${molecules[@]}; do
 
         
         # MarcusRate=$(MarcusCTRate -from $SPE_T1 -to $SPE_S1 -vHab $E_Hab_O3 -vlam $E_lam_O3 -dG $delta_G | awk '{print $5}' 2> /dev/null)
-        lam=$(MarcusCTRate -from $SPE_T1 -to $SPE_S1 -vHab $E_Hab_O3 -vlam $E_lam_O3 -dG $delta_G -chk | grep lambda | awk '{print $2}' 2> /dev/null)
+        # lam=$(MarcusCTRate -from $SPE_T1 -to $SPE_S1 -vHab $E_Hab_O3 -vlam $E_lam_O3 -dG $delta_G -chk | grep lambda | awk '{print $2}' 2> /dev/null)
         if [ -z "$MarcusRate" ]; then
             MarcusRate="NaN"
         elif [ "$MarcusRate" == "0.00e+00" ]; then
