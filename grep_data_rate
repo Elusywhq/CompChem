@@ -75,6 +75,7 @@ for molecule in ${molecules[@]}; do
     fi
 
     for functional in "${functionals[@]}"; do
+        echo "Functional: $functional"
         GS="$molecule"_"$functional"_svp_s0_scf_optfreq
         ES=${molecule}_${functional}_svp_s1_Dscf_optfreq
         ES_td=${molecule}_${functional}_svp_s1_tddft_optfreq
