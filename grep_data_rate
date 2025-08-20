@@ -14,10 +14,6 @@ else
   output=${1}_rate.csv
 fi
 
-
-
-echo "Molecule,Functional,S0,S1_Dscf,S1_td,T1,ST_eV,ST_Add,k_F,ISC1,ISC2,ISC3,k_isc,RISC1,RISC2,RISC3,k_risc,k_ct,rmsd_s1_t1,emission,ref_molecule" > $output
-
 # Process command line arguments
 while getopts "c" opt; do
     case $opt in
@@ -28,6 +24,9 @@ while getopts "c" opt; do
             ;;
     esac
 done
+
+
+echo "Molecule,Functional,S0,S1_Dscf,S1_td,T1,ST_eV,ST_Add,k_F,ISC1,ISC2,ISC3,k_isc,RISC1,RISC2,RISC3,k_risc,k_ct,rmsd_s1_t1,emission,ref_molecule" > $output
 
 Initial_State() {
   local list=("$1")
