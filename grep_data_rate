@@ -46,7 +46,7 @@ Final_State() {
 }
 
 # molecules=('0CZ0' '0DA0' '0DB0' '0TD0' '1CZ3' '1CZ4' '1DA3' '1DB2' '1DB5' '1OB4' '1TD3' '1TD4' '1TD5')
-
+candidates=('0CZ0' '0DA0' '0DB0' '0TD0' '1CZ3' '1CZ4' '1DA3' '1DB2' '1DB5' '1OB4' '1TD3' '1TD4' '1TD5')
 for molecule in ${molecules[@]}; do
     # echo "molecule: $molecule"
     if [[ ! "$molecule" =~ ^[0-9] ]]; then
@@ -280,7 +280,7 @@ for molecule in ${molecules[@]}; do
         delta_G=$(echo "$Gibbs_TS - $Gibbs_ES" | bc -l 2> /dev/null)
 
         
-        MarcusRate=$(MarcusCTRate -from $SPE_T1 -to $SPE_S1 -vHab $E_Hab_O3 -vlam $E_lam_O3 -dG $delta_G | awk '{print $5}' 2> /dev/null)
+        # MarcusRate=$(MarcusCTRate -from $SPE_T1 -to $SPE_S1 -vHab $E_Hab_O3 -vlam $E_lam_O3 -dG $delta_G | awk '{print $5}' 2> /dev/null)
         lam=$(MarcusCTRate -from $SPE_T1 -to $SPE_S1 -vHab $E_Hab_O3 -vlam $E_lam_O3 -dG $delta_G -chk | grep lambda | awk '{print $2}' 2> /dev/null)
         if [ -z "$MarcusRate" ]; then
             MarcusRate="NaN"
