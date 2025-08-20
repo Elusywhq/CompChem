@@ -271,10 +271,14 @@ for molecule in ${molecules[@]}; do
         RISC_rate_3=$(printf "%.8e" "$RISC_rate_3")
         RISC_average=$(printf "%.8e" "$RISC_average")
         # XYZ_S1_S0=$(printf "%.10f" "$XYZ_S1_S0")
-        xyz_T1_S1=$(calculate_rmsd $TS.xyz $ES.xyz 2>&1)
-        echo "xyz_T1_S1: $xyz_T1_S1"
-        XYZ_T1_S1=$(printf "%.10f" "$xyz_T1_S1")
-        echo "XYZ_T1_S1: $XYZ_T1_S1"
+        if [ -f $ES.xyz ]; then
+          if [ -f $TS.xyz ]; then
+            xyz_S1_S0=$(calculate_rmsd $ES.xyz $GS.xyz 2>&1)
+            XYZ_S1_S0=$(printf "%.10f" "$xyz_S1_S0")
+          else
+            XYZ_S1_S0=0.0000000000
+          fi
+        fi
         # XYZ_T1_S0=$(printf "%.10f" "$XYZ_T1_S0")
 
 
