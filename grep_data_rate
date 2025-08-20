@@ -273,10 +273,10 @@ for molecule in ${molecules[@]}; do
         # XYZ_S1_S0=$(printf "%.10f" "$XYZ_S1_S0")
         if [ -f $ES.xyz ]; then
           if [ -f $TS.xyz ]; then
-            xyz_S1_S0=$(calculate_rmsd $ES.xyz $GS.xyz 2>&1)
-            XYZ_S1_S0=$(printf "%.10f" "$xyz_S1_S0")
+            XYZ_T1_S1=$(calculate_rmsd $ES.xyz $TS.xyz 2>&1)
+            XYZ_T1_S1=$(printf "%.10f" "$XYZ_T1_S1")
           else
-            XYZ_S1_S0=0.0000000000
+            XYZ_T1_S1=0.0000000000
           fi
         fi
         # XYZ_T1_S0=$(printf "%.10f" "$XYZ_T1_S0")
