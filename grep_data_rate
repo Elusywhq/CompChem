@@ -246,6 +246,7 @@ for molecule in ${molecules[@]}; do
         # XYZ_S1_S0=$(calculate_rmsd $ES.xyz $GS.xyz 2>&1)
         # XYZ_T1_S0=$(calculate_rmsd $TS.xyz $GS.xyz 2>&1)
         XYZ_T1_S1=$(calculate_rmsd $TS.xyz $ES.xyz 2>&1)
+        echo "XYZ_T1_S1: $XYZ_T1_S1"
         # if [ -f "$ES_td.xyz" ]; then
         #     XYZ_S1_S0_td=$(calculate_rmsd $ES_td.xyz $GS.xyz 2>&1)
         #     XYZ_T1_S1_td=$(calculate_rmsd $TS.xyz $ES_td.xyz 2>&1)
@@ -270,14 +271,14 @@ for molecule in ${molecules[@]}; do
         RISC_rate_2=$(printf "%.8e" "$RISC_rate_2")
         RISC_rate_3=$(printf "%.8e" "$RISC_rate_3")
         RISC_average=$(printf "%.8e" "$RISC_average")
-        XYZ_S1_S0=$(printf "%.10f" "$XYZ_S1_S0")
+        # XYZ_S1_S0=$(printf "%.10f" "$XYZ_S1_S0")
         XYZ_T1_S1=$(printf "%.10f" "$XYZ_T1_S1")
-        XYZ_T1_S0=$(printf "%.10f" "$XYZ_T1_S0")
+        # XYZ_T1_S0=$(printf "%.10f" "$XYZ_T1_S0")
 
 
-        Gibbs_TS=$(grep "Final Gibbs free energy " "$TS.out" | awk '{print $6}')
-        Gibbs_ES=$(grep "Final Gibbs free energy " "$ES.out" | awk '{print $6}')
-        delta_G=$(echo "$Gibbs_TS - $Gibbs_ES" | bc -l 2> /dev/null)
+        # Gibbs_TS=$(grep "Final Gibbs free energy " "$TS.out" | awk '{print $6}')
+        # Gibbs_ES=$(grep "Final Gibbs free energy " "$ES.out" | awk '{print $6}')
+        # delta_G=$(echo "$Gibbs_TS - $Gibbs_ES" | bc -l 2> /dev/null)
 
         
         # MarcusRate=$(MarcusCTRate -from $SPE_T1 -to $SPE_S1 -vHab $E_Hab_O3 -vlam $E_lam_O3 -dG $delta_G | awk '{print $5}' 2> /dev/null)
