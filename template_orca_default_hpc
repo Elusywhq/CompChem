@@ -20,7 +20,7 @@ EBENV_AVX2=1
 export ORCA_ROOT=/hpctmp/e0732532/orca_6_1_0
 export PATH=$ORCA_ROOT/bin:$PATH
 export LD_LIBRARY_PATH=$ORCA_ROOT/lib:$LD_LIBRARY_PATH
-
+export PATH=$HOME/bin/ORCA:$PATH
 export MPI_ROOT=/app1/ebapps/arches/flat/software/OpenMPI/4.1.6-GCC-13.2.0
 export PATH=$MPI_ROOT/bin:$PATH
 export LD_LIBRARY_PATH=$MPI_ROOT/lib:$LD_LIBRARY_PATH
