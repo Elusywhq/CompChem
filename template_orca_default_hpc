@@ -82,10 +82,21 @@ if [ -f $tdir/${input%.inp}.out ]; then
   exit 99
 fi
 
+orb_from=$( ORCA-chkOrbital -q "${input%.inp}.out" | awk '{print $1}' 2> /dev/null)
+orb_to=$( ORCA-chkOrbital -q " ${input%.inp}.out" | awk '{print $3}' 2> /dev/null)
+
+if [ $(($orb_to - $orb_from)) -ne 1 ]; then
+  ORCA-chkOrbital  ${input%.inp}.out
+  finish=0
+fi
+
+i=0
+
 i=0
 while [ $finish -eq 0 ]; do
   i=$((i+1))
   echo "Checking round $i"
+  ORCA-chkOrbital  ${input%.inp}.out
   echo "ORCA calculation returned with error, restart the calculation..."
 # Back up for previous run
   cp $tdir/${input%.inp}.out $tdir/${input%.inp}.o$i
@@ -94,12 +105,19 @@ while [ $finish -eq 0 ]; do
 # Redo the calculation
   $ORCA_ROOT/orca  $input > ${input%.inp}.out 2> ${input%.inp}.err 
 # Check finish status again
-  finish=$(grep -c "****ORCA TERMINATED NORMALLY****" $tdir/${input%.inp}.out)
-  if [ $finish -eq 1 ]; then
-    echo "ORCA calculation is finished successfully."
-    break
-  fi  
-   if [ $i -eq 3 ]; then
+  # finish=$(grep -c "****ORCA TERMINATED NORMALLY****" $tdir/${input%.inp}.out)
+  # if [ $finish -eq 1 ]; then
+  #   echo "ORCA calculation is finished successfully."
+  #   break
+  # fi  
+  orb_from=$( ORCA-chkOrbital -q "${input%.inp}.out" | awk '{print $1}' 2> /dev/null)
+  orb_to=$( ORCA-chkOrbital -q " ${input%.inp}.out" | awk '{print $3}' 2> /dev/null)
+  finish=$(($orb_to - $orb_from))
+  if [ $finish -ne 1 ]; then
+    finish=0  
+  fi
+
+   if [ $i -eq 5 ]; then
     echo "Iteration hits the limit to $i, quitting... "
     if [ -f  $tdir/${input%.inp}.out  ] ; then  cp $tdir/${input%.inp}.out   $CurrDir/  ; fi ;
      if [ -f  $tdir/${input%.inp}.err  ] ; then  cp $tdir/${input%.inp}.err   $CurrDir/  ; fi ; 
