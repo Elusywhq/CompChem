@@ -58,7 +58,7 @@ Final_State() {
   grep "ISCFSHESS" "$file" | awk '{split($4, a, "_"); print a[4] "_" a[5]}'
 }
 
-# molecules=('0CZ0' '0DA0' '0DB0' '0TD0' '1CZ3' '1CZ4' '1DA3' '1DB2' '1DB5' '1OB4' '1TD3' '1TD4' '1TD5')
+candidates=('0CZ0' '0DA0' '0DB0' '0TD0' '1CZ3' '1CZ4' '1DA3' '1DB2' '1DB5' '1OB4' '1TD3' '1TD4' '1TD5')
 
 for molecule in ${molecules[@]}; do
     # echo "molecule: $molecule"
@@ -80,16 +80,18 @@ for molecule in ${molecules[@]}; do
         ES_td=${molecule}_${functional}_svp_s1_tddft_optfreq
         ES_2=${molecule}_${functional}_svp_s2_tddft_optfreq
         TS="$molecule"_"$functional"_svp_t1_Dscf_optfreq
+        TS_lam="$molecule"_"$functional"_svp_t1_lam
         Hab="$molecule"_"$functional"_svp_s1_Hab_scf
         lam="$molecule"_"$functional"_svp_t1_lam
-        FLUO="$molecule"_"$functional"_svp_s1_esd_fluo
+        SOC="$molecule"_"$functional"_svp_t1_RISOMF1X_soc
+        # FLUO="$molecule"_"$functional"_svp_s1_esd_fluo
         ISC_1="$molecule"_"$functional"_svp_t1_esd_isc_T1
-        ISC_2="$molecule"_"$functional"_svp_t1_esd_isc_T2
-        ISC_3="$molecule"_"$functional"_svp_t1_esd_isc_T3
-        RISC_1="$molecule"_"$functional"_svp_t1_esd_risc_T1
-        RISC_2="$molecule"_"$functional"_svp_t1_esd_risc_T2
-        RISC_3="$molecule"_"$functional"_svp_t1_esd_risc_T3
-        files=($GS $ES $TS $FLUO $ISC_1 $ISC_2 $ISC_3 $RISC_1 $RISC_2 $RISC_3)
+        # ISC_2="$molecule"_"$functional"_svp_t1_esd_isc_T2
+        # ISC_3="$molecule"_"$functional"_svp_t1_esd_isc_T3
+        # RISC_1="$molecule"_"$functional"_svp_t1_esd_risc_T1
+        # RISC_2="$molecule"_"$functional"_svp_t1_esd_risc_T2
+        # RISC_3="$molecule"_"$functional"_svp_t1_esd_risc_T3
+        # files=($GS $ES $TS $FLUO $ISC_1 $ISC_2 $ISC_3 $RISC_1 $RISC_2 $RISC_3)
         # if [ ! -f "$TS.out" ]; then
         T1=$(Final_State $ISC_1)
         TS="$molecule"_"$functional"_svp_"$T1"_optfreq
@@ -97,7 +99,10 @@ for molecule in ${molecules[@]}; do
         if [ ! -f "$ISC_1.out" ]; then
            TS="$molecule"_"$functional"_svp_t1_scf_optfreq
         fi
-        
+
+        if [ "$functional" == "M062X" ]; then
+            TS="$molecule"_"$functional"_svp_t1_scf_optfreq
+        fi
         # for file in "${files[@]}"; do
         #     echo "file: $file"
         # done
@@ -147,10 +152,7 @@ for molecule in ${molecules[@]}; do
         SPE_S1_td=$(ORCA-GrepSPE -q "$ES_td.out")
         SPE_S2=$(ORCA-GrepSPE -q "$ES_2.out")
         SPE_T1=$(ORCA-GrepSPE -q "$TS.out")
-
-        E_Hab_O3=$(ORCA-GrepSPE -q "$Hab.out" )
-        # E_ES=$(ORCA-GrepSPE -q "$ES.out" )
-        E_lam_O3=$(ORCA-GrepSPE -q "$lam.out" )
+        SPE_T1_lam=$(ORCA-GrepSPE -q "$TS_lam.out")
         # E_TS=$(ORCA-GrepSPE -q "$TS.out" )
         if [ "$SPE_S1" != "0" ] && [ "$SPE_T1" != "0" ]; then
             Energy_Gap=$(echo "($SPE_S1 - $SPE_T1) * 27.2114079527" | bc -l 2>/dev/null)
@@ -158,18 +160,18 @@ for molecule in ${molecules[@]}; do
             Energy_Gap=0.0000000000
         fi
         
-        Fluorescence_rate=$(ORCA-Grepk -q "$FLUO.out")
+        # Fluorescence_rate=$(ORCA-Grepk -q "$FLUO.out")
         
-        ISC_rate_1=$(ORCA-Grepk -q "$ISC_1.out")
-        ISC_rate_2=$(ORCA-Grepk -q "$ISC_2.out")
-        ISC_rate_3=$(ORCA-Grepk -q "$ISC_3.out")
+        # ISC_rate_1=$(ORCA-Grepk -q "$ISC_1.out")
+        # ISC_rate_2=$(ORCA-Grepk -q "$ISC_2.out")
+        # ISC_rate_3=$(ORCA-Grepk -q "$ISC_3.out")
 
 
-        RISC_rate_1=$(ORCA-Grepk -q "$RISC_1.out")
-        RISC_rate_2=$(ORCA-Grepk -q "$RISC_2.out")
-        RISC_rate_3=$(ORCA-Grepk -q "$RISC_3.out")
+        # RISC_rate_1=$(ORCA-Grepk -q "$RISC_1.out")
+        # RISC_rate_2=$(ORCA-Grepk -q "$RISC_2.out")
+        # RISC_rate_3=$(ORCA-Grepk -q "$RISC_3.out")
 
-        ST=$(grep 'DELE' $ISC_1.out | awk '{print $4}')
+        # ST=$(grep 'DELE' $ISC_1.out | awk '{print $4}')
         # echo "ISC rate 1: $ISC_rate_1"
         # echo "ISC rate 2: $ISC_rate_2"
         # echo "ISC rate 3: $ISC_rate_3"
@@ -177,21 +179,21 @@ for molecule in ${molecules[@]}; do
 
 
         # Make sure 1 and 3 are equal if one of them is zero
-        if [ -z $ISC_rate_3 ] && [ "$ISC_rate_1" != "0.00000000e+00" ]; then
-            ISC_rate_3=$ISC_rate_1
-            # echo "Replaced ISC rate 3 with ISC rate 1"
-        elif [ -z $ISC_rate_1 ] && [ "$ISC_rate_3" != "0.00000000e+00" ]; then
-            ISC_rate_1=$ISC_rate_3
-        fi
+        # if [ -z $ISC_rate_3 ] && [ "$ISC_rate_1" != "0.00000000e+00" ]; then
+        #     ISC_rate_3=$ISC_rate_1
+        #     # echo "Replaced ISC rate 3 with ISC rate 1"
+        # elif [ -z $ISC_rate_1 ] && [ "$ISC_rate_3" != "0.00000000e+00" ]; then
+        #     ISC_rate_1=$ISC_rate_3
+        # fi
 
-        if [ -z $RISC_rate_3 ] && [ "$RISC_rate_1" != "0.00000000e+00" ]; then
-            RISC_rate_3=$RISC_rate_1
-            # echo "Replaced RISC rate 3 with RISC rate 1"
-        elif [ -z $RISC_rate_1 ] && [ "$RISC_rate_3" != "0.00000000e+00" ]; then
-            RISC_rate_1=$RISC_rate_3
-        fi
-        ISC_sum=$(printf "%.10g + %.10g + %.10g\n" "$ISC_rate_1" "$ISC_rate_2" "$ISC_rate_3" | bc -l 2>/dev/null)
-        RISC_sum=$(printf "%.10g + %.10g + %.10g\n" "$RISC_rate_1" "$RISC_rate_2" "$RISC_rate_3" | bc -l 2>/dev/null)
+        # if [ -z $RISC_rate_3 ] && [ "$RISC_rate_1" != "0.00000000e+00" ]; then
+        #     RISC_rate_3=$RISC_rate_1
+        #     # echo "Replaced RISC rate 3 with RISC rate 1"
+        # elif [ -z $RISC_rate_1 ] && [ "$RISC_rate_3" != "0.00000000e+00" ]; then
+        #     RISC_rate_1=$RISC_rate_3
+        # fi
+        # ISC_sum=$(printf "%.10g + %.10g + %.10g\n" "$ISC_rate_1" "$ISC_rate_2" "$ISC_rate_3" | bc -l 2>/dev/null)
+        # RISC_sum=$(printf "%.10g + %.10g + %.10g\n" "$RISC_rate_1" "$RISC_rate_2" "$RISC_rate_3" | bc -l 2>/dev/null)
         # echo "ISC 1: $ISC_rate_1"
         # echo "ISC 2: $ISC_rate_2"
         # echo "ISC 3: $ISC_rate_3"
@@ -200,53 +202,53 @@ for molecule in ${molecules[@]}; do
         # echo "RISC 2: $RISC_rate_2"
         # echo "RISC 3: $RISC_rate_3"
         # echo "RISC sum: $RISC_sum"
-        if [ "$ISC_sum" != "0.00000000e+00" ]; then
-            if (( $(echo "$ISC_sum < 0" | bc -l) )); then
-                # echo "Negative ISC rate for $molecule with $functional"
-                ISC_average="NaN"
-            else
-                ISC_average=$(printf "%.10g / 3\n" "$ISC_sum" | bc -l 2>/dev/null)
-                # echo "ISC average: $ISC_average"
-            fi
-        else
-            ISC_average=0.0000000000
-        fi
-
-        if [ "$RISC_sum" != "0.00000000e+00" ]; then
-            if (( $(echo "$RISC_sum < 0" | bc -l) )); then
-                # echo "Negative RISC rate for $molecule with $functional"
-                RISC_average="NaN"
-            else
-                RISC_average=$(printf "%.10g / 3\n" "$RISC_sum" | bc -l 2>/dev/null)
-                # echo "RISC average: $RISC_average"
-            fi
-        else
-            RISC_average=0.0000000000
-        fi
-
-        if [ -f "$FLUO.spectrum" ]; then
-            emission=$(ORCA-GrepSpectrum "$FLUO.spectrum")
-            emission_wave=$(echo "$emission" | awk '{printf "%.2f\n", 1e7/$1}')
-        else
-            echo "$FLUO.spectrum not found"
-            emission_wave=0.00
-        fi
-        # multiwfn_ana $FLUO s1
-        # echo "RUNNING: multiwfn_ana $FLUO s1"
-
-        # if [ -f "$FLUO.gbw" ]; then
-        #     # echo "Multiwfn analysis for $FLUO"
-        #     DIndex_S1=$(multiwfn_ana $FLUO)
+        # if [ "$ISC_sum" != "0.00000000e+00" ]; then
+        #     if (( $(echo "$ISC_sum < 0" | bc -l) )); then
+        #         # echo "Negative ISC rate for $molecule with $functional"
+        #         ISC_average="NaN"
+        #     else
+        #         ISC_average=$(printf "%.10g / 3\n" "$ISC_sum" | bc -l 2>/dev/null)
+        #         # echo "ISC average: $ISC_average"
+        #     fi
         # else
-        #     # echo "Multiwfn analysis for $FLUO.gbw"
-        #     DIndex_S1=0
+        #     ISC_average=0.0000000000
         # fi
+
+        # if [ "$RISC_sum" != "0.00000000e+00" ]; then
+        #     if (( $(echo "$RISC_sum < 0" | bc -l) )); then
+        #         # echo "Negative RISC rate for $molecule with $functional"
+        #         RISC_average="NaN"
+        #     else
+        #         RISC_average=$(printf "%.10g / 3\n" "$RISC_sum" | bc -l 2>/dev/null)
+        #         # echo "RISC average: $RISC_average"
+        #     fi
+        # else
+        #     RISC_average=0.0000000000
+        # fi
+
+        # if [ -f "$FLUO.spectrum" ]; then
+        #     emission=$(ORCA-GrepSpectrum "$FLUO.spectrum")
+        #     emission_wave=$(echo "$emission" | awk '{printf "%.2f\n", 1e7/$1}')
+        # else
+        #     echo "$FLUO.spectrum not found"
+        #     emission_wave=0.00
+        # fi
+        # # multiwfn_ana $FLUO s1
+        # # echo "RUNNING: multiwfn_ana $FLUO s1"
+
+        # # if [ -f "$FLUO.gbw" ]; then
+        # #     # echo "Multiwfn analysis for $FLUO"
+        # #     DIndex_S1=$(multiwfn_ana $FLUO)
+        # # else
+        # #     # echo "Multiwfn analysis for $FLUO.gbw"
+        # #     DIndex_S1=0
+        # # fi
        
-        if [[ "${@}" =~ "offct" ]]; then
-            DIndex_S1=$(~/bin/ORCA/multiwfn_ana $FLUO s1)
-        else 
-            DIndex_S1=$(grep "D index" $FLUO.out | tail -n 1 | awk '{print $9}')
-        fi
+        # if [[ "${@}" =~ "offct" ]]; then
+        #     DIndex_S1=$(~/bin/ORCA/multiwfn_ana $FLUO s1)
+        # else 
+        #     DIndex_S1=$(grep "D index" $FLUO.out | tail -n 1 | awk '{print $9}')
+        # fi
 
         if [ ! -f "$TS.xyz" ]; then
             echo "$TS.xyz not found"
@@ -296,19 +298,19 @@ for molecule in ${molecules[@]}; do
         # XYZ_T1_S0=$(printf "%.10f" "$XYZ_T1_S0")
 
 
-        # Gibbs_TS=$(grep "Final Gibbs free energy " "$TS.out" | awk '{print $6}')
-        # Gibbs_ES=$(grep "Final Gibbs free energy " "$ES.out" | awk '{print $6}')
-        # delta_G=$(echo "$Gibbs_TS - $Gibbs_ES" | bc -l 2> /dev/null)
+        Gibbs_TS=$(grep "Final Gibbs free energy " "$TS.out" | awk '{print $6}')
+        Gibbs_ES=$(grep "Final Gibbs free energy " "$ES.out" | awk '{print $6}')
+        delta_G=$(echo "$Gibbs_TS - $Gibbs_ES" | bc -l 2> /dev/null)
 
         
-        # MarcusRate=$(MarcusCTRate -from $SPE_T1 -to $SPE_S1 -vHab $E_Hab_O3 -vlam $E_lam_O3 -dG $delta_G | awk '{print $5}' 2> /dev/null)
-        # lam=$(MarcusCTRate -from $SPE_T1 -to $SPE_S1 -vHab $E_Hab_O3 -vlam $E_lam_O3 -dG $delta_G -chk | grep lambda | awk '{print $2}' 2> /dev/null)
-        if [ -z "$MarcusRate" ]; then
-            MarcusRate="NaN"
-        elif [ "$MarcusRate" == "0.00e+00" ]; then
-            MarcusRate=""            
-            # MarcusRate=$(printf "%.8e" "$MarcusRate")
-        fi
+        MarcusRate=$(MarcusCTRate -from $SPE_T1 -to $SPE_S1 -Hab $totSOCME -vlam $SPE_T1_lam -dG $delta_G | awk '{print $5}' 2> /dev/null)
+        # # lam=$(MarcusCTRate -from $SPE_T1 -to $SPE_S1 -vHab $E_Hab_O3 -vlam $E_lam_O3 -dG $delta_G -chk | grep lambda | awk '{print $2}' 2> /dev/null)
+        # if [ -z "$MarcusRate" ]; then
+        #     MarcusRate="NaN"
+        # elif [ "$MarcusRate" == "0.00e+00" ]; then
+        #     MarcusRate=""            
+        #     # MarcusRate=$(printf "%.8e" "$MarcusRate")
+        # fi
 
         # $DIndex_S1=$(printf "%.3e" "$$DIndex_S1")
         # CT_T1=$(printf "%.3e" "$CT_T1")
@@ -343,33 +345,33 @@ for molecule in ${molecules[@]}; do
             fi
         fi
 
-        if [ "$Fluorescence_rate" == "0.00000000e+00" ]; then
-            if ! qjlist | grep -q "$FLUO"; then
-                echo "$FLUO"
-            fi
-        fi
+        # if [ "$Fluorescence_rate" == "0.00000000e+00" ]; then
+        #     if ! qjlist | grep -q "$FLUO"; then
+        #         echo "$FLUO"
+        #     fi
+        # fi
 
-        if [ "$ISC_rate_1" == "0.00000000e+00" ]; then
-            echo "$ISC_1"
-        fi
-        if [ "$ISC_rate_2" == "0.00000000e+00" ]; then
-            echo "$ISC_2"
-        fi
-        if [ "$ISC_rate_3" == "0.00000000e+00" ]; then
-            echo "$ISC_3"
-        fi
+        # if [ "$ISC_rate_1" == "0.00000000e+00" ]; then
+        #     echo "$ISC_1"
+        # fi
+        # if [ "$ISC_rate_2" == "0.00000000e+00" ]; then
+        #     echo "$ISC_2"
+        # fi
+        # if [ "$ISC_rate_3" == "0.00000000e+00" ]; then
+        #     echo "$ISC_3"
+        # fi
 
-        if [ "$RISC_rate_1" == "0.00000000e+00" ]; then
-            echo "$RISC_1"
-        fi
+        # if [ "$RISC_rate_1" == "0.00000000e+00" ]; then
+        #     echo "$RISC_1"
+        # fi
 
-        if [ "$RISC_rate_2" == "0.00000000e+00" ]; then
-            echo "$RISC_2"
-        fi
+        # if [ "$RISC_rate_2" == "0.00000000e+00" ]; then
+        #     echo "$RISC_2"
+        # fi
 
-        if [ "$RISC_rate_3" == "0.00000000e+00" ]; then
-            echo "$RISC_3"
-        fi
+        # if [ "$RISC_rate_3" == "0.00000000e+00" ]; then
+        #     echo "$RISC_3"
+        # fi
 
         # echo "writing to $output"
 
