@@ -41,7 +41,7 @@ for molecule in $molecules; do
     for functional in "${functionals[@]}"; do
         GS="$molecule"_"$functional"_svp_s0_scf_optfreq
         ES=${molecule}_${functional}_svp_s1_Dscf_optfreq
-        TS="$molecule"_"$functional"_svp_t1_scf_optfreq
+        # TS="$molecule"_"$functional"_svp_t1_scf_optfreq
         # FLUO="$molecule"_"$functional"_svp_s1_esd_fluo
         TS_lam="$molecule"_"$functional"_svp_t1_lam
         SOC="$molecule"_"$functional"_svp_t1_RISOMF1X_soc
@@ -67,7 +67,7 @@ for molecule in $molecules; do
         #         continue 2
         #     fi
         # done
-        ts=$(grep "ISCISHESS" "$ISC_1.out" | awk -F'"' '{ sub(/\.hess$/, "", $2); print $2 }')
+        TS=$(grep "ISCISHESS" "$ISC_1.out" | awk -F'"' '{ sub(/\.hess$/, "", $2); print $2 }')
         
         # RISC_rate_1=$(ORCA-Grepk -q "$RISC_1.out")
         # RISC_rate_2=$(ORCA-Grepk -q "$RISC_2.out")
@@ -75,7 +75,7 @@ for molecule in $molecules; do
         # E_ES=$(ORCA-GrepSPE -q "$ES.out")
         # E_Hab=$(ORCA-GrepSPE -q "$Hab.out")
         if [ -z $ts ]; then
-            ts=$TS
+            TS="$molecule"_"$functional"_svp_t1_scf_optfreq
         fi
         if [ "$functional" == "M062X" ]; then
             TS="$molecule"_"$functional"_svp_t1_scf_optfreq
