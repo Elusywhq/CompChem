@@ -50,7 +50,7 @@ for molecule in $molecules; do
         # RISC_1="$molecule"_"$functional"_svp_t1_esd_risc_T1
         # RISC_2="$molecule"_"$functional"_svp_t1_esd_risc_T2
         # Hab="$molecule"_"$functional"_svp_s1_Hab_scf
-        files=($RISC_1 $RISC_2)
+        # files=($RISC_1 $RISC_2)
         # for file in "${files[@]}"; do
         #     if [ ! -f "$file.out" ]; then
         #         echo "Error: $file.out not found" >&2
@@ -67,7 +67,7 @@ for molecule in $molecules; do
         #         continue 2
         #     fi
         # done
-        ts=$(grep "ISCISHESS" "$RISC_1.out" | awk -F'"' '{ sub(/\.hess$/, "", $2); print $2 }')
+        ts=$(grep "ISCISHESS" "$ISC_1.out" | awk -F'"' '{ sub(/\.hess$/, "", $2); print $2 }')
         
         # RISC_rate_1=$(ORCA-Grepk -q "$RISC_1.out")
         # RISC_rate_2=$(ORCA-Grepk -q "$RISC_2.out")
