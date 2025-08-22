@@ -171,6 +171,11 @@ for molecule in $molecules; do
 
         SOCME=$(grep "<T|HSO|S>" -A 6 "$SOC.out" | sed 's/[(),]//g' | sed -n '5p' | awk '{for (i=3; i<=NF; i++) printf("%s%s", $i, (i<NF ? "," : "\n"))}')
         read -r x_r x_i y_r y_i z_r z_i <<<$(echo "$SOCME" | tr ',' ' ')
+        if [ -z $SOCME ]; then
+          echo "Error: SOCME is empty: $SOC" >&2
+          continue
+        fi
+
         # Calculate magnitude
         totSOCME=$(awk -v xr="$x_r" -v xi="$x_i" -v yr="$y_r" -v yi="$y_i" -v zr="$z_r" -v zi="$z_i" \
         'BEGIN {
@@ -179,6 +184,20 @@ for molecule in $molecules; do
           z2 = zr*zr + zi*zi;
           printf("%.5e", sqrt(x2 + y2 + z2));
         }')
+
+        if [ ! -f $TS_lam.out ]; then
+            echo "Error: $TS_lam.out not found" >&2
+            continue
+        else 
+            orb_from=$( ORCA-chkOrbital -q "$TS_lam.out" | awk '{print $1}' 2> /dev/null)
+            orb_to=$( ORCA-chkOrbital -q "$TS_lam.out" | awk '{print $3}' 2> /dev/null)
+            if [ $(($orb_to - $orb_from)) -ne 1 ]; then
+                if [ $(qjlist $TS_lam | wc -l) -lt 1 ]; then
+                echo "Skipping $TS_lam, orbitals are not consecutive: $orb_from and $orb_to" >&2
+                continue
+                fi
+            fi
+        fi
         # Hab_from=$(ORCA-chkOrbital -q "$Hab.out" | awk '{print $1}')
         # Hab_to=$(ORCA-chkOrbital -q "$Hab.out" | awk '{print $1}')
         # Hab_excit=$(( $Hab_to - $Hab_from ))
