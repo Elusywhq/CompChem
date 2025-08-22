@@ -68,7 +68,7 @@ for molecule in $molecules; do
         #     fi
         # done
         TS=$(grep "ISCISHESS" "$ISC_1.out" | awk -F'"' '{ sub(/\.hess$/, "", $2); print $2 }')
-        
+        echo "TS: $TS"
         # RISC_rate_1=$(ORCA-Grepk -q "$RISC_1.out")
         # RISC_rate_2=$(ORCA-Grepk -q "$RISC_2.out")
         # RISC_rate_3=$(ORCA-Grepk -q "$RISC_3.out")
@@ -77,6 +77,7 @@ for molecule in $molecules; do
         if [ -z $ts ]; then
             TS="$molecule"_"$functional"_svp_t1_scf_optfreq
         fi
+
         if [ "$functional" == "M062X" ]; then
             TS="$molecule"_"$functional"_svp_t1_scf_optfreq
         fi
@@ -201,7 +202,7 @@ for molecule in $molecules; do
         MarcusRate=$(MarcusCTRate -from $SPE_T1 -to $SPE_S1 -Hab $totSOCME -vlam $SPE_T1_lam -dG $delta_G | awk '{print $5}' 2> /dev/null)
         echo "------------------ $molecule $functional ----------------------"
         MarcusCTRate -from $SPE_T1 -to $SPE_S1 -Hab $totSOCME -vlam $SPE_T1_lam -dG $delta_G -chk
-        calculate_rmsd $TS.xyz $ES.xyz
+        # calculate_rmsd $TS.xyz $ES.xyz
         echo "$molecule,$functional,$totSOCME,$lam,$MarcusRate,$XYZ_T1_S1,$ref"
         # else
         #     MarcusRate="NaN"
