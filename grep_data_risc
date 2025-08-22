@@ -160,7 +160,7 @@ for molecule in $molecules; do
 
         # XYZ_T1_S1=$(grep "The RMSD is" $RISC_1.out | awk '{print $4}')
       
-        XYZ_T1_S1=$(calculate_rmsd $TS.xyz $ES.xyz)
+        XYZ_T1_S1=$(calculate_rmsd $TS.xyz $ES.xyz 2>&1)
         # RISC_rate_1=$(printf "%.8e" "$RISC_rate_1")
         # RISC_rate_2=$(printf "%.8e" "$RISC_rate_2")
         # RISC_rate_3=$(printf "%.8e" "$RISC_rate_3")
@@ -172,7 +172,7 @@ for molecule in $molecules; do
         SOCME=$(grep "<T|HSO|S>" -A 6 "$SOC.out" | sed 's/[(),]//g' | sed -n '5p' | awk '{for (i=3; i<=NF; i++) printf("%s%s", $i, (i<NF ? "," : "\n"))}')
         read -r x_r x_i y_r y_i z_r z_i <<<$(echo "$SOCME" | tr ',' ' ')
         if [ -z $SOCME ]; then
-          echo "Error: SOCME is empty: $SOC" >&2
+          echo "!!!! Error: SOCME is empty: $SOC" >&2
           continue
         fi
 
@@ -186,14 +186,14 @@ for molecule in $molecules; do
         }')
 
         if [ ! -f $TS_lam.out ]; then
-            echo "Error: $TS_lam.out not found" >&2
+            echo "!!!! Error: $TS_lam.out not found" >&2
             continue
         else 
             orb_from=$( ORCA-chkOrbital -q "$TS_lam.out" | awk '{print $1}' 2> /dev/null)
             orb_to=$( ORCA-chkOrbital -q "$TS_lam.out" | awk '{print $3}' 2> /dev/null)
             if [ $(($orb_to - $orb_from)) -ne 1 ]; then
                 if [ $(qjlist $TS_lam | wc -l) -lt 1 ]; then
-                echo "Skipping $TS_lam, orbitals are not consecutive: $orb_from and $orb_to" >&2
+                echo "!!!! Skipping $TS_lam, orbitals are not consecutive: $orb_from and $orb_to" >&2
                 continue
                 fi
             fi
@@ -204,7 +204,12 @@ for molecule in $molecules; do
         # if [ $Hab_excit -eq 1 ]; then
         Gibbs_TS=$(grep "Final Gibbs free energy " "$TS.out" | awk '{print $6}')
         Gibbs_ES=$(grep "Final Gibbs free energy " "$ES.out" | awk '{print $6}')
+        echo
+        echo "Gibbs_TS: $Gibbs_TS, Gibbs_ES: $Gibbs_ES"
+
         delta_G=$(echo "$Gibbs_TS - $Gibbs_ES" | bc -l 2> /dev/null)
+        echo "delta_G: $delta_G"
+        echo
         SPE_S1=$(ORCA-GrepSPE -q "$ES.out")
         SPE_T1=$(ORCA-GrepSPE -q "$TS.out")
         SPE_T1_lam=$(ORCA-GrepSPE -q "$TS_lam.out")
