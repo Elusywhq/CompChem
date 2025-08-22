@@ -29,7 +29,7 @@ for molecule in $molecules; do
       continue
     fi
     cd $molecule
-    echo " ------------------ Molecule: $molecule ------------------"
+    echo " ------------------ Molecule: $molecule $functional ------------------"
     # ref="0${molecule:1:2}0"
     # echo "Reference: $ref"
     ref="0${molecule:1:2}0"
@@ -78,9 +78,9 @@ for molecule in $molecules; do
             TS="$molecule"_"$functional"_svp_t1_scf_optfreq
         fi
 
-        if [ "$functional" == "M062X" ]; then
-            TS="$molecule"_"$functional"_svp_t1_scf_optfreq
-        fi
+        # if [ "$functional" == "M062X" ]; then
+        #     TS="$molecule"_"$functional"_svp_t1_scf_optfreq
+        # fi
         # E_TS=$(ORCA-GrepSPE -q "$ts.out")
         
 
