@@ -207,7 +207,7 @@ for molecule in $molecules; do
         echo
         echo "Gibbs_TS: $Gibbs_TS, Gibbs_ES: $Gibbs_ES"
 
-        delta_G=$(echo "$Gibbs_TS - $Gibbs_ES" | bc -l )
+        delta_G=$(echo "$Gibbs_TS - $Gibbs_ES" | bc -l  2> /dev/null)
         echo "delta_G: $delta_G"
         echo
         SPE_S1=$(ORCA-GrepSPE -q "$ES.out")
