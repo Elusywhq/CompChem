@@ -74,7 +74,7 @@ for molecule in $molecules; do
         # RISC_rate_3=$(ORCA-Grepk -q "$RISC_3.out")
         # E_ES=$(ORCA-GrepSPE -q "$ES.out")
         # E_Hab=$(ORCA-GrepSPE -q "$Hab.out")
-        if [ -z $ts ]; then
+        if [ -z $TS ]; then
             TS="$molecule"_"$functional"_svp_t1_scf_optfreq
         fi
 
