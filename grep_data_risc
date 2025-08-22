@@ -201,6 +201,7 @@ for molecule in $molecules; do
 
         MarcusRate=$(MarcusCTRate -from $SPE_T1 -to $SPE_S1 -Hab $totSOCME -vlam $SPE_T1_lam -dG $delta_G | awk '{print $5}' 2> /dev/null)
         echo "------------------ $molecule $functional ----------------------"
+        echo "Running: MarcusCTRate -from $SPE_T1 -to $SPE_S1 -Hab $totSOCME -vlam $SPE_T1_lam -dG $delta_G -chk"
         MarcusCTRate -from $SPE_T1 -to $SPE_S1 -Hab $totSOCME -vlam $SPE_T1_lam -dG $delta_G -chk
         # calculate_rmsd $TS.xyz $ES.xyz
         echo "$molecule,$functional,$totSOCME,$lam,$MarcusRate,$XYZ_T1_S1,$ref"
