@@ -153,6 +153,9 @@ for molecule in ${molecules[@]}; do
         SPE_S2=$(ORCA-GrepSPE -q "$ES_2.out")
         SPE_T1=$(ORCA-GrepSPE -q "$TS.out")
         SPE_T1_lam=$(ORCA-GrepSPE -q "$TS_lam.out")
+        if [ -z "$SPE_T1_lam" ] || [ "$SPE_T1_lam" == "0.0000000000" ]; then
+            echo "$TS_lam.out not found or SPE is zero"
+        fi
         # E_TS=$(ORCA-GrepSPE -q "$TS.out" )
         if [ "$SPE_S1" != "0" ] && [ "$SPE_T1" != "0" ]; then
             Energy_Gap=$(echo "($SPE_S1 - $SPE_T1) * 27.2114079527" | bc -l 2>/dev/null)
