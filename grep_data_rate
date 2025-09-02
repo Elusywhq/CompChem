@@ -68,7 +68,7 @@ for molecule in ${molecules[@]}; do
     cd $molecule
     echo "Molecule: $molecule"
     ref="0${molecule:1:2}0"
-    echo "Reference: $ref"
+    # echo "Reference: $ref"
     if [ "$ref" == "0OB0" ]; then
         ref="0DB0"
     fi
@@ -234,7 +234,7 @@ for molecule in ${molecules[@]}; do
             emission=$(ORCA-GrepSpectrum "$FLUO.spectrum")
             emission_wave=$(echo "$emission" | awk '{printf "%.2f\n", 1e7/$1}')
         else
-            echo "$FLUO.spectrum not found"
+            echo "$FLUO.spectrum not found" 
             emission_wave=0.00
         fi
         # # multiwfn_ana $FLUO s1
