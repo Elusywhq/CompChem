@@ -305,7 +305,23 @@ for molecule in ${molecules[@]}; do
         Gibbs_ES=$(grep "Final Gibbs free energy " "$ES.out" | awk '{print $6}')
         delta_G=$(echo "$Gibbs_TS - $Gibbs_ES" | bc -l 2> /dev/null)
 
-        
+        zeff=${molecule}_M062X_svp_s1_tddft_fromO3LYP
+        SOCME=$(grep "<T|HSO|S>" -A 6 "$zeff.out" | sed 's/[(),]//g' | sed -n '5p' | awk '{for (i=3; i<=NF; i++) printf("%s%s", $i, (i<NF ? "," : "\n"))}')
+
+        # Extract individual components
+        read -r x_r x_i y_r y_i z_r z_i <<<$(echo "$SOCME" | tr ',' ' ')
+        # Extract Re_SOCME components
+        read -r x y z <<<$(grep "CALCULATED REDUCED SOCME BETWEEN TRIPLETS AND SINGLETS" -A 7 "$zeff.out" | grep "0        1" | awk '{print $3, $4, $5}')  
+             
+        totSOCME=$(awk -v xr="$x_r" -v xi="$x_i" -v yr="$y_r" -v yi="$y_i" -v zr="$z_r" -v zi="$z_i" \
+        'BEGIN {
+            x2 = xr*xr + xi*xi;
+            y2 = yr*yr + yi*yi;
+            z2 = zr*zr + zi*zi;
+            printf("%.5e", sqrt(x2 + y2 + z2));
+        }')
+
+
         MarcusRate=$(MarcusCTRate -from $SPE_T1 -to $SPE_S1 -Hab $totSOCME -vlam $SPE_T1_lam -dG $delta_G | awk '{print $5}' 2> /dev/null)
         # # lam=$(MarcusCTRate -from $SPE_T1 -to $SPE_S1 -vHab $E_Hab_O3 -vlam $E_lam_O3 -dG $delta_G -chk | grep lambda | awk '{print $2}' 2> /dev/null)
         if [ -z "$MarcusRate" ]; then
