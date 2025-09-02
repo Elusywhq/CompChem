@@ -84,13 +84,13 @@ for molecule in ${molecules[@]}; do
         Hab="$molecule"_"$functional"_svp_s1_Hab_scf
         lam="$molecule"_"$functional"_svp_t1_lam
         SOC="$molecule"_"$functional"_svp_t1_RISOMF1X_soc
-        # FLUO="$molecule"_"$functional"_svp_s1_esd_fluo
+        FLUO="$molecule"_"$functional"_svp_s1_esd_fluo
         ISC_1="$molecule"_"$functional"_svp_t1_esd_isc_T1
-        # ISC_2="$molecule"_"$functional"_svp_t1_esd_isc_T2
-        # ISC_3="$molecule"_"$functional"_svp_t1_esd_isc_T3
-        # RISC_1="$molecule"_"$functional"_svp_t1_esd_risc_T1
-        # RISC_2="$molecule"_"$functional"_svp_t1_esd_risc_T2
-        # RISC_3="$molecule"_"$functional"_svp_t1_esd_risc_T3
+        ISC_2="$molecule"_"$functional"_svp_t1_esd_isc_T2
+        ISC_3="$molecule"_"$functional"_svp_t1_esd_isc_T3
+        RISC_1="$molecule"_"$functional"_svp_t1_esd_risc_T1
+        RISC_2="$molecule"_"$functional"_svp_t1_esd_risc_T2
+        RISC_3="$molecule"_"$functional"_svp_t1_esd_risc_T3
         # files=($GS $ES $TS $FLUO $ISC_1 $ISC_2 $ISC_3 $RISC_1 $RISC_2 $RISC_3)
         # if [ ! -f "$TS.out" ]; then
         T1=$(Final_State $ISC_1)
