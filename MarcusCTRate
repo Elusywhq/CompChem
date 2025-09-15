@@ -127,7 +127,7 @@ def parse_arguments():
             sys.exit(1)
         lambda_ = convert_hartree_to_ev(Energy_vlam - Energy_from)
     else:
-        lambda_ = convert_icm_to_ev(lambda_)
+        lambda_ = convert_hartree_to_ev(lambda_)
 
     return H_ab, Delta_G, lambda_
 

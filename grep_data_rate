@@ -2,10 +2,10 @@
 
 molecules=$(ls -d */ | sed 's:/*$::')
 # molecules=("1OB1" "1OB2" "1OB3" "1OB4")
-# functionals=("O3LYP" "pbe0" "camB3LYP" "M062X" ) #"wB97XD4")
-functionals=("O3LYP")
+functionals=("O3LYP" "pbe0" "camB3LYP" "M062X" ) #"wB97XD4")
+# functionals=("O3LYP")
 states=("s0" "s1" "t1")
-candidates=('0CZ0' '0DA0' '0DB0' '0TD0' '1CZ3' '1CZ4' '1DA3' '1DB2' '1DB5' '1OB4' '1TD3' '1TD4' '1TD5')
+candidates=('0CZ0' '0DA0' '0DB0' '0TD0' '1CZ3' '1CZ4' '1DA3' '1DB2' '1DB4' '1DB5' '1TD3' '1TD4' '1TD5')
 # echo "Molecules: ${molecules[@]}"
 # csv_file="CM5192_calculation_data.csv"
 if [ -z "$1" ]; then
@@ -57,8 +57,6 @@ Final_State() {
   # grep "ISCISHESS" $file | awk '{print $4}' 
   grep "ISCFSHESS" "$file" | awk '{split($4, a, "_"); print a[4] "_" a[5]}'
 }
-
-candidates=('0CZ0' '0DA0' '0DB0' '0TD0' '1CZ3' '1CZ4' '1DA3' '1DB2' '1DB5' '1OB4' '1TD3' '1TD4' '1TD5')
 
 for molecule in ${molecules[@]}; do
     # echo "molecule: $molecule"

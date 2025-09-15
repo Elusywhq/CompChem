@@ -1,0 +1,49 @@
+#!/bin/bash
+
+#----------------------------------------------
+if [ "$1" == "-q" ]; then
+    for file in "${@:2}"; do
+        f=${file%.*}
+        if [ ! -f "$f.out" ]; then
+            # echo "File $file does not exist."
+            continue
+        fi
+        SOCME=$(grep "<T|HSO|S>" -A 6 "$f.out" | sed 's/[(),]//g' | sed -n '5p' | awk '{for (i=3; i<=NF; i++) printf("%s%s", $i, (i<NF ? "," : "\n"))}')
+        if [ -z "$SOCME" ]; then
+            SOCME=0
+        fi
+        read -r x_r x_i y_r y_i z_r z_i <<<$(echo "$SOCME" | tr ',' ' ')
+        totSOCME=$(awk -v xr="$x_r" -v xi="$x_i" -v yr="$y_r" -v yi="$y_i" -v zr="$z_r" -v zi="$z_i" \
+      'BEGIN {
+        x2 = xr*xr + xi*xi;
+        y2 = yr*yr + yi*yi;
+        z2 = zr*zr + zi*zi;
+        printf("%.5e", sqrt(x2 + y2 + z2));
+      }')
+        echo "$totSOCME"
+    done
+else
+    for file in "$@"; do
+        f=${file%.*}
+        if [ ! -f "$f.out" ]; then
+            # echo "File $file does not exist."
+            continue
+        fi
+        SOCME=$(grep "<T|HSO|S>" -A 6 "$f.out" | sed 's/[(),]//g' | sed -n '5p' | awk '{for (i=3; i<=NF; i++) printf("%s%s", $i, (i<NF ? "," : "\n"))}')
+        if [ -z "$SOCME" ]; then
+            SOCME=0
+        fi
+        read -r x_r x_i y_r y_i z_r z_i <<<$(echo "$SOCME" | tr ',' ' ')
+        totSOCME=$(awk -v xr="$x_r" -v xi="$x_i" -v yr="$y_r" -v yi="$y_i" -v zr="$z_r" -v zi="$z_i" \
+      'BEGIN {
+        x2 = xr*xr + xi*xi;
+        y2 = yr*yr + yi*yi;
+        z2 = zr*zr + zi*zi;
+        printf("%.5e", sqrt(x2 + y2 + z2));
+      }')
+        echo "$(grep "<T|HSO|S>" -B 3 -A 4 "$f.out" | head -n 6)"
+        echo "$(grep "<T|HSO|S>" -A 6 "$f.out" | sed -n '5p')"
+        echo "--------------------------------------------------------------------------------"
+        echo "Total SOCME: $totSOCME"
+    done
+fi
