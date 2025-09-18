@@ -85,10 +85,11 @@ fi
 orb_from=$( ORCA-chkOrbital -q "${input%.inp}.out" | awk '{print $1}' 2> /dev/null)
 orb_to=$( ORCA-chkOrbital -q " ${input%.inp}.out" | awk '{print $3}' 2> /dev/null)
 
-if [ $(($orb_to - $orb_from)) -ne 1 ]; then
-  ORCA-chkOrbital  ${input%.inp}.out
-  finish=0
-fi
+# if [ $(($orb_to - $orb_from)) -ne 1 ]; then
+#   ORCA-chkOrbital  ${input%.inp}.out
+#   finish=0
+# fi
+finish=$(grep -c "****ORCA TERMINATED NORMALLY****" $tdir/${input%.inp}.out)
 
 i=0
 
@@ -106,14 +107,14 @@ if [ $(grep XYZFILE $tdir/$input | awk '{print $4}' ) -eq 1 ]; then
   # Redo the calculation
     $ORCA_ROOT/orca  $input > ${input%.inp}.out 2> ${input%.inp}.err 
   # Check finish status again
-    # finish=$(grep -c "****ORCA TERMINATED NORMALLY****" $tdir/${input%.inp}.out)
-    # if [ $finish -eq 1 ]; then
-    #   echo "ORCA calculation is finished successfully."
-    #   break
-    # fi  
-    orb_from=$( ORCA-chkOrbital -q "${input%.inp}.out" | awk '{print $1}' 2> /dev/null)
-    orb_to=$( ORCA-chkOrbital -q " ${input%.inp}.out" | awk '{print $3}' 2> /dev/null)
-    finish=$(($orb_to - $orb_from))
+    finish=$(grep -c "****ORCA TERMINATED NORMALLY****" $tdir/${input%.inp}.out)
+    if [ $finish -eq 1 ]; then
+      echo "ORCA calculation is finished successfully."
+      break
+    fi  
+    # orb_from=$( ORCA-chkOrbital -q "${input%.inp}.out" | awk '{print $1}' 2> /dev/null)
+    # orb_to=$( ORCA-chkOrbital -q " ${input%.inp}.out" | awk '{print $3}' 2> /dev/null)
+    # finish=$(($orb_to - $orb_from))
     if [ $finish -ne 1 ]; then
       finish=0  
     fi
@@ -202,6 +203,7 @@ fi
    if [ -f  $tdir/${input%.inp}.spectrum     ] ; then  cp $tdir/${input%.inp}.spectrum      $CurrDir/  ; fi ;
    if [ -f  $tdir/${input%.inp}.plt          ] ; then  cp $tdir/${input%.inp}.plt           $CurrDir/  ; fi ;
    if [ -f  $tdir/${input%.inp}.hess         ] ; then  cp $tdir/${input%.inp}.hess          $CurrDir/  ; fi ;
+  if [ -f  $tdir/${input%.inp}.property.txt         ] ; then  cp $tdir/${input%.inp}.property.txt          $CurrDir/  ; fi ;
 #   if [ -f  $tdir/${input%.inp}_property.txt ] ; then  cp $tdir/${input%.inp}_property.txt  $CurrDir/  ; fi ;
    if [ -f  $tdir/${input%.inp}.gbw           ] ; then  cp $tdir/${input%.inp}.gbw           $CurrDir/  ; fi ;   
 #   cp $tdir/*.plt $CurrDir/
