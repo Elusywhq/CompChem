@@ -127,64 +127,65 @@ if [ $(grep XYZFILE $tdir/$input | awk '{print $4}' ) -eq 1 ]; then
     fi 
   done 
 fi
-# if [ $(grep "freq" $tdir/${input%.inp}.inp | wc -l) -eq 1 ]; then
-#   hess=0
-#   echo "Checking imaginary mode... "
-#   freq=`grep "vibrational_frequencies" -A 8 ${input%.inp}.hess | tail -n 1 | awk '{print $2}'`
-#   if [[ "$freq" == -* ]]; then
-#     echo "Vibrational mode 6 is an imaginary mode."
-#     echo "Frequency 6: $freq"
-#     hess=1
-#   else
-#     echo "Frequency 6: $freq"
-#     echo "No imaginary mode found. Exiting..."
-#     hess=0
-#   fi
-# fi
 
-# h=0
-# while [ $hess -eq 1 ]; do
+if [ $(grep "freq" $tdir/${input%.inp}.inp | wc -l) -eq 1 ]; then
+  hess=0
+  echo "Checking imaginary mode... "
+  freq=`grep "vibrational_frequencies" -A 8 ${input%.inp}.hess | tail -n 1 | awk '{print $2}'`
+  if [[ "$freq" == -* ]]; then
+    echo "Vibrational mode 6 is an imaginary mode."
+    echo "Frequency 6: $freq"
+    hess=1
+  else
+    echo "Frequency 6: $freq"
+    echo "No imaginary mode found. Exiting..."
+    hess=0
+  fi
+fi
 
-#   cp -f $XYZFILE ${input%.inp}.xyz.i$h
-#   echo "${input%.inp}.xyz.i$h is backed up."
-#   cp -f ${input%.inp}.out ${input%.inp}.out.i$h
-#   echo "${input%.inp}.out.i$h is backed up."
+h=0
+while [ $hess -eq 1 ]; do
 
-#   $HOME/bin/ORCA/ORCA-displacement $input
+  cp -f $XYZFILE ${input%.inp}.xyz.i$h
+  echo "${input%.inp}.xyz.i$h is backed up."
+  cp -f ${input%.inp}.out ${input%.inp}.out.i$h
+  echo "${input%.inp}.out.i$h is backed up."
 
-#   cat ${input%.inp}_v006.xyz > $XYZFILE
+  $HOME/bin/ORCA/ORCA-displacement $input
 
-#   sed -i "s/$XYZFILE/${input%.inp}_v006.xyz/" $input
-#   echo "Replacing xyz file and restart the calculation..."
+  cat ${input%.inp}_v006.xyz > $XYZFILE
 
-#   # actual execution
-#   $ORCA_ROOT/orca  $input > ${input%.inp}.out 2> ${input%.inp}.err 
+  sed -i "s/$XYZFILE/${input%.inp}_v006.xyz/" $input
+  echo "Replacing xyz file and restart the calculation..."
+
+  # actual execution
+  $ORCA_ROOT/orca  $input > ${input%.inp}.out 2> ${input%.inp}.err 
   
-#   echo "Orca run for iteration: $h is finished. "
-#   echo "Checking imaginary mode again. Iteration: $h "
+  echo "Orca run for iteration: $h is finished. "
+  echo "Checking imaginary mode again. Iteration: $h "
 
-#   freq=`grep "vibrational_frequencies" -A 8 ${input%.inp}.hess | tail -n 1 | awk '{print $2}'`
+  freq=`grep "vibrational_frequencies" -A 8 ${input%.inp}.hess | tail -n 1 | awk '{print $2}'`
 
-#   if [[ "$freq" == -* ]]; then
-#     echo "Vibrational mode 6 is an imaginary mode."
-#     echo "Frequency 6: $freq"
-#     hess=1
-#   else
-#     echo "Frequency 6: $freq"
-#     echo "No imaginary mode found. Exiting..."
-#     break
-#   fi 
-#   if [ $h -eq 0 ]; then
-#     echo "Iteration hits the limit to $h, quitting... "
-#     if [ -f  $tdir/${input%.inp}.out  ] ; then  cp $tdir/${input%.inp}.out   $CurrDir/  ; fi ;
-#     if [ -f  $tdir/${input%.inp}.err  ] ; then  cp $tdir/${input%.inp}.err   $CurrDir/  ; fi ; 
-#    if [ -f  $tdir/${input%.inp}.hess ] ; then  cp $tdir/${input%.inp}.hess  $CurrDir/  ; fi ; 
-#    if [ -f  $tdir/${input%.inp}.gbw  ] ; then  cp $tdir/${input%.inp}.gbw   $CurrDir/  ; fi ;
-#    if [ -f  $tdir/${input%.inp}.xyz  ] ; then  cp $tdir/${input%.inp}.xyz   $CurrDir/  ; fi ;
-#     exit 77
-#   fi 
-#   h=$((h+1))
-# done
+  if [[ "$freq" == -* ]]; then
+    echo "Vibrational mode 6 is an imaginary mode."
+    echo "Frequency 6: $freq"
+    hess=1
+  else
+    echo "Frequency 6: $freq"
+    echo "No imaginary mode found. Exiting..."
+    break
+  fi 
+  if [ $h -eq 0 ]; then
+    echo "Iteration hits the limit to $h, quitting... "
+    if [ -f  $tdir/${input%.inp}.out  ] ; then  cp $tdir/${input%.inp}.out   $CurrDir/  ; fi ;
+    if [ -f  $tdir/${input%.inp}.err  ] ; then  cp $tdir/${input%.inp}.err   $CurrDir/  ; fi ; 
+   if [ -f  $tdir/${input%.inp}.hess ] ; then  cp $tdir/${input%.inp}.hess  $CurrDir/  ; fi ; 
+   if [ -f  $tdir/${input%.inp}.gbw  ] ; then  cp $tdir/${input%.inp}.gbw   $CurrDir/  ; fi ;
+   if [ -f  $tdir/${input%.inp}.xyz  ] ; then  cp $tdir/${input%.inp}.xyz   $CurrDir/  ; fi ;
+    exit 77
+  fi 
+  h=$((h+1))
+done
 
 
 
@@ -195,7 +196,7 @@ fi
 #if [ $? -eq 0 ]; then
    if [ -f  $tdir/${input%.inp}.out          ] ; then  cp $tdir/${input%.inp}.out           $CurrDir/  ; fi ;
    if [ -f  $tdir/${input%.inp}.err          ] ; then  cp $tdir/${input%.inp}.err           $CurrDir/  ; fi ;
-   if [ -f  $tdir/${input%.inp}.densities    ] ; then  cp $tdir/${input%.inp}.densities     $CurrDir/  ; fi ;
+   if [ -f  $tdir/${input%.inp}.densitiesinfo    ] ; then  cp $tdir/${input%.inp}.densitiesinfo     $CurrDir/  ; fi ;
    if [ -f  $tdir/*.cube                     ] ; then  cp $tdir/*.cube                      $CurrDir/  ; fi ;
    if [ -f  $tdir/${input%.inp}.trj          ] ; then  cp $tdir/${input%.inp}.trj           $CurrDir/  ; fi ;
    if [ -f  $tdir/${input%.inp}.cis          ] ; then  cp $tdir/${input%.inp}.cis           $CurrDir/  ; fi ;
