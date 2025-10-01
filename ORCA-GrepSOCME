@@ -1,49 +1,138 @@
 #!/bin/bash
 
 #----------------------------------------------
-if [ "$1" == "-q" ]; then
-    for file in "${@:2}"; do
-        f=${file%.*}
-        if [ ! -f "$f.out" ]; then
-            # echo "File $file does not exist."
-            continue
-        fi
-        SOCME=$(grep "<T|HSO|S>" -A 6 "$f.out" | sed 's/[(),]//g' | sed -n '5p' | awk '{for (i=3; i<=NF; i++) printf("%s%s", $i, (i<NF ? "," : "\n"))}')
-        if [ -z "$SOCME" ]; then
-            SOCME=0
-        fi
-        read -r x_r x_i y_r y_i z_r z_i <<<$(echo "$SOCME" | tr ',' ' ')
-        totSOCME=$(awk -v xr="$x_r" -v xi="$x_i" -v yr="$y_r" -v yi="$y_i" -v zr="$z_r" -v zi="$z_i" \
-      'BEGIN {
-        x2 = xr*xr + xi*xi;
-        y2 = yr*yr + yi*yi;
-        z2 = zr*zr + zi*zi;
-        printf("%.5e", sqrt(x2 + y2 + z2));
+process_file() {
+  local hfile="$1"
+  local f=${hfile%.*}
+  local mode="$2"
+  local Triplet="$3"
+  local Singlet="$4"
+
+  if [ ! -f "$f.out" ]; then
+    echo "File $f.out does not exist."
+    return 0
+  fi
+
+  local nroot
+  nroot=$(grep -i 'nroots' "$f.out" 2>/dev/null | awk 'NR==1{print $4; exit}')
+  if [ -z "$nroot" ]; then
+    echo "nroot input not found in $f.out"
+    return 0
+  fi
+  
+  local nstate=$((nroot * (nroot + 1) + 2))
+  # SOCME=$(grep "<T|HSO|S>" -A $nstate "$f.out" | sed 's/[(),]//g' | sed -n '5p' | awk '{for (i=3; i<=NF; i++) printf("%s%s", $i, (i<NF ? "," : "\n"))}')
+  SOCME=$(
+    grep "T      S             Z                     X                     Y" -A "$nstate" "$f.out" |
+    sed 's/[(),]//g' |
+    awk -v t="$Triplet" -v s="$Singlet" '
+      $1==t && $2==s {
+        for(i=3;i<=NF;i++) printf "%s%s", $i, (i<NF?"," : "")
+        print ""
+        exit
       }')
-        echo "$totSOCME"
-    done
-else
-    for file in "$@"; do
-        f=${file%.*}
-        if [ ! -f "$f.out" ]; then
-            # echo "File $file does not exist."
-            continue
-        fi
-        SOCME=$(grep "<T|HSO|S>" -A 6 "$f.out" | sed 's/[(),]//g' | sed -n '5p' | awk '{for (i=3; i<=NF; i++) printf("%s%s", $i, (i<NF ? "," : "\n"))}')
-        if [ -z "$SOCME" ]; then
-            SOCME=0
-        fi
-        read -r x_r x_i y_r y_i z_r z_i <<<$(echo "$SOCME" | tr ',' ' ')
-        totSOCME=$(awk -v xr="$x_r" -v xi="$x_i" -v yr="$y_r" -v yi="$y_i" -v zr="$z_r" -v zi="$z_i" \
-      'BEGIN {
-        x2 = xr*xr + xi*xi;
-        y2 = yr*yr + yi*yi;
-        z2 = zr*zr + zi*zi;
-        printf("%.5e", sqrt(x2 + y2 + z2));
-      }')
-        echo "$(grep "<T|HSO|S>" -B 3 -A 4 "$f.out" | head -n 6)"
-        echo "$(grep "<T|HSO|S>" -A 6 "$f.out" | sed -n '5p')"
-        echo "--------------------------------------------------------------------------------"
-        echo "Total SOCME: $totSOCME"
-    done
+
+  if [ -z "$SOCME" ]; then
+    SOCME=0
+    echo "No SOCME found in $f.out"
+    return 0
+  fi
+
+
+  read -r x_r x_i y_r y_i z_r z_i <<< $(echo "$SOCME" | tr ',' ' ')
+  totSOCME=$(awk -v xr="$x_r" -v xi="$x_i" -v yr="$y_r" -v yi="$y_i" -v zr="$z_r" -v zi="$z_i" \
+  'BEGIN {
+  x2 = xr*xr + xi*xi;
+  y2 = yr*yr + yi*yi;
+  z2 = zr*zr + zi*zi;
+  printf("%.5e", sqrt(x2 + y2 + z2));
+  }')
+
+  # ---------------------------------- output ----------------------------------
+  if [ $mode -eq 1 ]; then
+    echo "$totSOCME"
+  else
+    grep "T      S             Z                     X                     Y" -B 5 -A 1 "$f.out"
+    # echo "      --------------------------------------------------------------------------------"
+    info_line=$(grep "T      S             Z                     X                     Y" -A "$nstate" "$f.out" | awk -v t="$Triplet" -v s="$Singlet" '$1==t && $2==s {print; exit}')
+    if [ -n "$info_line" ]; then
+      echo "$info_line"
+    else
+      echo "No matching T S line found in $f.out"
+    fi
+
+    echo "********************************************************************************"
+
+    echo "Total SOCME: $totSOCME"
+  fi
+}
+
+# option handling via case so more options can be added easily
+# Default values
+s=1
+t=1
+mode=0
+
+file_list=()
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -q)
+      mode=1
+      shift
+      ;;
+    -t)
+      if [ -n "$2" ] && [[ "$2" =~ ^[0-9]+$ ]]; then
+        t="$2"
+        shift 2
+      else
+        echo "Error: -t requires an integer parameter."
+        exit 1
+      fi
+      ;;
+    -s)
+      if [ -n "$2" ] && [[ "$2" =~ ^[0-9]+$ ]]; then
+        s="$2"
+        shift 2
+      else
+        echo "Error: -s requires an integer parameter."
+        exit 1
+      fi
+      ;;
+    -h|--help)
+      echo "Usage: $(basename "$0") [options] file1 [file2 ...]"
+      echo "Options:"
+      echo "  -q          Quiet mode, only output the total SOCME value."
+      echo "  -t <int>    Specify the triplet state number (default is 1)."
+      echo "  -s <int>    Specify the singlet state number (default is 1)."
+      echo "  -h, --help  Show this help message."
+      exit 0
+      ;;
+    # --) # end of options, treat the rest as files
+    #   shift
+    #   while [ $# -gt 0 ]; do
+    #     file_list+=("$1")
+    #     shift
+    #   done
+    #   ;;
+    -*)
+      echo "Unknown option: $1"
+      exit 1
+      ;;
+    *)
+      file_list+=("$1")
+      shift
+      ;;
+  esac
+done
+
+
+if [ $mode -eq 0 ]; then 
+  echo "Triplet state: $t"
+  echo "Singlet state: $s"
+  echo "Processing files: ${file_list[*]}"
+  # echo "Mode: $mode"
 fi
+
+for file in "${file_list[@]}"; do
+  process_file "$file" "$mode" $t $s
+done
