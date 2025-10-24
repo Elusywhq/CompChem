@@ -197,7 +197,7 @@ def main():
     H_ab, Delta_G, lambda_ = parse_arguments()
     if "-chk" in sys.argv:
         # If -chk is specified, print the parameters
-        print(f"H_ab: {H_ab:.4f} eV")
+        print(f"H_ab:    {H_ab:.2e} eV")
         print(f"Delta_G: {Delta_G:.4f} eV")
         print(f"lambda_: {lambda_:.4f} eV")
     

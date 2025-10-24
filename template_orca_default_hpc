@@ -128,7 +128,7 @@ if [ $(grep XYZFILE $tdir/$input | awk '{print $4}' ) -eq 1 ]; then
   done 
 fi
 
-if [ $(grep "freq" $tdir/${input%.inp}.inp | wc -l) -eq 1 ]; then
+if [ $(grep -i "freq" $tdir/${input%.inp}.inp | wc -l) -eq 1 ]; then
   hess=0
   echo "Checking imaginary mode... "
   freq=`grep "vibrational_frequencies" -A 8 ${input%.inp}.hess | tail -n 1 | awk '{print $2}'`
