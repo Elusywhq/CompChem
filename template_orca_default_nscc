@@ -171,7 +171,7 @@ done
    if [ -f  $tdir/${input%.inp}.spectrum     ] ; then  cp $tdir/${input%.inp}.spectrum      $CurrDir/  ; fi ;
   #  if [ -f  $tdir/${input%.inp}.plt          ] ; then  cp $tdir/${input%.inp}.plt           $CurrDir/  ; fi ;
    if [ -f  $tdir/${input%.inp}.hess         ] ; then  cp $tdir/${input%.inp}.hess          $CurrDir/  ; fi ;
-#   if [ -f  $tdir/${input%.inp}_property.txt ] ; then  cp $tdir/${input%.inp}_property.txt  $CurrDir/  ; fi ;
+  if [ -f  $tdir/${input%.inp}.property.txt ] ; then  cp $tdir/${input%.inp}.property.txt  $CurrDir/  ; fi ;
    if [ -f  $tdir/${input%.inp}.gbw           ] ; then  cp $tdir/${input%.inp}.gbw            $CurrDir/  ; fi ;   
    if [ -f  $tdir/${input%.inp}.FS.hess         ] ; then  cp $tdir/${input%.inp}.FS.hess          $CurrDir/  ; fi ;
 #   cp $tdir/*.plt $CurrDir/
