@@ -25,7 +25,7 @@ for file in "$@"; do
         echo "------------------------ --------------------------------- ------------------------------------"
         grep "GEOMETRY OPTIMIZATION CYCLE" $scratch/$name/$name.out | tail -n 1
         echo "----------------------------------------------------------------------------------------------"
-        echo "$scratch/$name/$name.out ::"
+        echo "$scratch/$name/$name.out"
         echo " "
         tail $scratch/$name/$name.out
         echo " "
