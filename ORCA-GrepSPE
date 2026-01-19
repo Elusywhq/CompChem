@@ -11,7 +11,7 @@ if [ "$1" == "-q" ]; then
             # echo "File $file does not exist."
             continue
         fi
-        SPE=$(grep --text "Total Energy       :" "$f.out" | tail -n 1 | awk '{print $4}')
+        SPE=$(grep --text "FINAL SINGLE POINT ENERGY" "$f.out" | tail -n 1 | awk '{print $4}')
         if [ -z "$SPE" ]; then
             SPE=0
         fi
@@ -24,7 +24,7 @@ else
             echo "File $f.out does not exist."
             continue
         fi
-        SPE=$(grep --text "Total Energy       :" "$f.out" | tail -n 1 | awk '{print $4}')
+        SPE=$(grep --text "FINAL SINGLE POINT ENERGY" "$f.out" | tail -n 1 | awk '{print $4}')
         if [ -z "$SPE" ]; then
             SPE=0
         fi
