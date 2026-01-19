@@ -187,7 +187,9 @@ while [ $hess -eq 1 ]; do
   h=$((h+1))
 done
 
-
+  if [ -f $tdir/${input%.inp}.property.txt ]; then
+    $ORCA_ROOT/orca_2json $tdir/${input%.inp} -property
+  fi
 
 
 
