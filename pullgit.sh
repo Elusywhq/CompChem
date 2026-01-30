@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [[ $(hostname) == *"vanda"* ]]; then
+if [[ $(hostname) == *"stdct"* ]]; then
     git -C /atlas/home/$USER/bin/ORCA pull
     git -C /atlas/home/$USER/bin/Elusy_Personal pull
 else
