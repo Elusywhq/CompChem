@@ -1,0 +1,218 @@
+#!/bin/bash
+
+#PBS -q colo-chmlu 
+#PBS -l select=1:ncpus=CR:host=colo-chmlu-08:mpiprocs=CR:mem=120GB
+#PBS -j oe
+#PBS -m abe
+#PBS -p 1023
+
+input=RN
+orbital=WF          # input file for restart the calculation, if needed
+
+#---------------------------------------------------------------------------
+#   normally you should not need to change anything below this line
+source /app1/ebenv
+# module load ORCA/6.0.1-foss-2023b-avx2
+EBENV_AVX2=1 
+#---------------------------------------------------------------------------
+#   normally you should not need to change anything below this line
+# export ORCA_ROOT=/app1/ebapps/arches/flat-avx2/software/ORCA/6.0.1-foss-2023b-avx2/bin/
+export ORCA_ROOT=/hpctmp/e0732532/orca_6_1_0
+export PATH=$ORCA_ROOT/bin:$PATH
+export LD_LIBRARY_PATH=$ORCA_ROOT/lib:$LD_LIBRARY_PATH
+export PATH=$HOME/bin/ORCA:$PATH
+export MPI_ROOT=/app1/ebapps/arches/flat/software/OpenMPI/4.1.6-GCC-13.2.0
+export PATH=$MPI_ROOT/bin:$PATH
+export LD_LIBRARY_PATH=$MPI_ROOT/lib:$LD_LIBRARY_PATH
+
+
+CurrDir=$PBS_O_WORKDIR
+cd $CurrDir
+
+export OMP_NUM_THREADS=1
+
+# scratch folder. Make it "input- dependent"
+tdir=/hpctmp/e0732532/${input%.inp}
+
+if [ ! -d $tdir ] ; then
+    mkdir -p $tdir
+else
+    rm -rf  $tdir/*
+fi
+
+cd $tdir
+echo "ORCA calculation is being executed in: "$tdir
+echo `pwd`
+
+cp -v $CurrDir/$input      $tdir/$input
+
+if grep -q "* XYZFILE" $CurrDir/$input; then
+  XYZFILE=`grep "* XYZFILE" $CurrDir/$input | awk '{print $5}'` 
+  cp -v $CurrDir/$XYZFILE $tdir/
+else
+  XYZFILE=${input%.inp}.xyz
+fi
+
+echo "XYZ file: $XYZFILE"
+# if it is a restart calcualtion, then check if the $orbital is
+# exactly the same as ${input%.inp}.gbw. They must differ
+if [ -f $CurrDir/$orbital ]; then
+   if [ "$orbital" -eq "${input%.inp}.gbw" ] ; then
+      echo "Restart GBW file is identical to ${input%.inp}.gbw. "
+      echo "Please give a different name."
+      echo "GBW file given for restart: " $orbital
+      echo "GBW of this calculation   : " ${input%.inp}.gbw
+   else
+      # correct case: copy the file to $tdir
+      cp $CurrDir/$orbital    $tdir/$orbital
+   fi
+fi
+
+
+# actual execution of ORCA
+$ORCA_ROOT/orca  $input > ${input%.inp}.out 2> ${input%.inp}.err
+
+# Check Output result::
+finish=0
+if [ -f $tdir/${input%.inp}.out ]; then
+  finish=$(grep "****ORCA TERMINATED NORMALLY****" $tdir/${input%.inp}.out | wc -l)
+  echo "ORCA calculation is finished successfully."
+else 
+  echo "$tdir/${input%.inp}.out is missing, exit..."
+  exit 99
+fi
+
+orb_from=$( ORCA-chkOrbital -q "${input%.inp}.out" | awk '{print $1}' 2> /dev/null)
+orb_to=$( ORCA-chkOrbital -q " ${input%.inp}.out" | awk '{print $3}' 2> /dev/null)
+
+# if [ $(($orb_to - $orb_from)) -ne 1 ]; then
+#   ORCA-chkOrbital  ${input%.inp}.out
+#   finish=0
+# fi
+finish=$(grep -c "****ORCA TERMINATED NORMALLY****" $tdir/${input%.inp}.out)
+
+i=0
+
+if [ $(grep XYZFILE $tdir/$input | awk '{print $4}' ) -eq 1 ]; then
+  i=0
+  while [ $finish -eq 0 ]; do
+    i=$((i+1))
+    echo "Checking round $i"
+    ORCA-chkOrbital  ${input%.inp}.out
+    echo "ORCA calculation returned with error, restart the calculation..."
+  # Back up for previous run
+    cp $tdir/${input%.inp}.out $tdir/${input%.inp}.o$i
+    cp $tdir/${input%.inp}.gbw $tdir/${input%.inp}.g$i
+    cp $tdir/${input%.inp}.gbw $tdir/$orbital
+  # Redo the calculation
+    $ORCA_ROOT/orca  $input > ${input%.inp}.out 2> ${input%.inp}.err 
+  # Check finish status again
+    finish=$(grep -c "****ORCA TERMINATED NORMALLY****" $tdir/${input%.inp}.out)
+    if [ $finish -eq 1 ]; then
+      echo "ORCA calculation is finished successfully."
+      break
+    fi  
+    # orb_from=$( ORCA-chkOrbital -q "${input%.inp}.out" | awk '{print $1}' 2> /dev/null)
+    # orb_to=$( ORCA-chkOrbital -q " ${input%.inp}.out" | awk '{print $3}' 2> /dev/null)
+    # finish=$(($orb_to - $orb_from))
+    if [ $finish -ne 1 ]; then
+      finish=0  
+    fi
+
+    if [ $i -eq 5 ]; then
+      echo "Iteration hits the limit to $i, quitting... "
+      if [ -f  $tdir/${input%.inp}.out  ] ; then  cp $tdir/${input%.inp}.out   $CurrDir/  ; fi ;
+      if [ -f  $tdir/${input%.inp}.err  ] ; then  cp $tdir/${input%.inp}.err   $CurrDir/  ; fi ; 
+      exit 88
+    fi 
+  done 
+fi
+
+if [ $(grep -i "freq" $tdir/${input%.inp}.inp | wc -l) -eq 1 ]; then
+  hess=0
+  echo "Checking imaginary mode... "
+  freq=`grep "vibrational_frequencies" -A 8 ${input%.inp}.hess | tail -n 1 | awk '{print $2}'`
+  if [[ "$freq" == -* ]]; then
+    echo "Vibrational mode 6 is an imaginary mode."
+    echo "Frequency 6: $freq"
+    hess=1
+  else
+    echo "Frequency 6: $freq"
+    echo "No imaginary mode found. Exiting..."
+    hess=0
+  fi
+fi
+
+h=0
+while [ $hess -eq 1 ]; do
+
+  cp -f $XYZFILE ${input%.inp}.xyz.i$h
+  echo "${input%.inp}.xyz.i$h is backed up."
+  cp -f ${input%.inp}.out ${input%.inp}.out.i$h
+  echo "${input%.inp}.out.i$h is backed up."
+
+  $HOME/bin/ORCA/ORCA-displacement $input
+
+  cat ${input%.inp}_v006.xyz > $XYZFILE
+
+  sed -i "s/$XYZFILE/${input%.inp}_v006.xyz/" $input
+  echo "Replacing xyz file and restart the calculation..."
+
+  # actual execution
+  $ORCA_ROOT/orca  $input > ${input%.inp}.out 2> ${input%.inp}.err 
+  
+  echo "Orca run for iteration: $h is finished. "
+  echo "Checking imaginary mode again. Iteration: $h "
+
+  freq=`grep "vibrational_frequencies" -A 8 ${input%.inp}.hess | tail -n 1 | awk '{print $2}'`
+
+  if [[ "$freq" == -* ]]; then
+    echo "Vibrational mode 6 is an imaginary mode."
+    echo "Frequency 6: $freq"
+    hess=1
+  else
+    echo "Frequency 6: $freq"
+    echo "No imaginary mode found. Exiting..."
+    break
+  fi 
+  if [ $h -eq 0 ]; then
+    echo "Iteration hits the limit to $h, quitting... "
+    if [ -f  $tdir/${input%.inp}.out  ] ; then  cp $tdir/${input%.inp}.out   $CurrDir/  ; fi ;
+    if [ -f  $tdir/${input%.inp}.err  ] ; then  cp $tdir/${input%.inp}.err   $CurrDir/  ; fi ; 
+   if [ -f  $tdir/${input%.inp}.hess ] ; then  cp $tdir/${input%.inp}.hess  $CurrDir/  ; fi ; 
+   if [ -f  $tdir/${input%.inp}.gbw  ] ; then  cp $tdir/${input%.inp}.gbw   $CurrDir/  ; fi ;
+   if [ -f  $tdir/${input%.inp}.xyz  ] ; then  cp $tdir/${input%.inp}.xyz   $CurrDir/  ; fi ;
+    exit 77
+  fi 
+  h=$((h+1))
+done
+
+  if [ -f $tdir/${input%.inp}.property.txt ]; then
+    $ORCA_ROOT/orca_2json $tdir/${input%.inp} -property
+  fi
+
+
+
+#   if the calculation is successful, then copy the
+#   useful files back the original folder
+#if [ $? -eq 0 ]; then
+   if [ -f  $tdir/${input%.inp}.out           ] ; then  cp $tdir/${input%.inp}.out           $CurrDir/  ; fi ;
+   if [ -f  $tdir/${input%.inp}.err           ] ; then  cp $tdir/${input%.inp}.err           $CurrDir/  ; fi ;
+   if [ -f  $tdir/${input%.inp}.densitiesinfo ] ; then  cp $tdir/${input%.inp}.densitiesinfo $CurrDir/  ; fi ;
+   if [ -f  $tdir/*.cube                      ] ; then  cp $tdir/*.cube                      $CurrDir/  ; fi ;
+   if [ -f  $tdir/${input%.inp}.trj           ] ; then  cp $tdir/${input%.inp}.trj           $CurrDir/  ; fi ;
+   if [ -f  $tdir/${input%.inp}.cis           ] ; then  cp $tdir/${input%.inp}.cis           $CurrDir/  ; fi ;
+   if [ -f  $tdir/${input%.inp}.xyz           ] ; then  cp $tdir/${input%.inp}.xyz           $CurrDir/  ; fi ;
+   if [ -f  $tdir/${input%.inp}.property.json ] ; then  cp $tdir/${input%.inp}.property.json $CurrDir/  ; fi ;
+   if [ -f  $tdir/${input%.inp}.plt           ] ; then  cp $tdir/${input%.inp}.plt           $CurrDir/  ; fi ;
+   if [ -f  $tdir/${input%.inp}.hess          ] ; then  cp $tdir/${input%.inp}.hess          $CurrDir/  ; fi ;
+  #  if [ -f  $tdir/${input%.inp}.property.txt  ] ; then  cp $tdir/${input%.inp}.property.txt  $CurrDir/  ; fi ;
+#   if [ -f  $tdir/${input%.inp}_property.txt ] ; then  cp $tdir/${input%.inp}_property.txt  $CurrDir/  ; fi ;
+   if [ -f  $tdir/${input%.inp}.gbw           ] ; then  cp $tdir/${input%.inp}.gbw           $CurrDir/  ; fi ;   
+#   cp $tdir/*.plt $CurrDir/
+#fi
+
+#-----------------------------------------------------
+
+exit $?
+

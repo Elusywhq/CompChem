@@ -3,7 +3,7 @@
 # Define default values
 cores="16"
 name="default"
-memory="120"
+memory="160"
 gbw=0
 wt=24
 
@@ -21,6 +21,13 @@ elif [[ $(hostname) == *"Precision"* ]]; then
   Host="bohr"
   scratch=/home/scratch/hanqi/orca
   echo "bohr"
+elif [[ $(hostname) == *"stdct"* ]]; then
+  Host="vanda"
+  scratch=/atlas/hpctmp/vanda/$USER
+  echo "vanda"
+else
+  echo "Unknown host. Exiting."
+  exit 1
 fi
 
 project=11004127
