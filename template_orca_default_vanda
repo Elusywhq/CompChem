@@ -1,7 +1,8 @@
 #!/bin/bash
 
-#PBS -q colo-chmlu 
-#PBS -l select=1:ncpus=CR:host=colo-chmlu-08:mpiprocs=CR:mem=120GB
+#PBS -P CFP01-CF-083
+#PBS -l select=1:ncpus=CR:mpiprocs=CR:mem=120GB
+#PBS -l walltime=WT:00:00
 #PBS -j oe
 #PBS -m abe
 #PBS -p 1023
