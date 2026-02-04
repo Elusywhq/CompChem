@@ -15,8 +15,21 @@ elif [[ $(hostname) == *"Precision"* ]]; then
 #   echo "bohr"
 fi
 
+if [ "$1" == "-loc" ]; then
+    shift
+    local=1
+else
+    local=0
+fi
+
+
+
 for f in "$@"; do
-  file=$scratch/${f%.*}/${f%.*}.out
+  if [ $local -eq 1 ]; then
+    file=${f%.*}.out
+  else
+    file=$scratch/${f%.*}/${f%.*}.out
+  fi
   if [ ! -f $file ]; then
     echo "WARNING: $file ORCA output file does not exist."
     continue
