@@ -1,0 +1,52 @@
+#!/bin/bash
+
+if [[ $(hostname) == *"atlas"* ]]; then
+  Host="hpc"
+  scratch=/hpctmp/e0732532
+#   echo "atlas"
+#   echo $scratch
+elif [[ $(hostname) == *"asp2a"* ]]; then
+  Host="nscc"
+  scratch=/home/users/nus/$USER/scratch/orcacalc
+#   echo "nscc"
+elif [[ $(hostname) == *"Precision"* ]]; then
+  Host="bohr"
+  scratch=/home/scratch/hanqi/orca
+#   echo "bohr"
+fi
+
+for f in "$@"; do
+  file=$scratch/${f%.*}/${f%.*}.out
+  if [ ! -f $file ]; then
+    echo "WARNING: $file ORCA output file does not exist."
+    continue
+  fi
+  iroot_list=( $(grep "The IROOT now is:" $file | awk '{print $6}') )
+  Ediffs=( $(grep "E diff. (CI)" $file | awk '{print $4}') )
+  SPEs=( $(grep "FINAL SINGLE POINT ENERGY" $file | awk '{print $5}') )
+  echo ""
+  echo "************ $file ***********************************************************"
+  echo -e "cycle\tiroot\tMultiplicity\tE diff. (CI)\tFINAL SINGLE POINT ENERGY"
+  for ((i=-1;i<=(${#iroot_list[*]});i++)); do
+    if [ $i -eq -1 ]; then
+      iroot=0
+    else
+      iroot="${iroot_list[$i]}"
+    fi
+    opt=$((i + 2))
+    iopt=$((i + 1))
+    if [ -z "$iroot" ]; then
+      continue
+    fi
+    state=$(grep "STATE  $iroot" $file | head -n $opt | tail -n 1 | awk '{print $14}')
+ 
+    echo -e "$opt\t$iroot\t$state\t${Ediffs[$iopt]}\t${SPEs[$iopt]}"
+    # echo "------------------------ --------------------------------- ------------------------------------"
+    # echo "                          GEOMETRY OPTIMIZATION CYCLE  $opt  " 
+    # echo "                          for i = $i IROOT = $iroot MULT = $state"
+    # echo "                          E diff. (CI) = ${Ediffs[$iopt]} "
+    # echo "                          FINAL SINGLE POINT ENERGY = ${SPEs[$iopt]} "
+    # echo "----------------------------------------------------------------------------------------------"
+  done
+  echo "********************************************************************************"
+done
