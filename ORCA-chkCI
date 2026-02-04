@@ -25,7 +25,7 @@ for f in "$@"; do
   Ediffs=( $(grep "E diff. (CI)" $file | awk '{print $4}') )
   SPEs=( $(grep "FINAL SINGLE POINT ENERGY" $file | awk '{print $5}') )
   echo ""
-  echo "************ $file ***********************************************************"
+  echo "************ $file ************************************"
   echo -e "cycle\tiroot\tMultiplicity\tE diff. (CI)\tFINAL SINGLE POINT ENERGY"
   for ((i=-1;i<=(${#iroot_list[*]});i++)); do
     if [ $i -eq -1 ]; then
