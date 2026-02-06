@@ -6,7 +6,7 @@ name="default"
 memory="160"
 gbw=0
 wt=24
-
+binpath="$HOME/bin/ORCA"
 
 if [[ $(hostname) == *"atlas"* ]]; then
   Host="hpc"
@@ -24,6 +24,7 @@ elif [[ $(hostname) == *"Precision"* ]]; then
 elif [[ $(hostname) == *"stdct"* ]]; then
   Host="vanda"
   scratch=/atlas/hpctmp/vanda/$USER
+  binpath="/atlas/home/$USER/bin/ORCA"
   echo "vanda"
 else
   echo "Unknown host. Exiting."
@@ -132,7 +133,8 @@ done
 
 # Your script logic goes here
 
-sed -e "s/CR/$cores/g" $HOME/bin/ORCA/$template > ./$name.sh
+
+sed -e "s/CR/$cores/g" $binpath/$template > ./$name.sh
 sed -i "s/RN/$name.inp/g" ./$name.sh
 sed -i "s/MRY/$memory/g" ./$name.sh
 sed -i "s/WT/$wt/g" ./$name.sh
