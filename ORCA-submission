@@ -46,6 +46,7 @@ usage() {
  echo "  -w             Specify another gbw file."
   echo "  -t             Specify walltime, default at 24."
   echo "  -esd           Turning on the ESD checking mode (Please check walltime)"
+  echo "  -ci            Turning on the CI optimization mode (Please check walltime)"
   exit 1
 }
 
@@ -105,6 +106,9 @@ while [ "$#" -gt 0 ]; do
     -loc)
       template=template_orca_loc
       ;; 
+    -ci)
+      template=template_orca_ciopt_$Host
+      ;;
    -t)
       if [ -n "$2" ] && is_integer "$2"; then
         wt="$2"
