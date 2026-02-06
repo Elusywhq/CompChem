@@ -122,6 +122,9 @@ while [ $i -lt 1 ] ; do
       # identify the new iroot 
       new_iroot=$(grep "Mult 1" ${input%.inp}.out | tail -n 1 | awk '{print $2}')
       new_iroot=${new_iroot:0:1}
+      if [ $new_iroot -eq 1 ] ; then
+        continue
+      fi
       sed -i "/IROOT/c\IROOT $new_iroot" $input
       sed -i "s/$XYZFILE/${input%.inp}.xyz/g" $input
 
