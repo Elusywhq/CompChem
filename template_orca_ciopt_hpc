@@ -123,7 +123,7 @@ while [ $i -lt 1 ] ; do
       new_iroot=$(grep "Mult 1" ${input%.inp}.out | tail -n 1 | awk '{print $2}')
       new_iroot=${new_iroot:0:1}
       sed -i "/IROOT/c\IROOT $new_iroot" $input
-      sed -i "s/$XYZFILE/${input%.inp}/g" $input
+      sed -i "s/$XYZFILE/${input%.inp}.xyz/g" $input
 
       $ORCA_ROOT/orca $input > ${input%.inp}.out 2> ${input%.inp}.err & 
       ORCA_PID=$!
