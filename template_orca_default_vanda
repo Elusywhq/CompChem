@@ -33,7 +33,7 @@ cd $CurrDir
 export OMP_NUM_THREADS=1
 
 # scratch folder. Make it "input- dependent"
-tdir=/hpctmp/e0732532/${input%.inp}
+tdir=/scratch/e0732532/orcacalc/${input%.inp}
 
 if [ ! -d $tdir ] ; then
     mkdir -p $tdir
