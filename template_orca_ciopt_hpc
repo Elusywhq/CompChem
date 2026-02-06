@@ -116,8 +116,8 @@ while [ $i -lt 1 ] ; do
       sleep 10
 
       # restart the calculation with the new geometry 
-      cp -v ${input%.inp}.xyz  restart.xyz.i$0
-      cp -v ${input%.inp}.out  restart.out.i$0
+      cp -v ${input%.inp}.xyz  restart.xyz.i$c
+      cp -v ${input%.inp}.out  restart.out.i$c
     #   cp -v ${input%.inp}.gbw  restart.gbw.i$0
       # identify the new iroot 
       new_iroot=$(grep "Mult 1" ${input%.inp}.out | tail -n 1 | awk '{print $2}')
@@ -127,6 +127,7 @@ while [ $i -lt 1 ] ; do
       $ORCA_ROOT/orca $input > ${input%.inp}.out 2> ${input%.inp}.err & 
       ORCA_PID=$!
       echo "Restarted ORCA with new PID: $ORCA_PID"
+      c=$((c+1))
     fi 
     if [ $finished -gt 0 ] ; then
        i=1
