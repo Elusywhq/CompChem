@@ -112,7 +112,7 @@ while [ $i -lt 1 ] ; do
       # kill the previous process
       kill $ORCA_PID
       wait $ORCA_PID 2>/dev/null # Wait for it to actually close
-
+      rm -f *tmp*
       sleep 120
 
       # restart the calculation with the new geometry 
@@ -131,6 +131,7 @@ while [ $i -lt 1 ] ; do
       $ORCA_ROOT/orca $input > ${input%.inp}.out 2> ${input%.inp}.err & 
       ORCA_PID=$!
       echo "Restarted ORCA with new PID: $ORCA_PID"
+      echo -e "\t Cycle \t IROOT \t Mult \t Ediffs"
       c=$((c+1))
       continue
     fi 
