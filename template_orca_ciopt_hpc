@@ -90,7 +90,7 @@ while [ $i -lt 1 ] ; do
       fi
   fi
 
-    sleep 500
+    sleep 600
     finished=$(grep "ORCA TERMINATED NORMALLY" ${input%.inp}.out | wc -l)
     iroot=$(grep "The IROOT now is:" ${input%.inp}.out | tail -n 1 | awk '{print $6}')
     mult=$(grep "STATE  $iroot" ${input%.inp}.out | tail -n 1 | awk '{print $14}')
@@ -133,6 +133,7 @@ while [ $i -lt 1 ] ; do
       echo "Restarted ORCA with new PID: $ORCA_PID"
       echo -e "\t Cycle \t IROOT \t Mult \t Ediffs"
       c=$((c+1))
+      sleep 120
       continue
     fi 
     if [ $finished -gt 0 ] ; then

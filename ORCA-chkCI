@@ -26,7 +26,11 @@ fi
 
 for f in "$@"; do
   if [ $local -eq 1 ]; then
-    file=${f%.*}.out
+    if [ -f $f ]; then
+      file=$f
+    else
+      file=${f%.*}.out
+    fi
   else
     file=$scratch/${f%.*}/${f%.*}.out
   fi
