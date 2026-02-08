@@ -8,7 +8,7 @@
 
 input=RN
 orbital=$(grep -ic 'moread' $input)          # input file for restart the calculation, if needed
-
+echo "Orbital restart file option: $orbital"
 #---------------------------------------------------------------------------
 #   normally you should not need to change anything below this line
 source /app1/ebenv
