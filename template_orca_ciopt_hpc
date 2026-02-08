@@ -118,6 +118,7 @@ while [ $i -lt 1 ] ; do
       # restart the calculation with the new geometry 
       cp -v ${input%.inp}.xyz  restart.xyz.i$c
       cp -v ${input%.inp}.out  restart.out.i$c
+      cp -v ${input%.inp}_trj.xyz restart_trj.xyz.i$c
     #   cp -v ${input%.inp}.gbw  restart.gbw.i$0
       # identify the new iroot 
       new_iroot=$(grep "Mult 1" ${input%.inp}.out | tail -n 1 | awk '{print $2}')
