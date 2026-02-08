@@ -119,6 +119,9 @@ while [ "$#" -gt 0 ]; do
         exit 1
       fi  
       ;;
+    -d)
+      template=template_orca_Dscf_$Host
+    ;;
 
     -esd)
       template=template_orca_esd_$Host
