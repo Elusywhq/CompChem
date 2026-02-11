@@ -129,17 +129,19 @@ if [ $(grep XYZFILE $tdir/$input | awk '{print $4}' ) -eq 1 ]; then
 fi
 
 if [ $(grep -i "freq" $tdir/${input%.inp}.inp | wc -l) -eq 1 ]; then
-  hess=0
-  echo "Checking imaginary mode... "
-  freq=`grep "vibrational_frequencies" -A 8 ${input%.inp}.hess | tail -n 1 | awk '{print $2}'`
-  if [[ "$freq" == -* ]]; then
-    echo "Vibrational mode 6 is an imaginary mode."
-    echo "Frequency 6: $freq"
-    hess=1
-  else
-    echo "Frequency 6: $freq"
-    echo "No imaginary mode found. Exiting..."
+  if [ $(grep -i "opt " $tdir/${input%.inp}.inp | wc -l) -eq 1 ]; then
     hess=0
+    echo "Checking imaginary mode... "
+    freq=`grep "vibrational_frequencies" -A 8 ${input%.inp}.hess | tail -n 1 | awk '{print $2}'`
+    if [[ "$freq" == -* ]]; then
+      echo "Vibrational mode 6 is an imaginary mode."
+      echo "Frequency 6: $freq"
+      hess=1
+    else
+      echo "Frequency 6: $freq"
+      echo "No imaginary mode found. Exiting..."
+      hess=0
+    fi
   fi
 fi
 
