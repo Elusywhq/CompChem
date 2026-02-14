@@ -1,5 +1,7 @@
 #!/bin/bash
-
+if [[ $(hostname) == *"atlas"* ]]; then
+    source /etc/profile.d/modules.sh
+fi
 # Check for input file
 if [[ $# -lt 1 ]]; then
     echo "Usage: $0 [-q] <molden_file>"
@@ -18,19 +20,21 @@ for filename in "$@"; do
     file=${filename%.*}
     op=$file.orb
     version=$(grep " Program Version" $file.out | awk '{print $3}')
-    if [ "$version" == "6.1.0" ]; then
-        $ORCA_ROOT/orca_2mkl ${file}.gbw -molden > /dev/null 2>&1
-    elif [ "$version" == "6.0.1" ]; then
-        orca_2mkl $file.gbw -molden > /dev/null 2>&1
-    elif [ "$version" == "6.0.0" ]; then
-        module purge ORCA/6.0.1-foss-2023b
-        module load ORCA/6.0.0-foss-2023b_xtb_6.7.1
-        orca_2mkl $file.gbw -molden > /dev/null 2>&1
-        module purge ORCA/6.0.0-foss-2023b_xtb_6.7.1
-        module load ORCA/6.0.1-foss-2023b
-    else
-        echo "Unknown ORCA version for $file: $version" 
-        continue
+    if [[ $(hostname) == *"atlas"* ]]; then
+        if [ "$version" == "6.1.0" ]; then
+            $ORCA_ROOT/orca_2mkl ${file}.gbw -molden > /dev/null 2>&1
+        elif [ "$version" == "6.0.1" ]; then
+            orca_2mkl $file.gbw -molden > /dev/null 2>&1
+        elif [ "$version" == "6.0.0" ]; then
+            module purge ORCA/6.0.1-foss-2023b
+            module load ORCA/6.0.0-foss-2023b_xtb_6.7.1
+            orca_2mkl $file.gbw -molden > /dev/null 2>&1
+            module purge ORCA/6.0.0-foss-2023b_xtb_6.7.1
+            module load ORCA/6.0.1-foss-2023b
+        else
+            echo "Unknown ORCA version for $file: $version" 
+            continue
+        fi
     fi
     # $ORCA_ROOT/orca_2mkl $file -molden  > /dev/null 2>&1
     norb=$(grep "Alpha" $file.molden.input | wc -l)
