@@ -17,7 +17,10 @@ fi
 for filename in "$@"; do
     file=${filename%.*}
     op=$file.orb
-    $ORCA_ROOT/orca_2mkl $file -molden  > /dev/null 2>&1
+    if [ ! -f $file.molden.input ]; then
+        $ORCA_ROOT/orca_2mkl $file -molden > /dev/null 2>&1
+    fi
+    # $ORCA_ROOT/orca_2mkl $file -molden  > /dev/null 2>&1
     norb=$(grep "Alpha" $file.molden.input | wc -l)
     HOMO=$(ORCA-GrepHOMO -q $file)
     LUMO=$(($HOMO + 1))
